@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.26)
+project(lexer)
+
+set(CMAKE_CXX_STANDARD 20)
+
+enable_testing()
+
+add_library(catch2 INTERFACE)
+target_include_directories(
+        catch2 INTERFACE lib/catch2
+)
+
+add_executable(lexer
+        src/main.cpp
+        src/rules/Program.h
+        src/rules/Ident.h
+        src/Reader.h
+)
+
+add_executable(lexer_tests
+        src/rules/Program.h
+        src/rules/Ident.h
+        src/Reader.h
+        tests/Reader_tests.cpp
+)
+
+target_link_libraries(lexer_tests PUBLIC catch2)
