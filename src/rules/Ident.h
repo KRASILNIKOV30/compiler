@@ -1,4 +1,6 @@
 #pragma once
+#include "Expression.h"
+
 #include <iostream>
 #include "../Reader.h"
 
@@ -73,3 +75,50 @@ inline bool ComplexId(Reader& reader)
 	return Id(reader) && ComplexIdRemainder(reader);
 }
 
+/**
+ * index -> e | [expression]
+ */
+inline bool Index(Reader& reader)
+{
+	if (reader.Empty() || reader.Peek() != '[')
+	{
+		return true;
+	}
+	reader.Get();
+
+	if (!Expression(reader))
+	{
+		return false;
+	}
+
+	if (reader.Peek() != ']')
+	{
+		return false;
+	}
+	reader.Get();
+
+	return true;
+}
+
+/**
+ * idIndex -> complexId index
+ */
+inline bool IdIndex(Reader& reader)
+{
+	return ComplexId(reader) && Index(reader);
+}
+
+/**
+ * ident -> idIndex
+ * idIndex -> complexId index
+ * index -> e | [expression]
+ * complexId -> id complexIdRemainder
+ * complexIdRemainder -> e | .complexId
+ * id -> letter idRemainder
+ * idRemainder -> e | idPart idRemainder
+ * idPart -> letter | digit
+ */
+inline bool Ident(Reader& reader)
+{
+	return IdIndex(reader);
+}
