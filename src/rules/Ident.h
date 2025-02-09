@@ -54,35 +54,13 @@ inline bool Id(Reader& reader)
 inline bool ComplexId(Reader& reader);
 
 /**
- * complexIdRemainder -> e | .complexId
- */
-inline bool ComplexIdRemainder(Reader& reader)
-{
-	if (reader.Empty() || reader.Peek() != '.')
-	{
-		return true;
-	}
-
-	reader.Get();
-	return ComplexId(reader);
-}
-
-/**
- * complexId -> id complexIdRemainder
- */
-inline bool ComplexId(Reader& reader)
-{
-	return Id(reader) && ComplexIdRemainder(reader);
-}
-
-/**
- * index -> e | [expression]
+ * index -> [expression]
  */
 inline bool Index(Reader& reader)
 {
-	if (reader.Empty() || reader.Peek() != '[')
+	if (reader.Peek() != '[')
 	{
-		return true;
+		return false;
 	}
 	reader.Get();
 
@@ -101,24 +79,78 @@ inline bool Index(Reader& reader)
 }
 
 /**
- * idIndex -> complexId index
+ * funcCall -> (expList)
  */
-inline bool IdIndex(Reader& reader)
+inline bool FuncCall(Reader& reader)
 {
-	return ComplexId(reader) && Index(reader);
+	if (reader.Peek() != '(')
+	{
+		return false;
+	}
+	reader.Get();
+
+	if (!ExpressionList(reader))
+	{
+		return false;
+	}
+
+	if (reader.Peek() != ')')
+	{
+		return false;
+	}
+	reader.Get();
+
+	return true;
 }
 
 /**
- * ident -> idIndex
- * idIndex -> complexId index
- * index -> e | [expression]
+* complexIdRemainder -> e | .complexId | index complexIdRemainder | funcCall complexIdRemainder
+ */
+inline bool ComplexIdRemainder(Reader& reader)
+{
+	if (reader.Empty())
+	{
+		return true;
+	}
+
+	if (reader.Peek() == '.')
+	{
+		reader.Get();
+		return ComplexId(reader);
+	}
+
+	if (reader.Peek() == '[')
+	{
+		return Index(reader) && ComplexIdRemainder(reader);
+	}
+
+	if (reader.Peek() == '(')
+	{
+		return FuncCall(reader) && ComplexIdRemainder(reader);
+	}
+
+	return true;
+}
+
+/**
  * complexId -> id complexIdRemainder
- * complexIdRemainder -> e | .complexId
+ */
+inline bool ComplexId(Reader& reader)
+{
+	return Id(reader) && ComplexIdRemainder(reader);
+}
+
+/**
+ * ident -> complexId
+ * complexId -> id complexIdRemainder
+ * complexIdRemainder -> e | .complexId | index complexIdRemainder | funcCall complexIdRemainder
+ * index -> [expression]
+ * funcCall -> (expList)
  * id -> letter idRemainder
  * idRemainder -> e | idPart idRemainder
  * idPart -> letter | digit
  */
 inline bool Ident(Reader& reader)
 {
-	return IdIndex(reader);
+	return ComplexId(reader);
 }
