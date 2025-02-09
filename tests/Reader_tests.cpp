@@ -21,7 +21,7 @@ SCENARIO("Reader reads characters and tracks position")
 
 			AND_THEN("The position should be 1")
 			{
-				CHECK(reader.GetPos() == 1);
+				CHECK(reader.Count() == 1);
 			}
 
 			AND_THEN("The stream should not be empty")
@@ -42,7 +42,7 @@ SCENARIO("Reader reads characters and tracks position")
 			AND_THEN("The character should still be 'H' and position should be 0")
 			{
 				CHECK(c == 'H');
-				REQUIRE(reader.GetPos() == 0);
+				REQUIRE(reader.Count() == 0);
 			}
 		}
 
@@ -69,7 +69,7 @@ SCENARIO("Reader reads characters and tracks position")
 
 			AND_THEN("The position should be 13")
 			{
-				CHECK(reader.GetPos() == 13);
+				CHECK(reader.Count() == 13);
 			}
 		}
 
@@ -102,12 +102,29 @@ SCENARIO("Reader reads characters and tracks position")
 
 			THEN("The position should be 0")
 			{
-				CHECK(reader.GetPos() == 0);
+				CHECK(reader.Count() == 0);
 			}
 
 			AND_THEN("The next character read should be 'H' again")
 			{
 				CHECK(reader.Get() == 'H');
+			}
+		}
+
+		WHEN("Seek reader")
+		{
+			reader.Get(); // 'H'
+			reader.Get(); // 'e'
+			reader.Get(); // 'l'
+			reader.Get(); // 'l'
+			reader.Get(); // 'o'
+
+			reader.Seek(1);
+
+			THEN("The position should be 1")
+			{
+				CHECK(reader.Count() == 1);
+				CHECK(reader.Peek() == 'e');
 			}
 		}
 	}

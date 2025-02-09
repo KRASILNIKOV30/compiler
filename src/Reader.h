@@ -17,7 +17,7 @@ public:
 		{
 			throw std::runtime_error("EOF Error: tried to get char from an empty reader");
 		}
-		++m_pos;
+		++m_count;
 		return static_cast<char>(m_input.get());
 	}
 
@@ -28,13 +28,13 @@ public:
 
 	void Unget()
 	{
-		--m_pos;
+		--m_count;
 		m_input.unget();
 	}
 
-	[[nodiscard]] size_t GetPos() const
+	[[nodiscard]] size_t Count() const
 	{
-		return m_pos;
+		return m_count;
 	}
 
 	[[nodiscard]] bool Empty() const
@@ -43,7 +43,13 @@ public:
 		return m_input.eof();
 	}
 
+	void Seek(const size_t pos)
+	{
+		m_count = pos;
+		m_input.seekg(static_cast<long>(pos));
+	}
+
 private:
 	std::istream& m_input;
-	size_t m_pos = 0;
+	size_t m_count = 0;
 };
