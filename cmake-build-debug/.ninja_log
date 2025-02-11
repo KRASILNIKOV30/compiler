@@ -1,0 +1,10 @@
+# ninja log v5
+24	2927	7609640844454255	CMakeFiles/lexer_tests.dir/tests/Ident_tests.cpp.obj	6ab0bffaceea6192
+39	3035	7609640845542653	CMakeFiles/lexer_tests.dir/tests/Expression_tests.cpp.obj	fdcaa9ceb0824fee
+6	19986	7609641014263436	CMakeFiles/lexer_tests.dir/tests/Reader_tests.cpp.obj	baf310df5abe7df1
+19988	27985	7609641094774392	lexer_tests.exe	5ce0ddcd1b03de72
+12	2831	7609641301119866	CMakeFiles/lexer_tests.dir/tests/Expression_tests.cpp.obj	fdcaa9ceb0824fee
+2832	11647	7609641389044962	lexer_tests.exe	5ce0ddcd1b03de72
+30	2905	7609642286711528	CMakeFiles/lexer_tests.dir/tests/Ident_tests.cpp.obj	6ab0bffaceea6192
+50	2977	7609642287436222	CMakeFiles/lexer_tests.dir/tests/Expression_tests.cpp.obj	fdcaa9ceb0824fee
+2977	12338	7609642380832978	lexer_tests.exe	5ce0ddcd1b03de72

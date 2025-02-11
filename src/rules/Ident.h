@@ -4,6 +4,9 @@
 #include <iostream>
 #include "../Reader.h"
 
+bool Expression(Reader& reader);
+bool ExpressionList(Reader& reader);
+
 /**
  * idPart -> letter | digit
  */
