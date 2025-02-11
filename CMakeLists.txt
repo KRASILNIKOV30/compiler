@@ -15,7 +15,6 @@ add_executable(lexer
         src/rules/Ident.h
         src/Reader.h
         src/rules/Expression.h
-        src/rules/Term.h
 )
 
 add_executable(lexer_tests
@@ -24,8 +23,6 @@ add_executable(lexer_tests
         tests/Reader_tests.cpp
         tests/Ident_tests.cpp
         src/rules/Expression.h
-        src/rules/Term.h
-        tests/Expression_tests.cpp
 )
 
 target_link_libraries(lexer_tests PUBLIC catch2)
