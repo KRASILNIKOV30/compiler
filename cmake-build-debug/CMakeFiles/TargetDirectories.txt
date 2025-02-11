@@ -1,5 +1,0 @@
-C:/iSpring/lexer/cmake-build-debug/CMakeFiles/lexer.dir
-C:/iSpring/lexer/cmake-build-debug/CMakeFiles/lexer_tests.dir
-C:/iSpring/lexer/cmake-build-debug/CMakeFiles/test.dir
-C:/iSpring/lexer/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/iSpring/lexer/cmake-build-debug/CMakeFiles/rebuild_cache.dir
