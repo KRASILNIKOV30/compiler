@@ -8,7 +8,7 @@
  */
 inline bool TheFirstLevelOperation(Reader& reader)
 {
-    if (ParseKeyword(reader, "AND") || ParseKeyword(reader, "*") || ParseKeyword(reader, "/") || op == ParseKeyword(reader, "MOD") || ParseKeyword(reader, "DIV"))
+    if (ParseKeyword(reader, "AND") || reader.Peek() == '*' || reader.Peek() == '/' || op == ParseKeyword(reader, "MOD") || ParseKeyword(reader, "DIV"))
     {
         reader.Get();
         return true;
@@ -20,7 +20,7 @@ inline bool TheFirstLevelOperation(Reader& reader)
  */
 inline bool TheSecondLevelOperation(Reader& reader)
 {
-    if (ParseKeyword(reader, "+") || ParseKeyword(reader, "-") || ParseKeyword(reader, "OR"))
+    if (reader.Peek() == '+' || reader.Peek() == '-' || ParseKeyword(reader, "OR"))
     {
         reader.Get();
         return true;
@@ -32,7 +32,7 @@ inline bool TheSecondLevelOperation(Reader& reader)
  */
 inline bool TheThirdLevelOperation(Reader& reader)
 {
-    if (ParseKeyword(reader, "==") || ParseKeyword(reader, "!=") || ParseKeyword(reader, ">") || ParseKeyword(reader, "<") || ParseKeyword(reader, ">=") || ParseKeyword(reader, "<="))
+    if (ParseKeyword(reader, "==") || ParseKeyword(reader, "!=") || reader.Peek() == '>' || reader.Peek() == '<' || ParseKeyword(reader, ">=") || ParseKeyword(reader, "<="))
     {
         reader.Get();
         return true;
