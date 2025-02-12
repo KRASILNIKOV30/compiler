@@ -1,22 +1,22 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
-#include <sstream>
-#include "../src/Reader.h"
+#include "../src/lexer/reader/Reader.h"
 
 SCENARIO("Reader reads characters and tracks position")
 {
 	GIVEN("A Reader initialized with a string stream containing 'Hello, World!'")
 	{
-		std::istringstream input("Hello, World!");
-		Reader reader(input);
+		Reader reader("Hello, World!");
 
 		WHEN("We read the first character")
 		{
+			reader.Record();
 			char ch = reader.Get();
 
 			THEN("The character should be 'H'")
 			{
 				CHECK(ch == 'H');
+				CHECK(reader.StopRecord() == "H");
 			}
 
 			AND_THEN("The position should be 1")
@@ -32,10 +32,12 @@ SCENARIO("Reader reads characters and tracks position")
 
 		WHEN("We peek at the first character without advancing the reader")
 		{
+			reader.Record();
 			char c = reader.Peek();
 
 			THEN("The character should be 'H'")
 			{
+				CHECK(reader.StopRecord().empty());
 				CHECK(c == 'H');
 			}
 
@@ -48,11 +50,15 @@ SCENARIO("Reader reads characters and tracks position")
 
 		WHEN("We read all characters from the stream")
 		{
+			reader.Record();
 			reader.Get(); // 'H'
 			reader.Get(); // 'e'
 			reader.Get(); // 'l'
 			reader.Get(); // 'l'
 			reader.Get(); // 'o'
+			CHECK(reader.StopRecord() == "Hello");
+
+			reader.Record();
 			reader.Get(); // ','
 			reader.Get(); // ' '
 			reader.Get(); // 'W'
@@ -61,6 +67,7 @@ SCENARIO("Reader reads characters and tracks position")
 			reader.Get(); // 'l'
 			reader.Get(); // 'd'
 			reader.Get(); // '!'
+			CHECK(reader.StopRecord() == ", World!");
 
 			THEN("The stream should be empty")
 			{
@@ -97,11 +104,13 @@ SCENARIO("Reader reads characters and tracks position")
 
 		WHEN("We unget a character")
 		{
+			reader.Record();
 			reader.Get();
 			reader.Unget();
 
 			THEN("The position should be 0")
 			{
+				CHECK(reader.StopRecord().empty());
 				CHECK(reader.Count() == 0);
 			}
 
@@ -113,6 +122,7 @@ SCENARIO("Reader reads characters and tracks position")
 
 		WHEN("Seek reader")
 		{
+			reader.Record();
 			reader.Get(); // 'H'
 			reader.Get(); // 'e'
 			reader.Get(); // 'l'
@@ -123,6 +133,7 @@ SCENARIO("Reader reads characters and tracks position")
 
 			THEN("The position should be 1")
 			{
+				CHECK(reader.StopRecord() == "H");
 				CHECK(reader.Count() == 1);
 				CHECK(reader.Peek() == 'e');
 			}

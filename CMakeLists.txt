@@ -13,16 +13,24 @@ target_include_directories(
 add_executable(lexer
         src/main.cpp
         src/rules/Ident.h
-        src/Reader.h
+        src/lexer/reader/Reader.h
+        src/lexer/token/Token.h
         src/rules/Expression.h
+        src/lexer/Lexer.cpp
+        src/lexer/Lexer.h
+        src/lexer/rules/Id.h
 )
 
 add_executable(lexer_tests
         src/rules/Ident.h
-        src/Reader.h
-        tests/Reader_tests.cpp
-        tests/Ident_tests.cpp
+        src/lexer/reader/Reader.h
+        src/lexer/token/Token.h
         src/rules/Expression.h
+        tests/Reader_tests.cpp
+        tests/Lexer_tests.cpp
+        src/lexer/Lexer.cpp
+        src/lexer/Lexer.h
+        src/lexer/rules/Id.h
 )
 
 target_link_libraries(lexer_tests PUBLIC catch2)
