@@ -19,6 +19,8 @@ add_executable(lexer
         src/lexer/Lexer.cpp
         src/lexer/Lexer.h
         src/lexer/rules/Id.h
+        src/lexer/rules/Number.h
+        src/lexer/rules/String.h
 )
 
 add_executable(lexer_tests
@@ -31,6 +33,8 @@ add_executable(lexer_tests
         src/lexer/Lexer.cpp
         src/lexer/Lexer.h
         src/lexer/rules/Id.h
+        src/lexer/rules/Number.h
+        src/lexer/rules/String.h
 )
 
 target_link_libraries(lexer_tests PUBLIC catch2)

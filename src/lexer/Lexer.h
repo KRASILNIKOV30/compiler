@@ -12,6 +12,8 @@ public:
 
 private:
 	Token Id();
+	Token Number();
+	Token String();
 	void SkipWhitespaces();
 
 private:

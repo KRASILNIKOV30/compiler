@@ -1,13 +1,17 @@
 #pragma once
 #include "../reader/Reader.h"
 
+inline bool IsIdChar(char ch)
+{
+	return ch == '_' || ch == '$' || std::isalpha(ch);
+}
+
 /**
  * idChar -> _ | $ | letter
  */
 inline bool IdChar(Reader& reader)
 {
-	const auto ch = reader.Get();
-	return ch == '_' || ch == '$' || std::isalpha(ch);
+	return IsIdChar(reader.Get());
 }
 
 /**
