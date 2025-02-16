@@ -27,6 +27,7 @@ enum class TokenType
 	OP_AND, // and
 	OP_OR, // or
 	OP_NOT, // not
+	OP_NOT_MARK, // !
 	ID, // identifier
 	INTEGER, // integer
 	FLOAT, // float

@@ -22,6 +22,7 @@ add_executable(lexer
         src/lexer/rules/Number.h
         src/lexer/rules/String.h
         src/lexer/rules/ReservedWords.h
+        src/lexer/rules/SpecialChars.h
 )
 
 add_executable(lexer_tests
@@ -37,6 +38,7 @@ add_executable(lexer_tests
         src/lexer/rules/Number.h
         src/lexer/rules/String.h
         src/lexer/rules/ReservedWords.h
+        src/lexer/rules/SpecialChars.h
 )
 
 target_link_libraries(lexer_tests PUBLIC catch2)

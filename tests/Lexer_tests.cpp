@@ -101,3 +101,102 @@ TEST_CASE("reserved words tests")
 	Check(Lexer("nott"), Token{ TokenType::ID, "nott", 0 });
 }
 
+TEST_CASE("valid special chars tests")
+{
+	Check(Lexer("(){}[],+-*/===<><=>=!=!"),
+		Token{ TokenType::PARAN_OPEN, "(", 0 },
+		Token{ TokenType::PARAN_CLOSE, ")", 1 },
+		Token{ TokenType::CURLY_OPEN, "{", 2 },
+		Token{ TokenType::CURLY_CLOSE, "}", 3 },
+		Token{ TokenType::BRACKET_OPEN, "[", 4 },
+		Token{ TokenType::BRACKET_CLOSE, "]", 5 },
+		Token{ TokenType::COMMA, ",", 6 },
+		Token{ TokenType::OP_PLUS, "+", 7 },
+		Token{ TokenType::OP_MINUS, "-", 8 },
+		Token{ TokenType::OP_MUL, "*", 9 },
+		Token{ TokenType::OP_DIVISION, "/", 10 },
+		Token{ TokenType::OP_EQUAL, "==", 11 },
+		Token{ TokenType::OP_ASSIGNMENT, "=", 13 },
+		Token{ TokenType::OP_LESS, "<", 14 },
+		Token{ TokenType::OP_GREATER, ">", 15 },
+		Token{ TokenType::OP_LESS_OR_EQUAL, "<=", 16 },
+		Token{ TokenType::OP_GREATER_OR_EQUAL, ">=", 18 },
+		Token{ TokenType::OP_NOT_EQUAL, "!=", 20 },
+		Token{ TokenType::OP_NOT_MARK, "!", 22 }
+		);
+}
+
+TEST_CASE("invalid special chars tests")
+{
+	Check(Lexer("#"), Token{ TokenType::ERROR, "#", 0, Error::UNKNOWN_SYMBOL });
+	Check(Lexer("@"), Token{ TokenType::ERROR, "@", 0, Error::UNKNOWN_SYMBOL });
+}
+
+TEST_CASE("complex expressions")
+{
+	Check(Lexer("-a + 5.3E-15 * (-a + -b * (a * -b) -c) != abc"),
+		Token{ TokenType::OP_MINUS, "-", 0 },
+		Token{ TokenType::ID, "a", 1 },
+		Token{ TokenType::OP_PLUS, "+", 3 },
+		Token{ TokenType::FLOAT, "5.3E-15", 5 },
+		Token{ TokenType::OP_MUL, "*", 13 },
+		Token{ TokenType::PARAN_OPEN, "(", 15 },
+		Token{ TokenType::OP_MINUS, "-", 16 },
+		Token{ TokenType::ID, "a", 17 },
+		Token{ TokenType::OP_PLUS, "+", 19 },
+		Token{ TokenType::OP_MINUS, "-", 21 },
+		Token{ TokenType::ID, "b", 22 },
+		Token{ TokenType::OP_MUL, "*", 24 },
+		Token{ TokenType::PARAN_OPEN, "(", 26 },
+		Token{ TokenType::ID, "a", 27 },
+		Token{ TokenType::OP_MUL, "*", 29 },
+		Token{ TokenType::OP_MINUS, "-", 31 },
+		Token{ TokenType::ID, "b", 32 },
+		Token{ TokenType::PARAN_CLOSE, ")", 33 },
+		Token{ TokenType::OP_MINUS, "-", 35 },
+		Token{ TokenType::ID, "c", 36 },
+		Token{ TokenType::PARAN_CLOSE, ")", 37 },
+		Token{ TokenType::OP_NOT_EQUAL, "!=", 39 },
+		Token{ TokenType::ID, "abc", 42 }
+		);
+
+	Check(Lexer("5 + 10 * 3.14 - 'test' / 2.5"),
+		Token{ TokenType::INTEGER, "5", 0 },
+		Token{ TokenType::OP_PLUS, "+", 2 },
+		Token{ TokenType::INTEGER, "10", 4 },
+		Token{ TokenType::OP_MUL, "*", 7 },
+		Token{ TokenType::FLOAT, "3.14", 9 },
+		Token{ TokenType::OP_MINUS, "-", 14 },
+		Token{ TokenType::STRING_LITERAL, "'test'", 16 },
+		Token{ TokenType::OP_DIVISION, "/", 23 },
+		Token{ TokenType::FLOAT, "2.5", 25 }
+		);
+
+	Check(Lexer("true and false or x > 10"),
+		Token{ TokenType::TRUE, "true", 0 },
+		Token{ TokenType::OP_AND, "and", 5 },
+		Token{ TokenType::FALSE, "false", 9 },
+		Token{ TokenType::OP_OR, "or", 15 },
+		Token{ TokenType::ID, "x", 18 },
+		Token{ TokenType::OP_GREATER, ">", 20 },
+		Token{ TokenType::INTEGER, "10", 22 }
+		);
+
+	Check(Lexer("((5 + 2) * (3 - 1)) / 4"),
+		Token{ TokenType::PARAN_OPEN, "(", 0 },
+		Token{ TokenType::PARAN_OPEN, "(", 1 },
+		Token{ TokenType::INTEGER, "5", 2 },
+		Token{ TokenType::OP_PLUS, "+", 4 },
+		Token{ TokenType::INTEGER, "2", 6 },
+		Token{ TokenType::PARAN_CLOSE, ")", 7 },
+		Token{ TokenType::OP_MUL, "*", 9 },
+		Token{ TokenType::PARAN_OPEN, "(", 11 },
+		Token{ TokenType::INTEGER, "3", 12 },
+		Token{ TokenType::OP_MINUS, "-", 14 },
+		Token{ TokenType::INTEGER, "1", 16 },
+		Token{ TokenType::PARAN_CLOSE, ")", 17 },
+		Token{ TokenType::PARAN_CLOSE, ")", 18 },
+		Token{ TokenType::OP_DIVISION, "/", 20 },
+		Token{ TokenType::INTEGER, "4", 22 }
+		);
+}

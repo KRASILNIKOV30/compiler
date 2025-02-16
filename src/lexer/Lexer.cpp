@@ -2,6 +2,7 @@
 #include "rules/Id.h"
 #include "rules/Number.h"
 #include "rules/ReservedWords.h"
+#include "rules/SpecialChars.h"
 #include "rules/String.h"
 
 Lexer::Lexer(std::string const& input)
@@ -33,6 +34,10 @@ Token Lexer::Get()
 	if (IsQuot(ch))
 	{
 		return String();
+	}
+	if (IsSpecialChar(ch))
+	{
+		return SpecialChar();
 	}
 
 	return Token{
@@ -104,6 +109,18 @@ Token Lexer::String()
 
 	return Token{
 		.type = TokenType::STRING_LITERAL,
+		.value = m_reader.StopRecord(),
+		.pos = startPos,
+	};
+}
+
+Token Lexer::SpecialChar()
+{
+	const auto startPos = m_reader.Count();
+	m_reader.Record();
+	const auto tokenType = SpecialCharRule(m_reader);
+	return Token{
+		.type = tokenType,
 		.value = m_reader.StopRecord(),
 		.pos = startPos,
 	};
