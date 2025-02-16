@@ -25,6 +25,7 @@ add_executable(lexer
         src/lexer/rules/SpecialChars.h
         src/rules/ExpressionList.h
         src/rules/Operations.h
+        src/rules/Term.h
 )
 
 add_executable(lexer_tests
@@ -43,6 +44,7 @@ add_executable(lexer_tests
         src/lexer/rules/SpecialChars.h
         src/rules/ExpressionList.h
         src/rules/Operations.h
+        src/rules/Term.h
 )
 
 target_link_libraries(lexer_tests PUBLIC catch2)
