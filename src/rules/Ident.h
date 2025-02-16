@@ -1,5 +1,6 @@
 #pragma once
 #include "Expression.h"
+#include "ExpressionList.h"
 #include "../lexer/Lexer.h"
 
 /**
@@ -12,13 +13,15 @@ inline bool IdRem(Lexer& lexer)
 		return true;
 	}
 
-	if (lexer.Peek().type == TokenType::BRACKET_OPEN)
+	const auto nextTokenType = lexer.Peek().type;
+
+	if (nextTokenType == TokenType::BRACKET_OPEN)
 	{
 		lexer.Get();
 		return Expression(lexer) && lexer.Get().type == TokenType::BRACKET_CLOSE && IdRem(lexer);
 	}
 
-	if (lexer.Peek().type == TokenType::PARAN_OPEN)
+	if (nextTokenType == TokenType::PARAN_OPEN)
 	{
 		lexer.Get();
 		return ExpressionList(lexer) && lexer.Get().type == TokenType::PARAN_CLOSE && IdRem(lexer);
