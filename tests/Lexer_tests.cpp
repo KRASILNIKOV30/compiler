@@ -86,4 +86,18 @@ TEST_CASE("invalid string tests")
 	Check(Lexer("   'Hello"), Token{ TokenType::ERROR, "", 3, Error::STRING_LITERAL_INCOMPLETE });
 }
 
+TEST_CASE("reserved words tests")
+{
+	Check(Lexer("mod div and or not true false"),
+		Token{ TokenType::OP_MOD, "mod", 0 },
+		Token{ TokenType::OP_DIV, "div", 4 },
+		Token{ TokenType::OP_AND, "and", 8 },
+		Token{ TokenType::OP_OR, "or", 12 },
+		Token{ TokenType::OP_NOT, "not", 15 },
+		Token{ TokenType::TRUE, "true", 19 },
+		Token{ TokenType::FALSE, "false", 24 }
+		);
+
+	Check(Lexer("nott"), Token{ TokenType::ID, "nott", 0 });
+}
 

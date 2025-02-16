@@ -21,6 +21,7 @@ add_executable(lexer
         src/lexer/rules/Id.h
         src/lexer/rules/Number.h
         src/lexer/rules/String.h
+        src/lexer/rules/ReservedWords.h
 )
 
 add_executable(lexer_tests
@@ -35,6 +36,7 @@ add_executable(lexer_tests
         src/lexer/rules/Id.h
         src/lexer/rules/Number.h
         src/lexer/rules/String.h
+        src/lexer/rules/ReservedWords.h
 )
 
 target_link_libraries(lexer_tests PUBLIC catch2)

@@ -1,6 +1,7 @@
 #include "Lexer.h"
 #include "rules/Id.h"
 #include "rules/Number.h"
+#include "rules/ReservedWords.h"
 #include "rules/String.h"
 
 Lexer::Lexer(std::string const& input)
@@ -23,7 +24,7 @@ Token Lexer::Get()
 
 	if (IsIdChar(ch))
 	{
-		return Id();
+		return CheckReserved(Id());
 	}
 	if (Digit(ch))
 	{
