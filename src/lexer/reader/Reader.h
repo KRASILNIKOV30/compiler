@@ -65,6 +65,7 @@ public:
 			m_record.clear();
 		}
 		m_count = pos;
+		m_input.clear();
 		m_input.seekg(static_cast<long>(pos));
 	}
 

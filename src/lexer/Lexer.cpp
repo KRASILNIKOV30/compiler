@@ -48,8 +48,17 @@ Token Lexer::Get()
 	};
 }
 
+Token Lexer::Peek()
+{
+	const auto pos = m_reader.Count();
+	const auto token = Get();
+	m_reader.Seek(pos);
+	return token;
+}
+
 bool Lexer::Empty()
 {
+	SkipWhitespaces();
 	return m_reader.Empty();
 }
 

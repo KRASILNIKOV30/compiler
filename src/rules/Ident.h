@@ -1,156 +1,42 @@
 #pragma once
 #include "Expression.h"
-
-#include <iostream>
-#include "../Reader.h"
+#include "../lexer/Lexer.h"
 
 /**
- * idPart -> letter | digit
+ * idRem -> e | [expression] idRem | (expList) idRem
  */
-inline bool IdPart(Reader& reader)
+inline bool IdRem(Lexer& lexer)
 {
-	const char ch = reader.Get();
-	return std::isalpha(ch) || std::isdigit(ch);
-}
-
-/**
- * idRemainder -> e | idPart idRemainder
- */
-inline bool IdRemainder(Reader& reader)
-{
-	if (reader.Empty())
+	if (lexer.Empty())
 	{
 		return true;
 	}
 
-	const auto count = reader.Count();
-	if (!IdPart(reader))
+	if (lexer.Peek().type == TokenType::BRACKET_OPEN)
 	{
-		reader.Seek(count);
-		return true;
+		lexer.Get();
+		return Expression(lexer) && lexer.Get().type == TokenType::BRACKET_CLOSE && IdRem(lexer);
 	}
 
-	return IdRemainder(reader);
-}
-
-/**
- * id -> letter idRemainder
- */
-inline bool Id(Reader& reader)
-{
-	if (reader.Empty())
+	if (lexer.Peek().type == TokenType::PARAN_OPEN)
 	{
-		return false;
-	}
-
-	if (!std::isalpha(reader.Peek()))
-	{
-		return false;
-	}
-
-	return IdPart(reader) && IdRemainder(reader);
-}
-
-inline bool ComplexId(Reader& reader);
-
-/**
- * index -> [expression]
- */
-inline bool Index(Reader& reader)
-{
-	if (reader.Peek() != '[')
-	{
-		return false;
-	}
-	reader.Get();
-
-	if (!Expression(reader))
-	{
-		return false;
-	}
-
-	if (reader.Peek() != ']')
-	{
-		return false;
-	}
-	reader.Get();
-
-	return true;
-}
-
-/**
- * funcCall -> (expList)
- */
-inline bool FuncCall(Reader& reader)
-{
-	if (reader.Peek() != '(')
-	{
-		return false;
-	}
-	reader.Get();
-
-	if (!ExpressionList(reader))
-	{
-		return false;
-	}
-
-	if (reader.Peek() != ')')
-	{
-		return false;
-	}
-	reader.Get();
-
-	return true;
-}
-
-/**
-* complexIdRemainder -> e | .complexId | index complexIdRemainder | funcCall complexIdRemainder
- */
-inline bool ComplexIdRemainder(Reader& reader)
-{
-	if (reader.Empty())
-	{
-		return true;
-	}
-
-	if (reader.Peek() == '.')
-	{
-		reader.Get();
-		return ComplexId(reader);
-	}
-
-	if (reader.Peek() == '[')
-	{
-		return Index(reader) && ComplexIdRemainder(reader);
-	}
-
-	if (reader.Peek() == '(')
-	{
-		return FuncCall(reader) && ComplexIdRemainder(reader);
+		lexer.Get();
+		return ExpressionList(lexer) && lexer.Get().type == TokenType::PARAN_CLOSE && IdRem(lexer);
 	}
 
 	return true;
 }
 
-/**
- * complexId -> id complexIdRemainder
- */
-inline bool ComplexId(Reader& reader)
+inline bool Id(Lexer& lexer)
 {
-	return Id(reader) && ComplexIdRemainder(reader);
+	return !lexer.Empty() && lexer.Get().type == TokenType::ID;
 }
 
 /**
- * ident -> complexId
- * complexId -> id complexIdRemainder
- * complexIdRemainder -> e | .complexId | index complexIdRemainder | funcCall complexIdRemainder
- * index -> [expression]
- * funcCall -> (expList)
- * id -> letter idRemainder
- * idRemainder -> e | idPart idRemainder
- * idPart -> letter | digit
+ * ident -> id idRem
+ * idRem -> e | [expression] idRem | (expList) idRem
  */
-inline bool Ident(Reader& reader)
+inline bool Ident(Lexer& lexer)
 {
-	return ComplexId(reader);
+	return Id(lexer) && IdRem(lexer);
 }

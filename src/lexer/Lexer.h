@@ -8,6 +8,7 @@ class Lexer
 public:
 	explicit Lexer(std::string const& input);
 	Token Get();
+	Token Peek();
 	[[nodiscard]] bool Empty();
 
 private:

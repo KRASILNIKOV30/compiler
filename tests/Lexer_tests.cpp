@@ -14,6 +14,16 @@ void Check(Lexer lexer, Args&&... args)
 	(checkOne(args), ...);
 }
 
+TEST_CASE("peek token")
+{
+	Lexer lexer("first second");
+	CHECK(lexer.Peek() == Token{ TokenType::ID, "first", 0});
+	CHECK(lexer.Peek() == Token{ TokenType::ID, "first", 0});
+	CHECK(lexer.Get() == Token{ TokenType::ID, "first", 0});
+	CHECK(lexer.Peek() == Token{ TokenType::ID, "second", 6});
+	CHECK(lexer.Get() == Token{ TokenType::ID, "second", 6});
+}
+
 TEST_CASE("empty lexer")
 {
 	Check(Lexer(""),
