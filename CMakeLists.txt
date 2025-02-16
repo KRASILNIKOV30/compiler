@@ -27,6 +27,7 @@ add_executable(lexer
         src/rules/Operations.h
         src/rules/Term.h
         src/rules/SimTerm.h
+        src/rules/SimExp.h
 )
 
 add_executable(lexer_tests
@@ -47,6 +48,7 @@ add_executable(lexer_tests
         src/rules/Operations.h
         src/rules/Term.h
         src/rules/SimTerm.h
+        src/rules/SimExp.h
 )
 
 target_link_libraries(lexer_tests PUBLIC catch2)
