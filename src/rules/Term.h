@@ -1,6 +1,9 @@
 #pragma once
 #include "Expression.h"
+#include "Ident.h"
 #include "../lexer/Lexer.h"
+
+inline bool Expression(Lexer& lexer);
 
 /**
  * term -> (expression) | + term | - term | not term | ! term | ident | number | true | false | string
@@ -10,6 +13,11 @@ inline bool Term(Lexer& lexer)
 	if (lexer.Empty())
 	{
 		return false;
+	}
+
+	if (lexer.Peek().type == TokenType::ID)
+	{
+		return Ident(lexer);
 	}
 
 	const auto tokenType = lexer.Get().type;
@@ -27,8 +35,7 @@ inline bool Term(Lexer& lexer)
 		return Term(lexer);
 	}
 
-	if (tokenType == TokenType::ID
-		|| tokenType == TokenType::INTEGER
+	if (tokenType == TokenType::INTEGER
 		|| tokenType == TokenType::FLOAT
 		|| tokenType == TokenType::TRUE
 		|| tokenType == TokenType::FALSE

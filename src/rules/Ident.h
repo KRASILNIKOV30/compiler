@@ -1,10 +1,9 @@
 #pragma once
-#include "Expression.h"
 #include "ExpressionList.h"
 #include "../lexer/Lexer.h"
 
 /**
- * idRem -> e | [expression] idRem | (expList) idRem
+ * idRem -> e | [expression] idRem | (expList) idRem | () idRem
  */
 inline bool IdRem(Lexer& lexer)
 {
@@ -24,6 +23,11 @@ inline bool IdRem(Lexer& lexer)
 	if (nextTokenType == TokenType::PARAN_OPEN)
 	{
 		lexer.Get();
+		if (lexer.Peek().type == TokenType::PARAN_CLOSE)
+		{
+			lexer.Get();
+			return IdRem(lexer);
+		}
 		return ExpressionList(lexer) && lexer.Get().type == TokenType::PARAN_CLOSE && IdRem(lexer);
 	}
 

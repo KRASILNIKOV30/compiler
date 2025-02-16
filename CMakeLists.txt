@@ -49,6 +49,7 @@ add_executable(lexer_tests
         src/rules/Term.h
         src/rules/SimTerm.h
         src/rules/SimExp.h
+        tests/Expression_tests.cpp
 )
 
 target_link_libraries(lexer_tests PUBLIC catch2)

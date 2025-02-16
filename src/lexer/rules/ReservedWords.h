@@ -14,9 +14,16 @@ const std::unordered_map<std::string, TokenType> RESERVED_WORDS = {
 	{ "false", TokenType::FALSE },
 };
 
-inline const Token CheckReserved(Token const& token)
+inline std::string ToLower(std::string s)
 {
-	const auto it = RESERVED_WORDS.find(token.value);
+	std::ranges::transform(s, s.begin(),
+		[](const unsigned char c) { return std::tolower(c); });
+	return s;
+}
+
+inline Token CheckReserved(Token const& token)
+{
+	const auto it = RESERVED_WORDS.find(ToLower(token.value));
 	return it == RESERVED_WORDS.end()
 		? token
 		: Token{
