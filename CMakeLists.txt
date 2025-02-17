@@ -12,10 +12,10 @@ target_include_directories(
 
 add_executable(lexer
         src/main.cpp
-        src/rules/Ident.h
+        src/parser/rules/Ident.cpp
         src/lexer/reader/Reader.h
         src/lexer/token/Token.h
-        src/rules/Expression.h
+        src/parser/rules/Expression.cpp
         src/lexer/Lexer.cpp
         src/lexer/Lexer.h
         src/lexer/rules/Id.h
@@ -23,18 +23,21 @@ add_executable(lexer
         src/lexer/rules/String.h
         src/lexer/rules/ReservedWords.h
         src/lexer/rules/SpecialChars.h
-        src/rules/ExpressionList.h
-        src/rules/Operations.h
-        src/rules/Term.h
-        src/rules/SimTerm.h
-        src/rules/SimExp.h
+        src/parser/rules/ExpressionList.cpp
+        src/parser/rules/Operations.h
+        src/parser/rules/Term.cpp
+        src/parser/rules/SimTerm.cpp
+        src/parser/rules/SimExp.cpp
+        src/parser/Parser.h
+        src/errors/Error.h
+        src/parser/Parser.cpp
 )
 
 add_executable(lexer_tests
-        src/rules/Ident.h
+        src/parser/rules/Ident.cpp
         src/lexer/reader/Reader.h
         src/lexer/token/Token.h
-        src/rules/Expression.h
+        src/parser/rules/Expression.cpp
         tests/Reader_tests.cpp
         tests/Lexer_tests.cpp
         src/lexer/Lexer.cpp
@@ -44,12 +47,15 @@ add_executable(lexer_tests
         src/lexer/rules/String.h
         src/lexer/rules/ReservedWords.h
         src/lexer/rules/SpecialChars.h
-        src/rules/ExpressionList.h
-        src/rules/Operations.h
-        src/rules/Term.h
-        src/rules/SimTerm.h
-        src/rules/SimExp.h
+        src/parser/rules/ExpressionList.cpp
+        src/parser/rules/Operations.h
+        src/parser/rules/Term.cpp
+        src/parser/rules/SimTerm.cpp
+        src/parser/rules/SimExp.cpp
         tests/Expression_tests.cpp
+        src/parser/Parser.h
+        src/errors/Error.h
+        src/parser/Parser.cpp
 )
 
 target_link_libraries(lexer_tests PUBLIC catch2)

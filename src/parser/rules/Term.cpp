@@ -1,30 +1,25 @@
-#pragma once
-#include "Expression.h"
-#include "Ident.h"
-#include "../lexer/Lexer.h"
-
-inline bool Expression(Lexer& lexer);
+#include "../Parser.h"
 
 /**
  * term -> (expression) | + term | - term | not term | ! term | ident | number | true | false | string
  */
-inline bool Term(Lexer& lexer)
+bool Parser::Term()
 {
-	if (lexer.Empty())
+	if (Empty())
 	{
 		return false;
 	}
 
-	if (lexer.Peek().type == TokenType::ID)
+	if (Peek().type == TokenType::ID)
 	{
-		return Ident(lexer);
+		return Ident();
 	}
 
-	const auto tokenType = lexer.Get().type;
+	const auto tokenType = Get().type;
 
 	if (tokenType == TokenType::PARAN_OPEN)
 	{
-		return Expression(lexer) && !lexer.Empty() && lexer.Get().type == TokenType::PARAN_CLOSE;
+		return Expression() && !Empty() && Get().type == TokenType::PARAN_CLOSE;
 	}
 
 	if (tokenType == TokenType::OP_PLUS
@@ -32,7 +27,7 @@ inline bool Term(Lexer& lexer)
 		|| tokenType == TokenType::OP_NOT
 		|| tokenType == TokenType::OP_NOT_MARK)
 	{
-		return Term(lexer);
+		return Term();
 	}
 
 	if (tokenType == TokenType::INTEGER

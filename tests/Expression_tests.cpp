@@ -1,17 +1,16 @@
 #include <catch.hpp>
-#include "../../src/lexer/Lexer.h"
-#include "../src/rules/Expression.h"
+#include "../src/parser/Parser.h"
 
 void Check(std::string const& str)
 {
-	Lexer lexer(str);
-	CHECK((Expression(lexer) && lexer.Empty()));
+	Parser parser{ Lexer(str) };
+	CHECK(parser.Parse());
 }
 
 void CheckFalse(std::string const& str)
 {
-	Lexer lexer(str);
-	CHECK_FALSE((Expression(lexer) && lexer.Empty()));
+	Parser parser{ Lexer(str) };
+	CHECK_FALSE(parser.Parse());
 }
 
 TEST_CASE("positive tests")

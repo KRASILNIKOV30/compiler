@@ -1,6 +1,5 @@
 #pragma once
-#include "../lexer/token/Token.h"
-
+#include "../../lexer/token/Token.h"
 #include <unordered_set>
 
 const std::unordered_set REL_OPS = {

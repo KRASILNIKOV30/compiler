@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "../../errors/Error.h"
 
 enum class TokenType
 {
@@ -34,16 +35,6 @@ enum class TokenType
 	STRING_LITERAL, // string literal
 	TRUE, // true
 	FALSE, // false
-};
-
-enum class Error
-{
-	NONE,
-	UNKNOWN_SYMBOL,
-	INVALID_NUMBER,
-	STRING_LITERAL_INCOMPLETE,
-	EMPTY_INPUT,
-	INVALID_ID,
 };
 
 struct Token
