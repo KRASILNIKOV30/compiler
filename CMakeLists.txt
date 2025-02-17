@@ -56,6 +56,7 @@ add_executable(lexer_tests
         src/parser/Parser.h
         src/errors/Error.h
         src/parser/Parser.cpp
+        tests/Parser_tests.cpp
 )
 
 target_link_libraries(lexer_tests PUBLIC catch2)

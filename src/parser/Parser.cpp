@@ -38,6 +38,12 @@ void Parser::RecordToken(Token const& token)
 	m_token = token;
 }
 
+bool Parser::Panic(const Error error)
+{
+	m_error = error;
+	return false;
+}
+
 bool Parser::Empty()
 {
 	return m_lexer.Empty();

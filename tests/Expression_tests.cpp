@@ -3,13 +3,13 @@
 
 void Check(std::string const& str)
 {
-	Parser parser{ Lexer(str) };
+	Parser parser(str);
 	CHECK(parser.Parse());
 }
 
 void CheckFalse(std::string const& str)
 {
-	Parser parser{ Lexer(str) };
+	Parser parser(str);
 	CHECK_FALSE(parser.Parse());
 }
 

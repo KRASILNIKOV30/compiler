@@ -6,8 +6,8 @@
 class Parser
 {
 public:
-	explicit Parser(Lexer&& lexer)
-		: m_lexer(std::move(lexer))
+	explicit Parser(std::string const& str)
+		: m_lexer(str)
 	{
 	}
 
@@ -20,6 +20,7 @@ private:
 	Token Peek();
 	bool Empty();
 	void RecordToken(Token const& token);
+	bool Panic(Error error);
 	bool Expression();
 	bool ExpressionRem();
 	bool ExpressionList();

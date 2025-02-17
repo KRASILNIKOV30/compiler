@@ -19,7 +19,7 @@ bool Parser::Term()
 
 	if (tokenType == TokenType::PARAN_OPEN)
 	{
-		return Expression() && !Empty() && Get().type == TokenType::PARAN_CLOSE;
+		return Expression() && ((!Empty() && Get().type == TokenType::PARAN_CLOSE) || Panic(Error::PARAN_CLOSE_EXPECTED));
 	}
 
 	if (tokenType == TokenType::OP_PLUS
@@ -39,5 +39,5 @@ bool Parser::Term()
 		return true;
 	}
 
-	return false;
+	return Panic(Error::TERM_EXPECTED);;
 }
