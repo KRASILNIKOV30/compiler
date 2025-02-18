@@ -13,7 +13,7 @@ public:
 	{
 		if (Empty())
 		{
-			return "";
+			return {};
 		}
 
 		++m_count;

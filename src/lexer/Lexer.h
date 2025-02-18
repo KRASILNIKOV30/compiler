@@ -1,7 +1,6 @@
 #pragma once
 #include "./token/Token.h"
 #include "reader/Reader.h"
-#include <catch.hpp>
 
 class Lexer
 {

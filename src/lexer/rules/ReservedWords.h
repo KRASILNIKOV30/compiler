@@ -1,8 +1,8 @@
 #pragma once
 #include "../token/Token.h"
-
 #include <string>
 #include <unordered_map>
+#include <bits/ranges_algo.h>
 
 const std::unordered_map<std::string, TokenType> RESERVED_WORDS = {
 	{ "mod", TokenType::OP_MOD },

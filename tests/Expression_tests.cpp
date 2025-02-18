@@ -15,6 +15,7 @@ void CheckFalse(std::string const& str)
 
 TEST_CASE("positive tests")
 {
+	Check("-(-5+-5--5)");
 	Check("1");
 	Check("a");
 	Check("a > b");

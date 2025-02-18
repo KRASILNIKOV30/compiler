@@ -60,8 +60,13 @@ add_executable(parser_tests
 )
 
 add_executable(robot
-        src/robot/main.cpp
-        src/robot/Reader.h
+        src/extra/robot/main.cpp
+        src/extra/Reader.h
+)
+
+add_executable(monkey
+        src/extra/Reader.h
+        src/extra/monkey/main.cpp
 )
 
 target_link_libraries(parser_tests PUBLIC catch2)
