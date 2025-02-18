@@ -14,7 +14,7 @@ bool Parser::ExpressionRem()
 	if (IsRelOp(m_lexer.Peek()))
 	{
 		Get();
-		return (SimExp() && ExpressionRem()) || Panic(Error::INVALID_EXP);
+		return (SimExp() && ExpressionRem()) || Panic(Error::INVALID_RELATION);
 	}
 
 	return true;
@@ -31,5 +31,5 @@ bool Parser::Expression()
 		return Panic(Error::EMPTY_INPUT);
 	}
 
-	return (SimExp() && ExpressionRem()) || Panic(Error::INVALID_EXP);
+	return SimExp() && ExpressionRem();
 }
