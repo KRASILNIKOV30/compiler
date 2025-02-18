@@ -15,7 +15,7 @@ bool Parser::IdRem()
 	if (nextTokenType == TokenType::BRACKET_OPEN)
 	{
 		Get();
-		return Expression() && Get().type == TokenType::BRACKET_CLOSE && IdRem();
+		return (Expression() && Get().type == TokenType::BRACKET_CLOSE && IdRem()) || Panic(Error::BRACKET_CLOSE_EXPECTED);
 	}
 
 	if (nextTokenType == TokenType::PARAN_OPEN)
@@ -24,9 +24,9 @@ bool Parser::IdRem()
 		if (Peek().type == TokenType::PARAN_CLOSE)
 		{
 			Get();
-			return IdRem();
+			return IdRem() || Panic(Error::INVALID_ID);
 		}
-		return ExpressionList() && Get().type == TokenType::PARAN_CLOSE && IdRem();
+		return (ExpressionList() && Get().type == TokenType::PARAN_CLOSE && IdRem()) || Panic(Error::PARAN_CLOSE_EXPECTED);
 	}
 
 	return true;
@@ -34,7 +34,7 @@ bool Parser::IdRem()
 
 bool Parser::Id()
 {
-	return !Empty() && Get().type == TokenType::ID;
+	return (!Empty() && Get().type == TokenType::ID) || Panic(Error::INVALID_ID);
 }
 
 /**
@@ -43,5 +43,5 @@ bool Parser::Id()
  */
 bool Parser::Ident()
 {
-	return Id() && IdRem();
+	return (Id() && IdRem()) || Panic(Error::INVALID_ID);
 }

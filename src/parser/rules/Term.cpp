@@ -7,7 +7,7 @@ bool Parser::Term()
 {
 	if (Empty())
 	{
-		return false;
+		return Panic(Error::EMPTY_INPUT);
 	}
 
 	if (Peek().type == TokenType::ID)
@@ -27,7 +27,7 @@ bool Parser::Term()
 		|| tokenType == TokenType::OP_NOT
 		|| tokenType == TokenType::OP_NOT_MARK)
 	{
-		return Term();
+		return Term() || Panic(Error::TERM_EXPECTED);
 	}
 
 	if (tokenType == TokenType::INTEGER

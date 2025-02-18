@@ -14,7 +14,7 @@ bool Parser::SimExpRem()
 	if (IsLowPriorityOp(m_lexer.Peek()))
 	{
 		Get();
-		return SimTerm() && SimExpRem();
+		return (SimTerm() && SimExpRem()) || Panic(Error::INVALID_EXP);
 	}
 
 	return true;
@@ -28,8 +28,8 @@ bool Parser::SimExp()
 {
 	if (Empty())
 	{
-		return false;
+		return Panic(Error::EMPTY_INPUT);
 	}
 
-	return SimTerm() && SimExpRem();
+	return (SimTerm() && SimExpRem()) || Panic(Error::INVALID_EXP);
 }

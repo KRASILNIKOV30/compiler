@@ -14,7 +14,7 @@ bool Parser::SimTermRem()
 	if (IsHighPriorityOp(m_lexer.Peek()))
 	{
 		m_lexer.Get();
-		return Term() && SimTermRem();
+		return (Term() && SimTermRem()) || Panic(Error::TERM_EXPECTED);
 	}
 
 	return true;
@@ -28,8 +28,8 @@ bool Parser::SimTerm()
 {
 	if (Empty())
 	{
-		return false;
+		return Panic(Error::EMPTY_INPUT);
 	}
 
-	return Term() && SimTermRem();
+	return (Term() && SimTermRem()) || Panic(Error::TERM_EXPECTED);
 }

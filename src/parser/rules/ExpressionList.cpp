@@ -13,7 +13,7 @@ bool Parser::ExpressionListRem()
 	if (Peek().type == TokenType::COMMA)
 	{
 		Get();
-		return Expression() && ExpressionListRem();
+		return (Expression() && ExpressionListRem()) || Panic(Error::INVALID_EXP);
 	}
 
 	return true;
@@ -25,5 +25,5 @@ bool Parser::ExpressionListRem()
  */
 bool Parser::ExpressionList()
 {
-	return Expression() && ExpressionListRem();
+	return (Expression() && ExpressionListRem()) || Panic(Error::INVALID_EXP);
 }
