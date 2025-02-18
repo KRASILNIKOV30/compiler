@@ -10,7 +10,7 @@ target_include_directories(
         catch2 INTERFACE lib/catch2
 )
 
-add_executable(lexer
+add_executable(parser
         src/main.cpp
         src/parser/rules/Ident.cpp
         src/lexer/reader/Reader.h
@@ -33,7 +33,7 @@ add_executable(lexer
         src/parser/Parser.cpp
 )
 
-add_executable(lexer_tests
+add_executable(parser_tests
         src/parser/rules/Ident.cpp
         src/lexer/reader/Reader.h
         src/lexer/token/Token.h
@@ -59,4 +59,4 @@ add_executable(lexer_tests
         tests/Parser_tests.cpp
 )
 
-target_link_libraries(lexer_tests PUBLIC catch2)
+target_link_libraries(parser_tests PUBLIC catch2)
