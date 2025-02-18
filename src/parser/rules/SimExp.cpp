@@ -28,7 +28,7 @@ bool Parser::SimExp()
 {
 	if (Empty())
 	{
-		return false;
+		return Panic(Error::EMPTY_INPUT);
 	}
 
 	return SimTerm() && SimExpRem();
