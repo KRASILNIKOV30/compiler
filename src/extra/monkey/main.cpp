@@ -45,9 +45,11 @@ bool P3(Reader& reader)
 int main()
 {
 	std::string input;
-	std::getline(std::cin, input);
-	Reader reader(input);
-	std::cout << (P1(reader) && reader.Empty() ? "OK" : "ERROR") << std::endl;
+	while (std::getline(std::cin, input))
+	{
+		Reader reader(input);
+		std::cout << (P1(reader) && reader.Empty() ? "OK" : "ERROR") << std::endl;
+	}
 
 	return EXIT_SUCCESS;
 }
