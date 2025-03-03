@@ -104,10 +104,12 @@ bool S(Reader& reader)
 int main()
 {
 	std::string input;
-	std::getline(std::cin, input);
-	Reader reader(input);
-	std::cout << (S(reader) ? "OK" : "ERROR") << std::endl;
-	std::cout << reader.GetCount() << std::endl;
+	while (std::getline(std::cin, input))
+	{
+		Reader reader(input);
+		std::cout << (S(reader) ? "OK" : "ERROR") << std::endl;
+		std::cout << reader.GetCount() << std::endl;
+	}
 
 	return EXIT_SUCCESS;
 }
