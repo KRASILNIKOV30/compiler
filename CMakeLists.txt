@@ -50,10 +50,7 @@ set(LL_PARSER_SOURCES
         src/LLParser/LLParser.h
         src/LLParser/LLParser.cpp
         src/table/Table.h
-)
-
-set(LL_PARSER_TESTS
-        ${LEXER_TESTS}
+        src/LLParser/RemapToken.h
 )
 
 set(TABLE_BUILDER_SOURCES
@@ -62,6 +59,11 @@ set(TABLE_BUILDER_SOURCES
 
 set(TABLE_BUILDER_TESTS
         tests/tableBuilder/TableBuilder_tests.cpp
+)
+
+set(LL_PARSER_TESTS
+        ${LEXER_TESTS}
+        tests/LLParser/LLParser_tests.cpp
 )
 
 add_executable(parser_tests

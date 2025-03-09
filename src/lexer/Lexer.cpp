@@ -17,7 +17,8 @@ Token Lexer::Get()
 	{
 		return Token{
 			.type = TokenType::ERROR,
-			.error = Error::EMPTY_INPUT,
+			.pos = m_reader.Count(),
+			.error = Error::EMPTY_INPUT
 		};
 	}
 

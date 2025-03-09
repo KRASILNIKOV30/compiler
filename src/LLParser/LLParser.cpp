@@ -1,28 +1,80 @@
 #include "LLParser.h"
+
+#include "RemapToken.h"
+
 #include <utility>
+
+const std::string END_SYMBOL = "#";
 
 LLParser::LLParser(Table table)
 	: m_table(std::move(table))
 {
+	m_row = m_table[0];
 }
 
-Error LLParser::Parse(std::string const& input)
+bool LLParser::Parse(std::string const& input)
 {
 	m_lexer = Lexer{ input };
+	m_index = 0;
+	m_row = m_table[0];
+	m_error = {};
+	Shift();
 
-	return Error::NONE;
+	while (true)
+	{
+		const auto& [symbol, guides, shift, error, ptr, stack, end] = m_row;
+		if (!guides.contains(m_symbol))
+		{
+			if (error)
+			{
+				RecordError();
+				return false;
+			}
+			++m_index;
+			m_row = m_table.at(m_index);
+			continue;
+		}
+
+		if (end)
+		{
+			return true;
+		}
+
+		if (shift)
+		{
+			Shift();
+		}
+
+		if (stack)
+		{
+			m_stack.push(m_index + 1);
+		}
+
+		if (ptr.has_value())
+		{
+			m_index = ptr.value();
+		}
+		else
+		{
+			m_index = m_stack.top();
+			m_stack.pop();
+		}
+		m_row = m_table.at(m_index);
+	}
 }
 
-std::optional<Token> LLParser::GetLastToken() const
+ErrorReason LLParser::GetError() const
 {
-	return m_lastToken;
+	return m_error;
 }
 
-Token LLParser::Get()
+void LLParser::Shift()
 {
 	const auto token = m_lexer.Get();
 	RecordToken(token);
-	return token;
+	m_symbol = token.error == Error::EMPTY_INPUT
+		? END_SYMBOL
+		: RemapTokenTypeToString(token.type);
 }
 
 Token LLParser::Peek()
@@ -40,4 +92,12 @@ bool LLParser::Empty()
 void LLParser::RecordToken(Token const& token)
 {
 	m_lastToken = token;
+}
+
+void LLParser::RecordError()
+{
+	m_error = {
+		.expected = m_row.guides,
+		.received = m_lastToken.value(),
+	};
 }

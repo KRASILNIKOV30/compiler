@@ -31,7 +31,7 @@ TEST_CASE("empty lexer")
 		);
 
 	Check(Lexer("    "),
-		Token{ TokenType::ERROR, "", 0, Error::EMPTY_INPUT }
+		Token{ TokenType::ERROR, "", 4, Error::EMPTY_INPUT }
 		);
 }
 
