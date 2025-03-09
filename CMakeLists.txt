@@ -45,13 +45,14 @@ set(PARSER_TESTS
         tests/Expression_tests.cpp
 )
 
-set(TABLE_PARSER_SOURCES
+set(LL_PARSER_SOURCES
         ${LEXER_SOURCES}
-        src/tableParser/TableParser.h
-        src/tableParser/TableParser.cpp
+        src/LLParser/LLParser.h
+        src/LLParser/LLParser.cpp
+        src/LLParser/Table.h
 )
 
-set(TABLE_PARSER_TESTS
+set(LL_PARSER_TESTS
         ${LEXER_TESTS}
 )
 
@@ -62,10 +63,10 @@ add_executable(parser_tests
         ${PARSER_TESTS}
 )
 
-add_executable(table-parser_tests
-        ${TABLE_PARSER_SOURCES}
-        ${TABLE_PARSER_TESTS}
+add_executable(ll-parser_tests
+        ${LL_PARSER_SOURCES}
+        ${LL_PARSER_TESTS}
 )
 
-target_link_libraries(table-parser_tests PUBLIC catch2)
+target_link_libraries(ll-parser_tests PUBLIC catch2)
 target_link_libraries(parser_tests PUBLIC catch2)
