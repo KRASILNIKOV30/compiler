@@ -58,7 +58,6 @@ set(LL_PARSER_TESTS
 
 set(TABLE_BUILDER_SOURCES
         src/tableBuilder/TableBuilder.h
-        src/tableBuilder/TableBuilder.cpp
 )
 
 set(TABLE_BUILDER_TESTS
