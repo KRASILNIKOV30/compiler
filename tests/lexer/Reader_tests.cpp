@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
-#include "../src/lexer/reader/Reader.h"
+#include "../../src/lexer/reader/Reader.h"
 
 SCENARIO("Reader reads characters and tracks position")
 {

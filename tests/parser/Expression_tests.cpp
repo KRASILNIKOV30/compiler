@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "../src/parser/Parser.h"
+#include "../../src/parser/Parser.h"
 
 void Check(std::string const& str)
 {

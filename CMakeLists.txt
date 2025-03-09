@@ -24,8 +24,8 @@ set(LEXER_SOURCES
 )
 
 set(LEXER_TESTS
-        tests/Lexer_tests.cpp
-        tests/Reader_tests.cpp
+        tests/lexer/Lexer_tests.cpp
+        tests/lexer/Reader_tests.cpp
 )
 
 set(PARSER_SOURCES
@@ -41,19 +41,28 @@ set(PARSER_SOURCES
 )
 
 set(PARSER_TESTS
-        tests/Parser_tests.cpp
-        tests/Expression_tests.cpp
+        tests/parser/Parser_tests.cpp
+        tests/parser/Expression_tests.cpp
 )
 
 set(LL_PARSER_SOURCES
         ${LEXER_SOURCES}
         src/LLParser/LLParser.h
         src/LLParser/LLParser.cpp
-        src/LLParser/Table.h
+        src/table/Table.h
 )
 
 set(LL_PARSER_TESTS
         ${LEXER_TESTS}
+)
+
+set(TABLE_BUILDER_SOURCES
+        src/tableBuilder/TableBuilder.h
+        src/tableBuilder/TableBuilder.cpp
+)
+
+set(TABLE_BUILDER_TESTS
+        tests/tableBuilder/TableBuilder_tests.cpp
 )
 
 add_executable(parser_tests
@@ -68,5 +77,11 @@ add_executable(ll-parser_tests
         ${LL_PARSER_TESTS}
 )
 
+add_executable(table-builder_tests
+        ${TABLE_BUILDER_SOURCES}
+        ${TABLE_BUILDER_TESTS}
+)
+
 target_link_libraries(ll-parser_tests PUBLIC catch2)
 target_link_libraries(parser_tests PUBLIC catch2)
+target_link_libraries(table-builder_tests PUBLIC catch2)

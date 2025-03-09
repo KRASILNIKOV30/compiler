@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "../src/lexer/Lexer.h"
+#include "../../src/lexer/Lexer.h"
 
 template <typename... Args>
 void Check(Lexer lexer, Args&&... args)

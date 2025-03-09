@@ -1,5 +1,5 @@
-#include "../src/errors/Error.h"
-#include "../src/parser/Parser.h"
+#include "../../src/errors/Error.h"
+#include "../../src/parser/Parser.h"
 
 #include <catch.hpp>
 

@@ -2,10 +2,10 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include "../lexer/token/Token.h"
 #include <algorithm>
+#include <optional>
 
-using Guides = std::unordered_set<TokenType>;
+using Guides = std::unordered_set<std::string>;
 
 inline bool operator==(Guides const& a, Guides const& b)
 {
@@ -14,23 +14,34 @@ inline bool operator==(Guides const& a, Guides const& b)
 		return false;
 	}
 
-	return std::ranges::all_of(a, [&](auto const& el) {
+	const auto result = std::ranges::all_of(a, [&](auto const& el) {
 		return b.contains(el);
 	});
+
+	return result;
 }
 
 struct TableRow
 {
-	size_t index;
 	std::string symbol;
 	Guides guides;
 	bool shift;
-	Error error;
-	size_t ptr;
+	bool error;
+	std::optional<size_t> ptr;
 	bool stack;
 	bool end;
-	bool operator==(const TableRow&) const = default;
 };
+
+inline bool operator==(TableRow const& a, TableRow const& b)
+{
+	return a.symbol == b.symbol &&
+		a.guides == b.guides &&
+		a.shift == b.shift &&
+		a.error == b.error &&
+		a.ptr == b.ptr &&
+		a.stack == b.stack &&
+		a.end == b.end;
+}
 
 using Table = std::vector<TableRow>;
 
