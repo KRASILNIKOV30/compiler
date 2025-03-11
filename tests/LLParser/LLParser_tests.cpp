@@ -39,3 +39,34 @@ TEST_CASE("ll-parser tests")
 		.expected = { "#" },
 		.received = Token{TokenType::INTEGER, "2", 15, Error::NONE}});
 }
+
+TEST_CASE("expression")
+{
+	TableBuilder builder(
+		"<S> - <E> # / ( id int float -\n"
+		"<E> - <T> <A> / ( id int float -\n"
+		"<A> - + <T> <A> / +\n"
+		"<A> - e / ) #\n"
+		"<T> - <F> <B> / ( - id int float\n"
+		"<B> - * <F> <B> / *\n"
+		"<B> - e / + ) #\n"
+		"<F> - ( <E> ) / (\n"
+		"<F> - id / id\n"
+		"<F> - int / int\n"
+		"<F> - float / float\n"
+		"<F> - - <F> / -\n");
+	const auto table = builder.BuildTable();
+	LLParser parser(table);
+
+	CHECK(parser.Parse("id"));
+	CHECK(parser.Parse("id + id"));
+	CHECK_FALSE(parser.Parse("id + id +"));
+	CHECK(parser.Parse("id + -(--1)"));
+
+	CHECK_FALSE(parser.Parse("id + -(-+-1)"));
+	CHECK(parser.GetError() == ErrorReason{
+		.expected = { "-", "id", "int", "float", "(" },
+		.received = Token{TokenType::OP_PLUS, "+", 8, Error::NONE}});
+
+	CHECK(parser.Parse("obj.x + 25.5 + -5"));
+}
