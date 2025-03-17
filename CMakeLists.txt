@@ -55,10 +55,16 @@ set(LL_PARSER_SOURCES
 
 set(TABLE_BUILDER_SOURCES
         src/tableBuilder/TableBuilder.h
+        src/tableBuilder/parseRules/ParseRules.h
+        src/tableBuilder/parseRules/ParseRules.cpp
 )
 
 set(TABLE_BUILDER_TESTS
         tests/tableBuilder/TableBuilder_tests.cpp
+)
+
+set(GUIDES_BUILDER_SOURCES
+        src/guidesBuilder/GuidesBuilder.h
 )
 
 set(LL_PARSER_TESTS
