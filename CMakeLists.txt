@@ -65,6 +65,8 @@ set(TABLE_BUILDER_TESTS
 
 set(GUIDES_BUILDER_SOURCES
         src/guidesBuilder/GuidesBuilder.h
+        src/guidesBuilder/parseRules/ParseRules.h
+        src/guidesBuilder/parseRules/ParseRules.cpp
 )
 
 set(LL_PARSER_TESTS

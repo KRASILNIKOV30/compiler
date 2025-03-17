@@ -1,37 +1,31 @@
 #pragma once
 #include "../tableBuilder/TableBuilder.h"
+#include "parseRules/ParseRules.h"
 #include <optional>
 #include <string>
 #include <sstream>
 #include <vector>
 
-namespace raw
-{
-using Alternative = std::vector<std::string>;
-using Alternatives = std::vector<Alternative>;
-using Rules = std::vector<std::pair<std::string, Alternatives>>;
-}
-
 class GuidesBuilder
 {
 public:
 	explicit GuidesBuilder(std::string const& str)
-		: m_input(str)
 	{
-		ParseRules();
+		std::stringstream ss(str);
+		m_rules = ParseRawRules(ss);
 	}
 
 	explicit GuidesBuilder(std::istream const& strm)
 	{
-		m_input << strm.rdbuf();
-		ParseRules();
+		std::stringstream ss;
+		ss << strm.rdbuf();
+		m_rules = ParseRawRules(ss);
 	}
 
 	std::optional<Rules> BuildGuidedRules();
 
 private:
-	void ParseRules();
 
 private:
-	std::stringstream m_input;
+	raw::Rules m_rules;
 };

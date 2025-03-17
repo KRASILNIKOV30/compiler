@@ -1,10 +1,12 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "../../table/Table.h"
 
-using Alternative = std::pair<std::vector<std::string>, Guides>;
+namespace raw
+{
+using Alternative = std::vector<std::string>;
 using Alternatives = std::vector<Alternative>;
 using Rules = std::vector<std::pair<std::string, Alternatives>>;
+}
 
-[[nodiscard]] Rules ParseRules(std::stringstream& input);
+[[nodiscard]] raw::Rules ParseRawRules(std::stringstream& input);

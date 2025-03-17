@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <optional>
 
+const std::string EMPTY = "e";
+
 using Guides = std::unordered_set<std::string>;
 
 inline bool operator==(Guides const& a, Guides const& b)
