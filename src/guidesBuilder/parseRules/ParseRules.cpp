@@ -2,8 +2,8 @@
 #include <sstream>
 #include <algorithm>
 
-using namespace raw;
-
+namespace
+{
 std::vector<std::string> GetRuleRightSide(std::istream& str)
 {
 	std::string lexeme;
@@ -16,9 +16,11 @@ std::vector<std::string> GetRuleRightSide(std::istream& str)
 	return result;
 }
 
-Rules ParseRawRules(std::stringstream& input)
+}
+
+raw::Rules ParseRawRules(std::stringstream& input)
 {
-	Rules rules{};
+	raw::Rules rules{};
 	std::string rule;
 	while (std::getline(input, rule))
 	{

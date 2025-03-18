@@ -9,4 +9,4 @@ using Alternatives = std::vector<Alternative>;
 using Rules = std::vector<std::pair<std::string, Alternatives>>;
 }
 
-[[nodiscard]] raw::Rules ParseRawRules(std::stringstream& input);
+raw::Rules ParseRawRules(std::stringstream& input);

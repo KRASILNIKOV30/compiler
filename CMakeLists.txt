@@ -69,6 +69,10 @@ set(GUIDES_BUILDER_SOURCES
         src/guidesBuilder/parseRules/ParseRules.cpp
 )
 
+set(GUIDES_BUILDER_TESTS
+        tests/guidesBuilder/GuidesBuilder_tests.cpp
+)
+
 set(LL_PARSER_TESTS
         ${LEXER_TESTS}
         tests/LLParser/LLParser_tests.cpp
@@ -82,15 +86,13 @@ add_executable(parser_tests
 )
 
 add_executable(ll-parser_tests
+        ${TABLE_BUILDER_SOURCES}
+        ${GUIDES_BUILDER_SOURCES}
         ${LL_PARSER_SOURCES}
         ${LL_PARSER_TESTS}
-)
-
-add_executable(table-builder_tests
-        ${TABLE_BUILDER_SOURCES}
         ${TABLE_BUILDER_TESTS}
+        ${GUIDES_BUILDER_TESTS}
 )
 
-target_link_libraries(ll-parser_tests PUBLIC catch2)
 target_link_libraries(parser_tests PUBLIC catch2)
-target_link_libraries(table-builder_tests PUBLIC catch2)
+target_link_libraries(ll-parser_tests PUBLIC catch2)

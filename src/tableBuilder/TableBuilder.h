@@ -27,7 +27,7 @@ public:
 	{
 		std::stringstream iss;
 		iss << strm.rdbuf();
-		ParseRules(iss);
+		m_rules = ParseRules(iss);
 	}
 
 	[[nodiscard]] Table BuildTable() const
