@@ -153,7 +153,9 @@ private:
 					}
 					const bool isLast = i == alternative.size() - 1;
 					std::unordered_set<std::string> follow = isLast
+						? left != nonTerm
 						? GetFollow(left)
+						: std::unordered_set<std::string>{}
 						: std::unordered_set{ alternative[i + 1] };
 
 					followLexemes.merge(follow);
