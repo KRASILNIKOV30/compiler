@@ -44,4 +44,23 @@ TEST_CASE("guides builder tests")
 		"<F> - ( <E> ) / (\n"
 		"<F> - - <F> / -\n"
 		"<F> - id / id\n");
+
+	Check(""
+		"<Z> - <U> #\n"
+		"<U> - <A> <B> <C>\n"
+		"<A> - a <A>\n"
+		"<A> - e\n"
+		"<B> - b <B>\n"
+		"<B> - e\n"
+		"<C> - c <C>\n"
+		"<C> - e\n",
+		""
+		"<Z> - <U> # / # a b c\n"
+		"<U> - <A> <B> <C> / # c b a\n"
+		"<A> - a <A> / a\n"
+		"<A> - e / b c #\n"
+		"<B> - b <B> / b\n"
+		"<B> - e / c #\n"
+		"<C> - c <C> / c\n"
+		"<C> - e / #\n");
 }
