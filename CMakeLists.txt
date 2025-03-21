@@ -51,6 +51,8 @@ set(LL_PARSER_SOURCES
         src/LLParser/LLParser.cpp
         src/table/Table.h
         src/LLParser/RemapToken.h
+        src/LLParser/error/StringifyError.h
+        src/LLParser/error/StringifyError.cpp
 )
 
 set(TABLE_BUILDER_SOURCES
@@ -67,6 +69,7 @@ set(GUIDES_BUILDER_SOURCES
         src/guidesBuilder/GuidesBuilder.h
         src/guidesBuilder/parseRules/ParseRules.h
         src/guidesBuilder/parseRules/ParseRules.cpp
+        src/print/PrintContainer.h
 )
 
 set(GUIDES_BUILDER_TESTS
@@ -76,6 +79,7 @@ set(GUIDES_BUILDER_TESTS
 set(LL_PARSER_TESTS
         ${LEXER_TESTS}
         tests/LLParser/LLParser_tests.cpp
+        src/LLParser/error/StringifyError.cpp
 )
 
 add_executable(parser_tests
@@ -92,6 +96,13 @@ add_executable(ll-parser_tests
         ${LL_PARSER_TESTS}
         ${TABLE_BUILDER_TESTS}
         ${GUIDES_BUILDER_TESTS}
+)
+
+add_executable(ll_parser
+        ${TABLE_BUILDER_SOURCES}
+        ${GUIDES_BUILDER_SOURCES}
+        ${LL_PARSER_SOURCES}
+        src/main.cpp
 )
 
 target_link_libraries(parser_tests PUBLIC catch2)

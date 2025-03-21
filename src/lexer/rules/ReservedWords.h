@@ -1,6 +1,6 @@
 #pragma once
 #include "../token/Token.h"
-
+#include <algorithm>
 #include <string>
 #include <unordered_map>
 
