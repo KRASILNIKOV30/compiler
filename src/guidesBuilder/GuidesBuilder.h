@@ -161,11 +161,6 @@ private:
 		}
 	}
 
-	static bool IsTerm(std::string const& term)
-	{
-		return term[0] != '<';
-	}
-
 private:
 	raw::Rules m_rules;
 	std::unordered_set<std::string> m_nonTerms;

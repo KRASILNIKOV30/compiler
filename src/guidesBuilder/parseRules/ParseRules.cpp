@@ -8,7 +8,7 @@ std::vector<std::string> GetRuleRightSide(std::istream& str)
 {
 	std::string lexeme;
 	std::vector<std::string> result;
-	while (str >> lexeme && lexeme != "/")
+	while (str >> lexeme)
 	{
 		result.emplace_back(lexeme);
 	}

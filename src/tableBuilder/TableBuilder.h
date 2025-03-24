@@ -142,7 +142,7 @@ private:
 			++ptr;
 		}
 
-		throw std::runtime_error("unknown non term");
+		throw std::runtime_error("unknown non term " + symbol);
 	}
 
 	[[nodiscard]] Guides GetNonTermGuides(std::string symbol, Table const& table) const
@@ -170,11 +170,6 @@ private:
 		}
 
 		return count;
-	}
-
-	static bool IsTerm(std::string const& term)
-	{
-		return term[0] != '<';
 	}
 
 private:

@@ -6,6 +6,8 @@
 #include <optional>
 
 const std::string EMPTY = "e";
+constexpr char NON_TERM_FIRST_CHAR = '<';
+constexpr int NON_TERM_MIN_SIZE = 3;
 
 using Guides = std::unordered_set<std::string>;
 
@@ -50,4 +52,9 @@ using Table = std::vector<TableRow>;
 inline bool operator==(Table const& a, Table const& b)
 {
 	return std::ranges::equal(a, b);
+}
+
+inline bool IsTerm(std::string const& term)
+{
+	return term.size() < NON_TERM_MIN_SIZE || term[0] != NON_TERM_FIRST_CHAR;
 }
