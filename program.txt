@@ -1,4 +1,7 @@
-<Z> -> <expression> #
+<Z> -> <program> #
+<program> -> <ass>
+<program> -> <expression>
+<ass> -> <ident> = <expression> ;
 <expression> -> <simexp> <expressionRem>
 <expressionRem> -> <relOp> <simexp> <expressionRem>
 <expressionRem> -> e

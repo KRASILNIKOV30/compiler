@@ -35,6 +35,10 @@ inline std::unordered_map<TokenType, std::string> TokenTypeToString = {
 	{ TokenType::STRING_LITERAL, "string" },
 	{ TokenType::TRUE, "true" },
 	{ TokenType::FALSE, "false" },
+	{ TokenType::IF, "if" },
+	{ TokenType::SEMICOLON, ";" },
+	{ TokenType::THEN, "then" },
+	{ TokenType::ELSE, "else" },
 };
 
 inline std::string RemapTokenTypeToString(const TokenType type)

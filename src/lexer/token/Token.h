@@ -35,6 +35,10 @@ enum class TokenType
 	STRING_LITERAL, // string literal
 	TRUE, // true
 	FALSE, // false
+	IF, // if
+	SEMICOLON, // ;
+	THEN, // then
+	ELSE, // else
 };
 
 struct Token

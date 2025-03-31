@@ -19,6 +19,7 @@ const std::unordered_map<char, TokenType> SPECIAL_CHARS = {
 	{ '!', TokenType::OP_NOT_MARK },
 	{ '<', TokenType::OP_LESS },
 	{ '>', TokenType::OP_GREATER },
+	{ ';', TokenType::SEMICOLON }
 };
 
 const std::unordered_map<char, std::pair<char, TokenType>> DOUBLED_SPECIAL_CHARS = {
