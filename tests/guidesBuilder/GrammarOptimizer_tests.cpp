@@ -28,58 +28,57 @@ void Check(std::string const& input, std::string const& expected)
 
 TEST_CASE("Remove left recursion tests")
 {
-	// SECTION("Simple immediate left recursion")
-	// {
-	// 	Check(""
-	// 		"<A> - <A> a\n"
-	// 		"<A> - b\n",
-	// 		""
-	// 		"<A> - b <ARem>\n"
-	// 		"<ARem> - a <ARem>\n"
-	// 		"<ARem> - e\n"
-	// 		);
-	// }
-	//
-	// SECTION("Multiple recursive alternatives")
-	// {
-	// 	Check(""
-	// 		"<B> - <B> c\n"
-	// 		"<B> - <B> d\n"
-	// 		"<B> - a\n"
-	// 		"<B> - f\n",
-	// 		""
-	// 		"<B> - a <BRem>\n"
-	// 		"<B> - f <BRem>\n"
-	// 		"<BRem> - c <BRem>\n"
-	// 		"<BRem> - d <BRem>\n"
-	// 		"<BRem> - e\n"
-	// 		);
-	// }
-	//
-	// SECTION("Mixed recursive and non-recursive")
-	// {
-	// 	Check(""
-	// 		"<C> - <C> x y\n"
-	// 		"<C> - z\n"
-	// 		"<C> - w <C>\n",
-	// 		""
-	// 		"<C> - z <CRem>\n"
-	// 		"<C> - w <C> <CRem>\n"
-	// 		"<CRem> - x y <CRem>\n"
-	// 		"<CRem> - e\n"
-	// 		);
-	// }
-	//
-	// SECTION("No left recursion")
-	// {
-	// 	Check(""
-	// 		"<D> - a b\n"
-	// 		"<D> - c d\n",
-	// 		""
-	// 		"<D> - a b\n"
-	// 		"<D> - c d\n"
-	// 		);
-	// }
+	SECTION("Simple immediate left recursion")
+	{
+		Check(""
+			"<A> - <A> a\n"
+			"<A> - b\n",
+			""
+			"<A> - b <ARem>\n"
+			"<ARem> - a <ARem>\n"
+			"<ARem> - e\n"
+			);
+	}
+	SECTION("Multiple recursive alternatives")
+	{
+		Check(""
+			"<B> - <B> c\n"
+			"<B> - <B> d\n"
+			"<B> - a\n"
+			"<B> - f\n",
+			""
+			"<B> - a <BRem>\n"
+			"<B> - f <BRem>\n"
+			"<BRem> - c <BRem>\n"
+			"<BRem> - d <BRem>\n"
+			"<BRem> - e\n"
+			);
+	}
+
+	SECTION("Mixed recursive and non-recursive")
+	{
+		Check(""
+			"<C> - <C> x y\n"
+			"<C> - z\n"
+			"<C> - w <C>\n",
+			""
+			"<C> - z <CRem>\n"
+			"<C> - w <C> <CRem>\n"
+			"<CRem> - x y <CRem>\n"
+			"<CRem> - e\n"
+			);
+	}
+
+	SECTION("No left recursion")
+	{
+		Check(""
+			"<D> - a b\n"
+			"<D> - c d\n",
+			""
+			"<D> - a b\n"
+			"<D> - c d\n"
+			);
+	}
 
 	SECTION("Multiple nonterminals with recursion")
 	{
