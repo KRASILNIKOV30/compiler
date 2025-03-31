@@ -1,6 +1,6 @@
 #pragma once
 #include "../tableBuilder/TableBuilder.h"
-#include "parseRules/ParseRules.h"
+#include "../parseRawRules/ParseRules.h"
 #include <optional>
 #include <string>
 #include "../print/PrintContainer.h"

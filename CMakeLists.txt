@@ -67,14 +67,17 @@ set(TABLE_BUILDER_TESTS
 
 set(GUIDES_BUILDER_SOURCES
         src/guidesBuilder/GuidesBuilder.h
-        src/guidesBuilder/parseRules/ParseRules.h
-        src/guidesBuilder/parseRules/ParseRules.cpp
+        src/parseRawRules/ParseRules.h
+        src/parseRawRules/ParseRules.cpp
         src/print/PrintContainer.h
+        src/grammarOptimizer/GrammarOptimizer.h
+        src/grammarOptimizer/GrammarOptimizer.cpp
         src/guidesBuilder/GuidesBuilder.cpp
 )
 
 set(GUIDES_BUILDER_TESTS
         tests/guidesBuilder/GuidesBuilder_tests.cpp
+        tests/guidesBuilder/GrammarOptimizer_tests.cpp
 )
 
 set(LL_PARSER_TESTS
