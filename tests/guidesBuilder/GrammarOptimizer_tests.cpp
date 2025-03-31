@@ -5,7 +5,7 @@
 namespace
 {
 
-void Check(std::string const& input, std::string const& expected)
+void CheckLeftRecursion(std::string const& input, std::string const& expected)
 {
 	std::stringstream inputStrm(input);
 	std::stringstream expectedStrm(expected);
@@ -24,13 +24,44 @@ void Check(std::string const& input, std::string const& expected)
 	}
 }
 
+void CheckLeftFactor(std::string const& input, std::string const& expected)
+{
+	std::stringstream inputStrm(input);
+	std::stringstream expectedStrm(expected);
+	const auto rules = ParseRawRules(inputStrm);
+	GrammarOptimizer optimizer(rules);
+	optimizer.LeftFactor();
+	const auto optimized = optimizer.GetRules();
+
+	raw::Rules expectedRules = ParseRawRules(expectedStrm);
+
+	REQUIRE(optimized.size() == expectedRules.size());
+	for (size_t i = 0; i < optimized.size(); ++i)
+	{
+		REQUIRE(optimized[i].first == expectedRules[i].first);
+		REQUIRE(optimized[i].second == expectedRules[i].second);
+	}
+}
+
+}
+
+TEST_CASE("Left factor")
+{
+	CheckLeftFactor(""
+		"<A> - a b\n"
+		"<A> - a c\n",
+		""
+		"<A> - a <AFact>\n"
+		"<AFact> - b\n"
+		"<AFact> - c\n"
+		);
 }
 
 TEST_CASE("Remove left recursion tests")
 {
 	SECTION("Simple immediate left recursion")
 	{
-		Check(""
+		CheckLeftRecursion(""
 			"<A> - <A> a\n"
 			"<A> - b\n",
 			""
@@ -41,7 +72,7 @@ TEST_CASE("Remove left recursion tests")
 	}
 	SECTION("Multiple recursive alternatives")
 	{
-		Check(""
+		CheckLeftRecursion(""
 			"<B> - <B> c\n"
 			"<B> - <B> d\n"
 			"<B> - a\n"
@@ -57,7 +88,7 @@ TEST_CASE("Remove left recursion tests")
 
 	SECTION("Mixed recursive and non-recursive")
 	{
-		Check(""
+		CheckLeftRecursion(""
 			"<C> - <C> x y\n"
 			"<C> - z\n"
 			"<C> - w <C>\n",
@@ -71,7 +102,7 @@ TEST_CASE("Remove left recursion tests")
 
 	SECTION("No left recursion")
 	{
-		Check(""
+		CheckLeftRecursion(""
 			"<D> - a b\n"
 			"<D> - c d\n",
 			""
@@ -82,7 +113,7 @@ TEST_CASE("Remove left recursion tests")
 
 	SECTION("Multiple nonterminals with recursion")
 	{
-		Check(""
+		CheckLeftRecursion(""
 			"<E> - <E> + <T>\n"
 			"<E> - <T>\n"
 			"<T> - <T> * <F>\n"

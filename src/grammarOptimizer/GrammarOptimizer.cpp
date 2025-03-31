@@ -2,6 +2,7 @@
 #include "../table/Table.h"
 
 #include <ranges>
+#include <set>
 
 void GrammarOptimizer::RemoveLeftRecursion()
 {
@@ -74,6 +75,102 @@ void GrammarOptimizer::RemoveLeftRecursion()
 
 	// Добавляем все новые правила в исходный набор
 	m_rules.insert(m_rules.end(), newRules.begin(), newRules.end());
+}
+
+void GrammarOptimizer::LeftFactor()
+{
+	const std::string SALT = "Fact";
+	for (auto& [left, alternatives] : m_rules)
+	{
+		if (alternatives.size() < 2)
+		{
+			continue;
+		}
+
+		std::unordered_map<std::string, std::vector<raw::Alternative>> commonPrefixes;
+
+		// Группируем правила по первому символу
+		for (const auto& alt : alternatives)
+		{
+			if (!alt.empty())
+			{
+				const auto prefix = alt.front();
+				commonPrefixes[prefix].push_back(alt);
+			}
+		}
+
+		raw::Alternatives newAlternatives;
+		std::set<raw::Alternative> altsToRemove;
+		for (auto& alts : commonPrefixes | std::views::values)
+		{
+			if (alts.size() == 1)
+			{
+				newAlternatives.push_back(alts.front());
+				continue;
+			}
+
+			altsToRemove.insert(alts.begin(), alts.end());
+			// Находим наибольший общий префикс
+			size_t commonLen = 1;
+			bool hasCommon = true;
+
+			while (hasCommon)
+			{
+				if (alts[0].size() <= commonLen)
+				{
+					break;
+				}
+
+				const auto& next = alts[0][commonLen];
+				for (const auto& alt : alts)
+				{
+					if (alt.size() <= commonLen || alt[commonLen] != next)
+					{
+						hasCommon = false;
+						break;
+					}
+				}
+				if (hasCommon)
+				{
+					commonLen++;
+				}
+			}
+
+			if (commonLen == 1)
+			{
+				std::string newLeft = left;
+				newLeft.insert(newLeft.end() - 1, SALT.begin(), SALT.end());
+
+				raw::Alternative commonPart{ alts[0].begin(), alts[0].begin() + commonLen };
+				commonPart.push_back(newLeft);
+				newAlternatives.push_back(commonPart);
+
+				raw::Alternatives newAlts;
+				for (const auto& alt : alts)
+				{
+					if (alt.size() > commonLen)
+					{
+						newAlts.emplace_back(alt.begin() + commonLen, alt.end());
+					}
+					else
+					{
+						newAlts.push_back({ EMPTY });
+					}
+				}
+
+				alternatives.push_back({ commonPart[0], newLeft });
+				erase_if(alternatives, [&](const auto& alt) {
+					return altsToRemove.contains(alt);
+				});
+				m_rules.emplace_back(newLeft, newAlts);
+			}
+		}
+
+		if (!newAlternatives.empty())
+		{
+			alternatives = std::move(newAlternatives);
+		}
+	}
 }
 
 raw::Rules const& GrammarOptimizer::GetRules() const

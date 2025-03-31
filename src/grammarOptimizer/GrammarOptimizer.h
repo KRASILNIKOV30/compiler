@@ -11,6 +11,7 @@ public:
 	}
 
 	void RemoveLeftRecursion();
+	void LeftFactor();
 	[[nodiscard]] raw::Rules const& GetRules() const;
 
 private:
