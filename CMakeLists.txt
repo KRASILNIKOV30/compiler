@@ -70,6 +70,7 @@ set(GUIDES_BUILDER_SOURCES
         src/guidesBuilder/parseRules/ParseRules.h
         src/guidesBuilder/parseRules/ParseRules.cpp
         src/print/PrintContainer.h
+        src/guidesBuilder/GuidesBuilder.cpp
 )
 
 set(GUIDES_BUILDER_TESTS
