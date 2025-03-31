@@ -38,6 +38,11 @@ TEST_CASE("ll-parser tests")
 	CHECK(parser.GetError() == ErrorReason{
 		.expected = { "#" },
 		.received = Token{TokenType::INTEGER, "2", 15, Error::NONE}});
+
+	CHECK_FALSE(parser.Parse("a.a."));
+	CHECK(parser.GetError() == ErrorReason{
+		.expected = { "#" },
+		.received = Token{TokenType::INTEGER, "2", 15, Error::NONE}});
 }
 
 TEST_CASE("expression")
