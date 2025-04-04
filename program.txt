@@ -1,6 +1,34 @@
 <Z> -> <program> #
-<program> -> <ass>
-<program> -> <expression>
+<program> -> main <block>
+<block> -> <dcls> begin <stms>
+<dcls> -> <dclList> <dclsRem>
+<dclsRem> -> ; <dclList> <dclsRem>
+<dclsRem> -> e
+<dclList> -> <constDcl>
+<dclList> -> <varDcl>
+<dclList> -> <funcDcl>
+<constDcl> -> const <ident> : <type> = <expression>
+<varDcl> -> var <ident> : <type> = <expression>
+<varDcl> -> var <ident> : <type>
+<funcDcl> -> function <ident> ( <paramList> ) : <type>
+<paramList> -> <param> <paramListRem>
+<paramListRem> -> , <param> <paramListRem>
+<paramListRem> -> e
+<param> -> <ident> : <type>
+<stms> -> <stm> <stms>
+<stmsRem> -> <stm> <stmsRem>
+<stmsRem> -> e
+<stm> -> <ass>
+<stm> -> <if>
+<stm> -> <while>
+<stm> -> <read>
+<stm> -> <write>
+<while> -> while ( <expression> ) <stms> wend
+<if> -> if ( <expression> ) <stms> <else> iend
+<else> -> elif ( <expression> ) <stms> <else>
+<else> -> else <stms>
+<else> -> e
+<read> -> read ( <identList> ) ;
 <ass> -> <ident> = <expression> ;
 <expression> -> <simexp> <expressionRem>
 <expressionRem> -> <relOp> <simexp> <expressionRem>
