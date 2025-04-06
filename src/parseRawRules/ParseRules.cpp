@@ -1,19 +1,34 @@
 #include "ParseRules.h"
+#include "../table/Table.h"
 #include <sstream>
 #include <algorithm>
 
 namespace
 {
-std::vector<std::string> GetRuleRightSide(std::istream& str)
+const std::string DELIMITER = "|";
+
+raw::Alternatives GetRuleAlternatives(std::istream& str)
 {
+	raw::Alternatives alternatives;
+	raw::Alternative alternative;
 	std::string lexeme;
-	std::vector<std::string> result;
 	while (str >> lexeme)
 	{
-		result.emplace_back(lexeme);
+		if (lexeme == DELIMITER)
+		{
+			alternatives.push_back(alternative);
+			alternative.clear();
+			continue;
+		}
+		alternative.emplace_back(lexeme);
 	}
 
-	return result;
+	if (!alternative.empty())
+	{
+		alternatives.push_back(alternative);
+	}
+
+	return alternatives;
 }
 
 }
@@ -28,21 +43,29 @@ raw::Rules ParseRawRules(std::stringstream& input)
 		std::string nonTerm;
 		iss >> nonTerm;
 
+		if (IsTerm(nonTerm))
+		{
+			throw std::runtime_error("Terminal at left side found: " + nonTerm);
+		}
+
 		std::string minus;
 		iss >> minus;
 
-		const auto alternative = GetRuleRightSide(iss);
+		const auto alternatives = GetRuleAlternatives(iss);
 
 		auto it = std::ranges::find_if(rules, [&](const auto& r) {
 			return r.first == nonTerm;
 		});
 		if (it == rules.end())
 		{
-			rules.push_back({ nonTerm, { alternative } });
+			rules.emplace_back(nonTerm, alternatives);
 		}
 		else
 		{
-			it->second.push_back(alternative);
+			for (const auto& alternative : alternatives)
+			{
+				it->second.push_back(alternative);
+			}
 		}
 	}
 

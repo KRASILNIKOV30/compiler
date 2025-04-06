@@ -47,14 +47,27 @@ void CheckLeftFactor(std::string const& input, std::string const& expected)
 
 TEST_CASE("Left factor")
 {
-	CheckLeftFactor(""
-		"<A> - a b\n"
-		"<A> - a c\n",
-		""
-		"<A> - a <AFact>\n"
-		"<AFact> - b\n"
-		"<AFact> - c\n"
-		);
+	SECTION("simple factoring")
+	{
+		CheckLeftFactor(""
+			"<A> - a b | a c\n",
+			""
+			"<A> - a <AFact>\n"
+			"<AFact> - b | c\n"
+			);
+	}
+
+	SECTION("factoring with e")
+	{
+		CheckLeftFactor(""
+			"<B> - a b\n"
+			"<B> - a\n",
+			""
+			"<B> - a <BFact>\n"
+			"<BFact> - b\n"
+			"<BFact> - e\n"
+			);
+	}
 }
 
 TEST_CASE("Remove left recursion tests")
