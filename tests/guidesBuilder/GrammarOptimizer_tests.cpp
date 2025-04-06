@@ -64,8 +64,40 @@ TEST_CASE("Left factor")
 			"<B> - a\n",
 			""
 			"<B> - a <BFact>\n"
-			"<BFact> - b\n"
-			"<BFact> - e\n"
+			"<BFact> - b | e\n"
+			);
+	}
+
+	SECTION("factoring with many non terms")
+	{
+		CheckLeftFactor(""
+			"<A> -> a b | a c\n"
+			"<F> -> x y | x z\n",
+			""
+			"<A> -> a <AFact>\n"
+			"<F> -> x <FFact>\n"
+			"<AFact> -> b | c\n"
+			"<FFact> -> y | z\n"
+			);
+	}
+
+	SECTION("factoring many terms")
+	{
+		CheckLeftFactor(""
+			"<A> -> a b c | a b d\n",
+			""
+			"<A> -> a b <AFact>\n"
+			"<AFact> -> c | d\n"
+			);
+	}
+
+	SECTION("One big rule")
+	{
+		CheckLeftFactor(""
+			"<A> -> a b c d | a b c f | x a b c | y a b c\n",
+			""
+			"<A> -> x a b c | y a b c | a b c <AFact>\n"
+			"<AFact> -> d | f\n"
 			);
 	}
 }

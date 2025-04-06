@@ -80,8 +80,10 @@ void GrammarOptimizer::RemoveLeftRecursion()
 void GrammarOptimizer::LeftFactor()
 {
 	const std::string SALT = "Fact";
-	for (auto& [left, alternatives] : m_rules)
+	raw::Rules newRules;
+	for (size_t i = 0; i < m_rules.size(); i++)
 	{
+		auto& [left, alternatives] = m_rules[i];
 		if (alternatives.size() < 2)
 		{
 			continue;
@@ -136,7 +138,7 @@ void GrammarOptimizer::LeftFactor()
 				}
 			}
 
-			if (commonLen == 1)
+			if (commonLen)
 			{
 				std::string newLeft = left;
 				newLeft.insert(newLeft.end() - 1, SALT.begin(), SALT.end());
@@ -158,7 +160,7 @@ void GrammarOptimizer::LeftFactor()
 					}
 				}
 
-				alternatives.push_back({ commonPart[0], newLeft });
+				alternatives.push_back(commonPart);
 				erase_if(alternatives, [&](const auto& alt) {
 					return altsToRemove.contains(alt);
 				});
@@ -166,10 +168,10 @@ void GrammarOptimizer::LeftFactor()
 			}
 		}
 
-		if (!newAlternatives.empty())
-		{
-			alternatives = std::move(newAlternatives);
-		}
+		// if (!newAlternatives.empty())
+		// {
+		// 	alternatives = std::move(newAlternatives);
+		// }
 	}
 }
 
