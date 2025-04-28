@@ -114,6 +114,12 @@ add_executable(guides-builder_tests
         tests/guidesBuilder/GuidesBuilder_tests.cpp
 )
 
+add_executable(table-builder_tests
+        ${TABLE_BUILDER_SOURCES}
+        ${TABLE_BUILDER_TESTS}
+)
+
 target_link_libraries(parser_tests PUBLIC catch2)
 target_link_libraries(ll-parser_tests PUBLIC catch2)
 target_link_libraries(guides-builder_tests PUBLIC catch2)
+target_link_libraries(table-builder_tests PUBLIC catch2)

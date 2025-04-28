@@ -35,13 +35,11 @@ public:
 	[[nodiscard]] Table BuildTable()
 	{
 		assert(m_rules.front().alternatives.size() == 1);
-		Table table;
-		table.emplace_back();
 		const auto firstRule = m_rules.front().name;
 
-		table[0][firstRule] = { .isOk = true };
+		m_table[0][firstRule] = { .isOk = true };
 		AddEntriesToTable(ExtendGrammarEntries({ 0, 0 }), 0);
-		m_rowsQueue.emplace(0);
+		m_rowsQueue.emplace(1);
 
 		while (!m_rowsQueue.empty())
 		{
@@ -58,12 +56,23 @@ public:
 				else
 				{
 					const auto nextEntry = GetNext(entry);
-					AddEntriesToTable(ExtendGrammarEntries(nextEntry), rowIndex);
+					const auto symbol = GetSymbol(nextEntry);
+					if (symbol == END_SYMBOL)
+					{
+						m_table[rowIndex][END_SYMBOL] = {
+							ActionType::RULE,
+							entry.rule,
+						};
+					}
+					else
+					{
+						AddEntriesToTable(ExtendGrammarEntries(nextEntry), rowIndex);
+					}
 				}
 			}
 		}
 
-		return table;
+		return m_table;
 	}
 
 private:
@@ -91,29 +100,54 @@ private:
 			const auto symbol = GetSymbol(entry);
 			if (m_table[rowIndex].contains(symbol))
 			{
-				m_grammarEntries[m_table[rowIndex].at(symbol).value].emplace_back(entry);
+				m_grammarEntries[m_table[rowIndex].at(symbol).value].insert(entry);
 			}
 			else
 			{
-				m_table[rowIndex][symbol] = { .type = ActionType::SHIFT, .value = m_grammarEntries.size() };
-				m_grammarEntries.emplace_back(std::vector{ entry });
+				m_table[rowIndex][symbol] = {
+					.type = ActionType::SHIFT,
+					.value = GetEntryIndex(entry)
+				};
 			}
 		}
+	}
+
+	size_t GetEntryIndex(GrammarEntry const& entry)
+	{
+		for (size_t i = 0; i < m_grammarEntries.size(); ++i)
+		{
+			if (m_grammarEntries[i].contains(entry))
+			{
+				return i;
+			}
+		}
+
+		const size_t newRowIndex = m_grammarEntries.size();
+		m_grammarEntries.emplace_back(GrammarEntriesSet{ entry });
+		m_table.emplace_back();
+		m_rowsQueue.emplace(newRowIndex);
+
+		return newRowIndex;
 	}
 
 	std::vector<GrammarEntry> ExtendGrammarEntries(GrammarEntry const& entry)
 	{
 		std::vector entries{ entry };
 		const auto symbol = GetSymbol(entry);
+		if (IsTerm(symbol))
+		{
+			return entries;
+		}
+
 		for (const auto& [rule, guides] : GetAlternatives(symbol))
 		{
-			AddEntries(guides, entries);
+			AddEntries(guides, entries, symbol);
 		}
 
 		return entries;
 	}
 
-	void AddEntries(Guides const& guides, std::vector<GrammarEntry>& entries)
+	void AddEntries(Guides const& guides, std::vector<GrammarEntry>& entries, std::string const& symbol)
 	{
 		size_t ruleIndex = 0;
 		for (auto const& [name, alternatives] : m_rules)
@@ -121,7 +155,7 @@ private:
 			for (auto const& [rule, _] : alternatives)
 			{
 				const auto firstSymbol = rule.front();
-				if (guides.contains(firstSymbol) && guides.contains(name))
+				if (guides.contains(firstSymbol) && (guides.contains(name) || name == symbol))
 				{
 					entries.emplace_back(ruleIndex, 0);
 				}
@@ -217,7 +251,7 @@ private:
 
 private:
 	Rules m_rules{};
-	std::vector<std::vector<GrammarEntry>> m_grammarEntries{ 1, std::vector<GrammarEntry>() };
+	std::vector<GrammarEntriesSet> m_grammarEntries{ 1, GrammarEntriesSet{} };
 	std::queue<size_t> m_rowsQueue{};
-	Table m_table;
+	Table m_table{ 1, std::unordered_map<std::string, Action>() };
 };

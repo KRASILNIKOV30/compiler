@@ -4,8 +4,6 @@
 
 #include <utility>
 
-const std::string END_SYMBOL = "#";
-
 LLParser::LLParser(Table table)
 	: m_table(std::move(table))
 {

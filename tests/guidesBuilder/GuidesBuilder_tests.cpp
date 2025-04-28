@@ -64,4 +64,19 @@ TEST_CASE("guides builder tests")
 		"<B> - e / # c <C>\n"
 		"<C> - c <C> / c\n"
 		"<C> - e / #\n");
+
+	Check(""
+		  "<S> - int <idList> #\n"
+		  "<idList> - <idList> , <id>\n"
+		  "<idList> - <id>\n"
+		  "<id> - A\n"
+		  "<id> - B\n"
+		  "<id> - C\n",
+		""
+		"<S> - int <idList> # / int\n"
+		"<idList> - <idList> , <id> / <idList> <id> B C A\n"
+		"<idList> - <id> / A C B\n"
+		"<id> - A / A\n"
+		"<id> - B / B\n"
+		"<id> - C / C\n");
 }

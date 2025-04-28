@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <vector>
 
+const std::string END_SYMBOL = "#";
 const std::string EMPTY = "e";
 constexpr char NON_TERM_FIRST_CHAR = '<';
 constexpr int NON_TERM_MIN_SIZE = 3;
@@ -23,7 +24,18 @@ struct GrammarEntry
 {
 	size_t rule;
 	size_t pos;
+	bool operator==(GrammarEntry const& other) const = default;
+
+	struct Hasher
+	{
+		size_t operator()(GrammarEntry const& entry) const
+		{
+			return std::hash<size_t>()(entry.rule) ^ std::hash<size_t>()(entry.pos);
+		}
+	};
 };
+
+using GrammarEntriesSet = std::unordered_set<GrammarEntry, GrammarEntry::Hasher>;
 
 enum class ActionType
 {
