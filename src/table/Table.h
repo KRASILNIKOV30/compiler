@@ -47,6 +47,8 @@ struct Action
 {
 	ActionType type;
 	size_t value;
+	std::string ruleName;
+	size_t ruleSize = 0;
 	bool isOk = false;
 	bool operator==(const Action&) const = default;
 };

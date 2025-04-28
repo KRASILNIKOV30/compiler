@@ -29,19 +29,19 @@ TEST_CASE("table builder tests")
 				{ "C", { ActionType::SHIFT, 6 } },
 			},
 			{ { ",", { ActionType::SHIFT, 7 } },
-				{ "#", { ActionType::RULE, 0 } } },
+				{ "#", { ActionType::RULE, 0, "<S>", 2 } } },
 
-			{ { ",", { ActionType::RULE, 2 } },
-				{ "#", { ActionType::RULE, 2 } } },
+			{ { ",", { ActionType::RULE, 2, "<idList>", 1 } },
+				{ "#", { ActionType::RULE, 2, "<idList>", 1 } } },
 
-			{ { ",", { ActionType::RULE, 3 } },
-				{ "#", { ActionType::RULE, 3 } } },
+			{ { ",", { ActionType::RULE, 3, "<id>", 1 } },
+				{ "#", { ActionType::RULE, 3, "<id>", 1 } } },
 
-			{ { ",", { ActionType::RULE, 4 } },
-				{ "#", { ActionType::RULE, 4 } } },
+			{ { ",", { ActionType::RULE, 4, "<id>", 1 } },
+				{ "#", { ActionType::RULE, 4, "<id>", 1 } } },
 
-			{ { ",", { ActionType::RULE, 5 } },
-				{ "#", { ActionType::RULE, 5 } } },
+			{ { ",", { ActionType::RULE, 5, "<id>", 1 } },
+				{ "#", { ActionType::RULE, 5, "<id>", 1 } } },
 
 			{
 				{ "<id>", { ActionType::SHIFT, 8 } },
@@ -50,23 +50,6 @@ TEST_CASE("table builder tests")
 				{ "C", { ActionType::SHIFT, 6 } },
 			},
 
-			{ { ",", { ActionType::RULE, 1 } },
-				{ "#", { ActionType::RULE, 1 } } } });
-
-	// Check(
-	// 	"<list> - el <listRem> # / el\n"
-	// 	"<listRem> - e / #\n"
-	// 	"<listRem> - , el <listRem> / ,\n",
-	// 	Table{
-	// 		{ "<list>", { "el" }, false, true, 3, false, false },
-	// 		{ "<listRem>", { "#" }, false, false, 6, false, false },
-	// 		{ "<listRem>", { "," }, false, true, 7, false, false },
-	// 		{ "el", { "el" }, true, true, 4, false, false },
-	// 		{ "<listRem>", { "#", "," }, false, true, 1, true, false },
-	// 		{ "#", { "#" }, true, true, std::nullopt, false, true },
-	// 		{ "e", { "#" }, false, true, std::nullopt, false, false },
-	// 		{ ",", { "," }, true, true, 8, false, false },
-	// 		{ "el", { "el" }, true, true, 9, false, false },
-	// 		{ "<listRem>", { "#", "," }, false, true, 1, false, false },
-	// 	});
+			{ { ",", { ActionType::RULE, 1, "<idList>", 3 } },
+				{ "#", { ActionType::RULE, 1, "<idList>", 3 } } } });
 }

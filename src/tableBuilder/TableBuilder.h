@@ -59,10 +59,7 @@ public:
 					const auto symbol = GetSymbol(nextEntry);
 					if (symbol == END_SYMBOL)
 					{
-						m_table[rowIndex][END_SYMBOL] = {
-							ActionType::RULE,
-							entry.rule,
-						};
+						m_table[rowIndex][END_SYMBOL] = BuildRuleFold(entry.rule);
 					}
 					else
 					{
@@ -81,11 +78,18 @@ private:
 		const auto ruleIndex = entry.rule;
 		for (const auto& symbol : GetFollow(GetRuleName(entry.rule)))
 		{
-			m_table[rowIndex][symbol] = {
-				.type = ActionType::RULE,
-				.value = ruleIndex
-			};
+			m_table[rowIndex][symbol] = BuildRuleFold(ruleIndex);
 		}
+	}
+
+	[[nodiscard]] Action BuildRuleFold(const size_t ruleIndex) const
+	{
+		return {
+			.type = ActionType::RULE,
+			.value = ruleIndex,
+			.ruleName = GetRuleName(ruleIndex),
+			.ruleSize = GetRuleSize(ruleIndex),
+		};
 	}
 
 	static GrammarEntry GetNext(GrammarEntry const& entry)
@@ -193,6 +197,14 @@ private:
 		}
 
 		return rule->alternatives.at(i);
+	}
+
+	[[nodiscard]] size_t GetRuleSize(const size_t i) const
+	{
+		const auto rule = GetAlternative(i).rule;
+		return rule.back() == END_SYMBOL
+			? rule.size() - 1
+			: rule.size();
 	}
 
 	[[nodiscard]] bool IsLast(GrammarEntry const& entry) const
