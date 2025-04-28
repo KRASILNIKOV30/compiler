@@ -1,9 +1,9 @@
 #pragma once
-#include "../tableBuilder/TableBuilder.h"
 #include "../parseRawRules/ParseRules.h"
+#include "../print/PrintContainer.h"
+#include "../tableBuilder/TableBuilder.h"
 #include <optional>
 #include <string>
-#include "../print/PrintContainer.h"
 
 class GuidesBuilder
 {
@@ -14,7 +14,6 @@ public:
 
 private:
 	void Init();
-	Guides GetGuides(std::string const& nonTerm);
 	void BuildRelationFirst();
 	std::unordered_set<std::string> GetFollow(std::string const& nonTerm) const;
 	void TransitiveClosure();

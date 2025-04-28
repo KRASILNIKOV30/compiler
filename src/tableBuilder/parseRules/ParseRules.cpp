@@ -49,7 +49,7 @@ Rules ParseRules(std::stringstream& input)
 		const auto alternative = GetAlternative(iss);
 
 		auto it = std::ranges::find_if(rules, [&](const auto& r) {
-			return r.first == nonTerm;
+			return r.name == nonTerm;
 		});
 		if (it == rules.end())
 		{
@@ -57,7 +57,7 @@ Rules ParseRules(std::stringstream& input)
 		}
 		else
 		{
-			it->second.push_back(alternative);
+			it->alternatives.push_back(alternative);
 		}
 	}
 

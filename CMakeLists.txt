@@ -109,5 +109,11 @@ add_executable(ll_parser
         src/main.cpp
 )
 
+add_executable(guides-builder_tests
+        ${GUIDES_BUILDER_SOURCES}
+        tests/guidesBuilder/GuidesBuilder_tests.cpp
+)
+
 target_link_libraries(parser_tests PUBLIC catch2)
 target_link_libraries(ll-parser_tests PUBLIC catch2)
+target_link_libraries(guides-builder_tests PUBLIC catch2)

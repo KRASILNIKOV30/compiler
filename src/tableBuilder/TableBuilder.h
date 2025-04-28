@@ -1,10 +1,12 @@
 #pragma once
 #include "../table/Table.h"
+#include "./parseRules/ParseRules.h"
+#include <cassert>
+#include <queue>
 #include <ranges>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
-#include "./parseRules/ParseRules.h"
 
 /**
  * input format:
@@ -30,148 +32,192 @@ public:
 		m_rules = ParseRules(iss);
 	}
 
-	[[nodiscard]] Table BuildTable() const
+	[[nodiscard]] Table BuildTable()
 	{
+		assert(m_rules.front().alternatives.size() == 1);
 		Table table;
-		FillLeftNonTerms(table);
-		FillRightSides(table);
+		table.emplace_back();
+		const auto firstRule = m_rules.front().name;
+
+		table[0][firstRule] = { .isOk = true };
+		AddEntriesToTable(ExtendGrammarEntries({ 0, 0 }), 0);
+		m_rowsQueue.emplace(0);
+
+		while (!m_rowsQueue.empty())
+		{
+			const auto rowIndex = m_rowsQueue.front();
+			m_rowsQueue.pop();
+			const auto& rowEntries = m_grammarEntries[rowIndex];
+
+			for (const auto& entry : rowEntries)
+			{
+				if (IsLast(entry))
+				{
+					FillFolds(entry, rowIndex);
+				}
+				else
+				{
+					const auto nextEntry = GetNext(entry);
+					AddEntriesToTable(ExtendGrammarEntries(nextEntry), rowIndex);
+				}
+			}
+		}
 
 		return table;
 	}
 
 private:
-	void FillLeftNonTerms(Table& table) const
+	void FillFolds(GrammarEntry const& entry, const size_t rowIndex)
 	{
-		auto ptr = GetLeftSideNonTermsNumber();
-		for (const auto& [name, alternatives] : m_rules)
+		const auto ruleIndex = entry.rule;
+		for (const auto& symbol : GetFollow(GetRuleName(entry.rule)))
 		{
-			for (const auto& [rule, guides] : alternatives)
-			{
-				table.emplace_back(TableRow{
-					.symbol = name,
-					.guides = guides,
-					.shift = false,
-					.error = false,
-					.ptr = ptr,
-					.stack = false,
-					.end = false,
-				});
-				ptr += rule.size();
-			}
-			table.back().error = true;
+			m_table[rowIndex][symbol] = {
+				.type = ActionType::RULE,
+				.value = ruleIndex
+			};
 		}
 	}
 
-	void FillRightSides(Table& table) const
+	static GrammarEntry GetNext(GrammarEntry const& entry)
 	{
-		bool isAxiom = true;
-		for (const auto& alternatives : m_rules | std::ranges::views::values)
-		{
-			for (const auto& alternative : alternatives)
-			{
-				FillAlternative(table, alternative, isAxiom);
-				isAxiom = false;
-			}
-		}
+		return { .rule = entry.rule, .pos = entry.pos + 1 };
 	}
 
-	void FillAlternative(Table& table, Alternative const& alternative, bool isAxiom) const
+	void AddEntriesToTable(std::vector<GrammarEntry> const& entries, const size_t rowIndex)
 	{
-		const auto [rule, guides] = alternative;
-		for (const auto& symbol : rule)
+		for (auto const& entry : entries)
 		{
-			TableRow row{};
-			if (IsTerm(symbol))
+			const auto symbol = GetSymbol(entry);
+			if (m_table[rowIndex].contains(symbol))
 			{
-				if (symbol == EMPTY)
-				{
-					row.symbol = EMPTY;
-					row.guides = guides;
-					row.shift = false;
-					row.error = true;
-					row.ptr = std::nullopt;
-					row.stack = false;
-					row.end = false;
-				}
-				else
-				{
-					row.symbol = symbol;
-					row.guides = { symbol };
-					row.shift = true;
-					row.error = true;
-					row.ptr = table.size() + 1;
-					row.stack = false;
-					row.end = false;
-				}
+				m_grammarEntries[m_table[rowIndex].at(symbol).value].emplace_back(entry);
 			}
 			else
 			{
-				row.symbol = symbol;
-				row.guides = GetNonTermGuides(symbol, table);
-				row.shift = false;
-				row.error = true;
-				row.ptr = GetNonTermPtr(symbol, table);
-				row.stack = true;
-				row.end = false;
+				m_table[rowIndex][symbol] = { .type = ActionType::SHIFT, .value = m_grammarEntries.size() };
+				m_grammarEntries.emplace_back(std::vector{ entry });
 			}
-
-			table.push_back(row);
 		}
-
-		auto& last = table.back();
-		if (IsTerm(last.symbol))
-		{
-			last.ptr = std::nullopt;
-		}
-		else
-		{
-			last.stack = false;
-		}
-		last.end = isAxiom;
 	}
 
-	static size_t GetNonTermPtr(std::string const& symbol, Table const& table)
+	std::vector<GrammarEntry> ExtendGrammarEntries(GrammarEntry const& entry)
 	{
-		size_t ptr = 0;
-		for (const auto& row : table)
+		std::vector entries{ entry };
+		const auto symbol = GetSymbol(entry);
+		for (const auto& [rule, guides] : GetAlternatives(symbol))
 		{
-			if (row.symbol == symbol)
+			AddEntries(guides, entries);
+		}
+
+		return entries;
+	}
+
+	void AddEntries(Guides const& guides, std::vector<GrammarEntry>& entries)
+	{
+		size_t ruleIndex = 0;
+		for (auto const& [name, alternatives] : m_rules)
+		{
+			for (auto const& [rule, _] : alternatives)
 			{
-				return ptr;
+				const auto firstSymbol = rule.front();
+				if (guides.contains(firstSymbol) && guides.contains(name))
+				{
+					entries.emplace_back(ruleIndex, 0);
+				}
+				++ruleIndex;
 			}
-			++ptr;
 		}
-
-		throw std::runtime_error("unknown non term " + symbol);
 	}
 
-	[[nodiscard]] Guides GetNonTermGuides(std::string symbol, Table const& table) const
+	[[nodiscard]] Alternatives GetAlternatives(std::string const& nonTerm) const
 	{
-		Guides result{};
-		for (const auto& row : table
-		     | std::ranges::views::take(GetLeftSideNonTermsNumber())
-		     | std::ranges::views::filter([&](const auto& r) { return r.symbol == symbol; }))
+		return std::ranges::find_if(m_rules, [&nonTerm](const Rule& rule) {
+			return rule.name == nonTerm;
+		})->alternatives;
+	}
+
+	[[nodiscard]] std::string GetRuleName(size_t i) const
+	{
+		auto rule = m_rules.begin();
+		while (rule->alternatives.size() <= i)
 		{
-			for (const auto& guide : row.guides)
+			i -= rule->alternatives.size();
+			++rule;
+		}
+
+		return rule->name;
+	}
+
+	[[nodiscard]] Alternative GetAlternative(size_t i) const
+	{
+		auto rule = m_rules.begin();
+		while (rule->alternatives.size() <= i)
+		{
+			i -= rule->alternatives.size();
+			++rule;
+		}
+
+		return rule->alternatives.at(i);
+	}
+
+	[[nodiscard]] bool IsLast(GrammarEntry const& entry) const
+	{
+		return GetAlternative(entry.rule).rule.size() == entry.pos + 1;
+	}
+
+	[[nodiscard]] std::string GetSymbol(GrammarEntry const& entry) const
+	{
+		return GetAlternative(entry.rule).rule.at(entry.pos);
+	}
+
+	[[nodiscard]] std::unordered_set<std::string> GetFollow(std::string const& nonTerm) const
+	{
+		std::unordered_set<std::string> followLexemes;
+		for (const auto& [name, alternatives] : m_rules)
+		{
+			for (auto const& [rule, guides] : alternatives)
 			{
-				result.emplace(guide);
+				for (int i = 0; i < rule.size(); ++i)
+				{
+					if (rule[i] != nonTerm)
+					{
+						continue;
+					}
+					const bool isLast = i == rule.size() - 1;
+					std::unordered_set<std::string> follow = isLast
+						? name != nonTerm
+							? GetFollow(name)
+							: std::unordered_set<std::string>{}
+						: ExtendSymbol(rule[i + 1]);
+
+					followLexemes.merge(follow);
+				}
 			}
 		}
 
-		return result;
+		return followLexemes;
 	}
 
-	[[nodiscard]] size_t GetLeftSideNonTermsNumber() const
+	[[nodiscard]] std::unordered_set<std::string> ExtendSymbol(std::string const& symbol) const
 	{
-		size_t count = 0;
-		for (const auto& alternatives : m_rules | std::ranges::views::values)
+		std::unordered_set symbols{ symbol };
+		if (IsTerm(symbol))
 		{
-			count += alternatives.size();
+			return symbols;
 		}
 
-		return count;
+		for (auto [_, guides] : GetAlternatives(symbol))
+		{
+			symbols.merge(guides);
+		}
+
+		return symbols;
 	}
 
 private:
 	Rules m_rules{};
+	std::vector<std::vector<GrammarEntry>> m_grammarEntries{ 1, std::vector<GrammarEntry>() };
+	std::queue<size_t> m_rowsQueue{};
+	Table m_table;
 };

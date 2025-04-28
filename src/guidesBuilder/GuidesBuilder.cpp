@@ -23,7 +23,7 @@ std::optional<std::string> GuidesBuilder::BuildGuidedRules()
 	std::stringstream ss;
 	for (const auto& [left, alternatives] : m_rules)
 	{
-		auto nonTermGuides = GetGuides(left);
+		auto nonTermGuides = m_guides[left];
 		for (const auto& alternative : alternatives)
 		{
 			Guides alternativeGuides{};
@@ -34,7 +34,7 @@ std::optional<std::string> GuidesBuilder::BuildGuidedRules()
 			}
 			if (!IsTerm(first))
 			{
-				const auto guides = GetGuides(first);
+				const auto guides = m_guides[first];
 				for (const auto& guide : guides)
 				{
 					alternativeGuides.emplace(guide);
@@ -51,7 +51,7 @@ std::optional<std::string> GuidesBuilder::BuildGuidedRules()
 		}
 
 		for (const auto& alternative : alternatives
-		     | std::views::filter([](const auto& alt) { return alt[0] == EMPTY; }))
+				| std::views::filter([](const auto& alt) { return alt[0] == EMPTY; }))
 		{
 			ss << left << " -" << alternative << " /" << nonTermGuides << std::endl;
 		}
@@ -74,18 +74,6 @@ void GuidesBuilder::Init()
 			}
 		}
 	}
-}
-
-Guides GuidesBuilder::GetGuides(std::string const& nonTerm)
-{
-	Guides result{};
-	for (const auto& guide : m_guides[nonTerm]
-	     | std::views::filter([&](const auto& l) { return IsTerm(l); }))
-	{
-		result.emplace(guide);
-	}
-
-	return result;
 }
 
 void GuidesBuilder::BuildRelationFirst()
@@ -120,8 +108,8 @@ std::unordered_set<std::string> GuidesBuilder::GetFollow(std::string const& nonT
 				const bool isLast = i == alternative.size() - 1;
 				std::unordered_set<std::string> follow = isLast
 					? left != nonTerm
-					? GetFollow(left)
-					: std::unordered_set<std::string>{}
+						? GetFollow(left)
+						: std::unordered_set<std::string>{}
 					: std::unordered_set{ alternative[i + 1] };
 
 				followLexemes.merge(follow);
