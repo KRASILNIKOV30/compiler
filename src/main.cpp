@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 
 		GuidesBuilder guidesBuilder(input);
 		const auto rules = guidesBuilder.BuildGuidedRules();
-		TableBuilder tableBuilder(rules.value());
+		TableBuilder tableBuilder(rules);
 		const auto table = tableBuilder.BuildTable();
 		LLParser parser(table);
 
