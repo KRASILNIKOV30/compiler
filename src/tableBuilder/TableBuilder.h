@@ -4,8 +4,8 @@
 #include <cassert>
 #include <queue>
 #include <ranges>
-#include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 /**
@@ -19,17 +19,9 @@
 class TableBuilder
 {
 public:
-	explicit TableBuilder(std::string const& str)
+	explicit TableBuilder(Rules rules)
+		: m_rules(std::move(rules))
 	{
-		std::stringstream iss(str);
-		m_rules = ParseRules(iss);
-	}
-
-	explicit TableBuilder(std::istream const& strm)
-	{
-		std::stringstream iss;
-		iss << strm.rdbuf();
-		m_rules = ParseRules(iss);
 	}
 
 	[[nodiscard]] Table BuildTable()
@@ -170,9 +162,16 @@ private:
 
 	[[nodiscard]] Alternatives GetAlternatives(std::string const& nonTerm) const
 	{
-		return std::ranges::find_if(m_rules, [&nonTerm](const Rule& rule) {
+		const auto it = std::ranges::find_if(m_rules, [&nonTerm](const Rule& rule) {
 			return rule.name == nonTerm;
-		})->alternatives;
+		});
+
+		if (it == m_rules.end())
+		{
+			throw std::runtime_error("unknown non terminal " + nonTerm);
+		}
+
+		return it->alternatives;
 	}
 
 	[[nodiscard]] std::string GetRuleName(size_t i) const
@@ -233,8 +232,8 @@ private:
 					const bool isLast = i == rule.size() - 1;
 					std::unordered_set<std::string> follow = isLast
 						? name != nonTerm
-							? GetFollow(name)
-							: std::unordered_set<std::string>{}
+						? GetFollow(name)
+						: std::unordered_set<std::string>{}
 						: ExtendSymbol(rule[i + 1]);
 
 					followLexemes.merge(follow);

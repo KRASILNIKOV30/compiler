@@ -1,6 +1,7 @@
 #include "guidesBuilder/GuidesBuilder.h"
 #include "LLParser/LLParser.h"
 #include "LLParser/error/StringifyError.h"
+#include "parseRawRules/StringifyRules.h"
 
 #include <stdexcept>
 #include <string>

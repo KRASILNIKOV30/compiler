@@ -21,8 +21,9 @@ TEST_CASE("guides builder tests")
 		""
 		"<S> - a <A> # / a\n"
 		"<S> - b / b\n"
+		"<S> - a # / a\n"
 		"<A> - c <A> <S> / c\n"
-		"<A> - e / a b # <S>\n");
+		"<A> - c <S> / c\n");
 
 	Check(""
 		"<Z> - <E> #\n"
@@ -38,11 +39,12 @@ TEST_CASE("guides builder tests")
 		""
 		"<Z> - <E> # / <T> id <F> - (\n"
 		"<E> - <T> <G> / <F> - id (\n"
+		"<E> - <T> / <F> - id (\n"
 		"<G> - + <T> <G> / +\n"
-		"<G> - e / ) #\n"
+		"<G> - + <T> / +\n"
 		"<T> - <F> <U> / ( - id\n"
+		"<T> - <F> / ( - id\n"
 		"<U> - * <F> <F> / *\n"
-		"<U> - e / ) # <G> +\n"
 		"<F> - ( <E> ) / (\n"
 		"<F> - - <F> / -\n"
 		"<F> - id / id\n");
@@ -50,21 +52,25 @@ TEST_CASE("guides builder tests")
 	Check(""
 		"<Z> - <U> #\n"
 		"<U> - <A> <B> <C>\n"
-		"<A> - a <A>\n"
-		"<A> - e\n"
-		"<B> - b <B>\n"
-		"<B> - e\n"
-		"<C> - c <C>\n"
-		"<C> - e\n",
+		"<A> - a <A> | e\n"
+		"<B> - b <B> | e\n"
+		"<C> - c <C> | e\n",
 		""
-		"<Z> - <U> # / <A> <C> c b a <B> #\n"
-		"<U> - <A> <B> <C> / a <B> b <C> c #\n"
+		"<Z> - <U> # / <A> <C> <B> b c a\n"
+		"<Z> - # / #\n"
+		"<U> - <A> <B> <C> / a\n"
+		"<U> - <B> <C> / b\n"
+		"<U> - <A> <C> / a\n"
+		"<U> - <C> / c\n"
+		"<U> - <A> <B> / a\n"
+		"<U> - <B> / b\n"
+		"<U> - <A> / a\n"
 		"<A> - a <A> / a\n"
-		"<A> - e / # c <C> b <B>\n"
+		"<A> - a / a\n"
 		"<B> - b <B> / b\n"
-		"<B> - e / # c <C>\n"
+		"<B> - b / b\n"
 		"<C> - c <C> / c\n"
-		"<C> - e / #\n");
+		"<C> - c / c\n");
 
 	Check(""
 		"<S> - int <idList> #\n"
@@ -88,8 +94,8 @@ TEST_CASE("guides builder tests")
 		"<list> - id\n",
 		""
 		"<S> - ( <optList> ) # / (\n"
+		"<S> - ( ) # / (\n"
 		"<optList> - <list> / <list> id\n"
-		"<optList> - e / )\n"
 		"<list> - <list> , id / <list> id\n"
 		"<list> - id / id\n");
 }

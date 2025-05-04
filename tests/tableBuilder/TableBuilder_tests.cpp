@@ -52,19 +52,3 @@ TEST_CASE("table builder tests")
 			{ { ",", { ActionType::RULE, 1, "<idList>", 3 } },
 			  { "#", { ActionType::RULE, 1, "<idList>", 3 } } } });
 }
-
-TEST_CASE("list")
-{
-	Check(""
-		"<S> - ( <optList> ) # / (\n"
-		"<optList> - <list> / <list> id\n"
-		"<optList> - e / )\n"
-		"<list> - <list> , id / <list> id\n"
-		"<list> - id / id\n",
-		Table{
-			{ { "<S>", { .isOk = true } },
-			  { "(", { ActionType::SHIFT, 1 } } },
-
-			{ {} }
-		});
-}

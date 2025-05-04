@@ -1,4 +1,6 @@
 #include "GuidesBuilder.h"
+#include <sstream>
+#include "../emptyRulesDeleter/EmptyRulesDeleter.h"
 
 GuidesBuilder::GuidesBuilder(std::string const& str)
 {
@@ -17,6 +19,8 @@ GuidesBuilder::GuidesBuilder(std::istream const& strm)
 
 Rules GuidesBuilder::BuildGuidedRules()
 {
+	EmptyRulesDeleter deleter(m_rules);
+	m_rules = deleter.DeleteEmptyRules();
 	BuildRelationFirst();
 	TransitiveClosure();
 	return GetRules();
