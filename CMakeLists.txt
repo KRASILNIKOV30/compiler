@@ -127,8 +127,16 @@ add_executable(empty-rules-deleter_tests
         tests/emptyRulesDeleter/EmptyRulesDeleter_tests.cpp
 )
 
+add_executable(slr_tests
+        ${TABLE_BUILDER_SOURCES}
+        ${GUIDES_BUILDER_SOURCES}
+        ${LL_PARSER_SOURCES}
+        tests/slr_tests.cpp
+)
+
 target_link_libraries(parser_tests PUBLIC catch2)
 target_link_libraries(ll-parser_tests PUBLIC catch2)
 target_link_libraries(guides-builder_tests PUBLIC catch2)
 target_link_libraries(table-builder_tests PUBLIC catch2)
 target_link_libraries(empty-rules-deleter_tests PUBLIC catch2)
+target_link_libraries(slr_tests PUBLIC catch2)

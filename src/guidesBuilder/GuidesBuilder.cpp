@@ -50,36 +50,17 @@ Rules GuidesBuilder::GetRules()
 	std::stringstream ss;
 	for (const auto& [left, alternatives] : m_rules)
 	{
-		auto nonTermGuides = m_guides[left];
 		for (const auto& alternative : alternatives)
 		{
 			Guides alternativeGuides{};
-			const auto& first = alternative[0];
-			if (first == EMPTY)
-			{
-				continue;
-			}
+			const auto& first = alternative.front();
+			alternativeGuides.insert(first);
 			if (!IsTerm(first))
 			{
-				const auto guides = m_guides[first];
-				for (const auto& guide : guides)
-				{
-					alternativeGuides.emplace(guide);
-					nonTermGuides.extract(guide);
-				}
-			}
-			else
-			{
-				alternativeGuides.emplace(first);
-				nonTermGuides.extract(first);
+				const auto& guides = m_guides[first];
+				alternativeGuides.insert(guides.begin(), guides.end());
 			}
 			AddRule(rules, left, alternative, alternativeGuides);
-		}
-
-		for (const auto& alternative : alternatives
-		     | std::views::filter([](const auto& alt) { return alt[0] == EMPTY; }))
-		{
-			AddRule(rules, left, alternative, nonTermGuides);
 		}
 	}
 
