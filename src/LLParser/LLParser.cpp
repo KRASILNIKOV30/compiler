@@ -17,10 +17,14 @@ bool LLParser::Parse(std::string const& input)
 	m_stateStack = {};
 	m_foldStack = {};
 	m_readStack = {};
+	m_action = {};
 	m_lastToken.reset();
 	m_stateStack.emplace(0);
 
-	NextAction();
+	if (!NextAction())
+	{
+		return false;
+	}
 	while (!m_action.isOk)
 	{
 		if (m_action.type == ActionType::SHIFT)
@@ -54,8 +58,8 @@ void LLParser::Shift(const size_t value)
 		const auto token = m_lexer.Get();
 		RecordToken(token);
 		m_readStack.push(token.error == Error::EMPTY_INPUT
-				? END_SYMBOL
-				: RemapTokenTypeToString(token.type));
+			? END_SYMBOL
+			: RemapTokenTypeToString(token.type));
 	}
 	else
 	{
@@ -91,8 +95,8 @@ bool LLParser::NextAction()
 	};
 
 	for (const auto& lexeme : row
-			| std::views::keys
-			| std::views::filter([](const auto& s) { return IsTerm(s); }))
+	     | std::views::keys
+	     | std::views::filter([](const auto& s) { return IsTerm(s); }))
 	{
 		m_error.expected.insert(lexeme);
 	}

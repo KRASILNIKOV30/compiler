@@ -1,5 +1,5 @@
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
+#include <sstream>
 #include "../../src/emptyRulesDeleter/EmptyRulesDeleter.h"
 #include "../../src/parseRawRules/ParseRules.h"
 #include "../../src/parseRawRules/StringifyRules.h"
@@ -10,7 +10,7 @@ void Check(std::string const& rulesStr, std::string const& expectedStr)
 	const auto rules = ParseRawRules(ss);
 	EmptyRulesDeleter deleter(rules);
 	const auto handledRules = deleter.DeleteEmptyRules();
-	const auto handledRulesStr = StringifyRawRules(handledRules);
+	const auto handledRulesStr = StringifyRules(handledRules);
 
 	REQUIRE(handledRulesStr == expectedStr);
 }

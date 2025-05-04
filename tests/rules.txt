@@ -1,0 +1,37 @@
+<Z> -> <expression> #
+<expression> -> <expression> <relOp> <simexp>
+<expression> -> <simexp>
+<expListOpt> -> <expList> | e
+<expList> -> <expList> , <expression>
+<expList> -> <expression>
+<simexp> -> <simexp> <lowPriorityOp> <simterm>
+<simexp> -> <simterm>
+<simterm> -> <simterm> <highPriorityOp> <term>
+<simterm> -> <term>
+<term> -> ( <expression> )
+<term> -> + <term>
+<term> -> - <term>
+<term> -> not <term>
+<term> -> ! <term>
+<term> -> <ident>
+<term> -> int
+<term> -> float
+<term> -> true
+<term> -> false
+<term> -> string
+<ident> -> <ident> [ <expression> ]
+<ident> -> <ident> ( <expListOpt> )
+<ident> -> id
+<relOp> -> <
+<relOp> -> >
+<relOp> -> <=
+<relOp> -> >=
+<relOp> -> ==
+<relOp> -> !=
+<lowPriorityOp> -> +
+<lowPriorityOp> -> -
+<lowPriorityOp> -> or
+<highPriorityOp> -> *
+<highPriorityOp> -> mod
+<highPriorityOp> -> div
+<highPriorityOp> -> and

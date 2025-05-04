@@ -1,9 +1,8 @@
-#define CATCH_CONFIG_MAIN
 #include "../../src/guidesBuilder/GuidesBuilder.h"
 #include "catch.hpp"
 #include "../../src/parseRawRules/StringifyRules.h"
 
-void Check(std::string const& rawRules, std::string const& expected)
+void CheckGuidesBuilder(std::string const& rawRules, std::string const& expected)
 {
 	GuidesBuilder builder(rawRules);
 	const auto rules = builder.BuildGuidedRules();
@@ -13,7 +12,7 @@ void Check(std::string const& rawRules, std::string const& expected)
 
 TEST_CASE("guides builder tests")
 {
-	Check(""
+	CheckGuidesBuilder(""
 		"<S> - a <A> #\n"
 		"<S> - b\n"
 		"<A> - c <A> <S>\n"
@@ -25,7 +24,7 @@ TEST_CASE("guides builder tests")
 		"<A> - c <A> <S> / c\n"
 		"<A> - c <S> / c\n");
 
-	Check(""
+	CheckGuidesBuilder(""
 		"<Z> - <E> #\n"
 		"<E> - <T> <G>\n"
 		"<G> - + <T> <G>\n"
@@ -49,7 +48,7 @@ TEST_CASE("guides builder tests")
 		"<F> - - <F> / -\n"
 		"<F> - id / id\n");
 
-	Check(""
+	CheckGuidesBuilder(""
 		"<Z> - <U> #\n"
 		"<U> - <A> <B> <C>\n"
 		"<A> - a <A> | e\n"
@@ -72,7 +71,7 @@ TEST_CASE("guides builder tests")
 		"<C> - c <C> / c\n"
 		"<C> - c / c\n");
 
-	Check(""
+	CheckGuidesBuilder(""
 		"<S> - int <idList> #\n"
 		"<idList> - <idList> , <id>\n"
 		"<idList> - <id>\n"
@@ -87,7 +86,7 @@ TEST_CASE("guides builder tests")
 		"<id> - B / B\n"
 		"<id> - C / C\n");
 
-	Check(""
+	CheckGuidesBuilder(""
 		"<S> - ( <optList> ) #\n"
 		"<optList> - <list> | e\n"
 		"<list> - <list> , id\n"

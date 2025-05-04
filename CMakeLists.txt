@@ -132,6 +132,19 @@ add_executable(slr_tests
         ${GUIDES_BUILDER_SOURCES}
         ${LL_PARSER_SOURCES}
         tests/slr_tests.cpp
+        tests/emptyRulesDeleter/EmptyRulesDeleter_tests.cpp
+        tests/guidesBuilder/GuidesBuilder_tests.cpp
+        tests/tableBuilder/TableBuilder_tests.cpp
+        tests/lexer/Lexer_tests.cpp
+        tests/lexer/Reader_tests.cpp
+)
+
+add_custom_command(
+        TARGET slr_tests POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/rules.txt"
+        "${CMAKE_CURRENT_BINARY_DIR}/rules.txt"
+        COMMENT "Copying tests/rules.txt to output dir"
 )
 
 target_link_libraries(parser_tests PUBLIC catch2)

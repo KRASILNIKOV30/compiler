@@ -91,35 +91,41 @@ private:
 
 	void AddEntriesToTable(std::vector<GrammarEntry> const& entries, const size_t rowIndex)
 	{
+		std::unordered_map<std::string, GrammarEntriesSet> rowEntriesMap;
 		for (auto const& entry : entries)
 		{
 			const auto symbol = GetSymbol(entry);
+			rowEntriesMap[symbol].insert(entry);
+		}
+
+		for (const auto& [symbol, entriesSet] : rowEntriesMap)
+		{
 			if (m_table[rowIndex].contains(symbol))
 			{
-				m_grammarEntries[m_table[rowIndex].at(symbol).value].insert(entry);
+				m_grammarEntries[m_table[rowIndex].at(symbol).value].insert(entriesSet.begin(), entriesSet.end());
 			}
 			else
 			{
 				m_table[rowIndex][symbol] = {
 					.type = ActionType::SHIFT,
-					.value = GetEntryIndex(entry)
+					.value = GetEntriesSetIndex(entriesSet)
 				};
 			}
 		}
 	}
 
-	size_t GetEntryIndex(GrammarEntry const& entry)
+	size_t GetEntriesSetIndex(GrammarEntriesSet const& entrySet)
 	{
 		for (size_t i = 0; i < m_grammarEntries.size(); ++i)
 		{
-			if (m_grammarEntries[i].contains(entry))
+			if (m_grammarEntries[i] == entrySet)
 			{
 				return i;
 			}
 		}
 
 		const size_t newRowIndex = m_grammarEntries.size();
-		m_grammarEntries.emplace_back(GrammarEntriesSet{ entry });
+		m_grammarEntries.emplace_back(entrySet);
 		m_table.emplace_back();
 		m_rowsQueue.emplace(newRowIndex);
 
