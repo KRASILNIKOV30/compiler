@@ -70,14 +70,11 @@ set(GUIDES_BUILDER_SOURCES
         src/parseRawRules/ParseRules.h
         src/parseRawRules/ParseRules.cpp
         src/print/PrintContainer.h
-        src/grammarOptimizer/GrammarOptimizer.h
-        src/grammarOptimizer/GrammarOptimizer.cpp
         src/guidesBuilder/GuidesBuilder.cpp
 )
 
 set(GUIDES_BUILDER_TESTS
         tests/guidesBuilder/GuidesBuilder_tests.cpp
-        tests/guidesBuilder/GrammarOptimizer_tests.cpp
 )
 
 set(LL_PARSER_TESTS
@@ -119,7 +116,17 @@ add_executable(table-builder_tests
         ${TABLE_BUILDER_TESTS}
 )
 
+add_executable(empty-rules-deleter_tests
+        src/emptyRulesDeleter/EmptyRulesDeleter.h
+        src/parseRawRules/ParseRules.h
+        src/parseRawRules/ParseRules.cpp
+        src/parseRawRules/StringifyRawRules.h
+        src/parseRawRules/StringifyRawRules.cpp
+        tests/emptyRulesDeleter/EmptyRulesDeleter_tests.cpp
+)
+
 target_link_libraries(parser_tests PUBLIC catch2)
 target_link_libraries(ll-parser_tests PUBLIC catch2)
 target_link_libraries(guides-builder_tests PUBLIC catch2)
 target_link_libraries(table-builder_tests PUBLIC catch2)
+target_link_libraries(empty-rules-deleter_tests PUBLIC catch2)

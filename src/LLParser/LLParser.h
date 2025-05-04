@@ -19,23 +19,22 @@ public:
 	ErrorReason GetError() const;
 
 private:
-	void Shift();
+	void Shift(size_t value);
+	void Fold(std::string const& ruleName, size_t ruleSize);
+	bool NextAction();
+	std::string GetCurrentSymbol();
+	Action GetCurrentAction();
 	Token Peek();
 	bool Empty();
 	void RecordToken(Token const& token);
-	void RecordError();
 
 private:
 	Lexer m_lexer{ "" };
 	Table m_table{};
 	std::optional<Token> m_lastToken;
 	ErrorReason m_error{};
-	std::string m_symbol;
-	TableRow m_row;
-	size_t m_index = 0;
-	std::stack<size_t> m_stack;
+	std::stack<size_t> m_stateStack;
+	std::stack<std::string> m_readStack;
+	std::stack<std::string> m_foldStack;
+	Action m_action{};
 };
-
-
-
-

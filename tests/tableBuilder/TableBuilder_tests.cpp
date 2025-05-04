@@ -1,4 +1,3 @@
-#define CATCH_CONFIG_MAIN
 #include "../../src/tableBuilder/TableBuilder.h"
 #include "catch.hpp"
 
@@ -12,15 +11,15 @@ void Check(std::string const& str, Table const& expected)
 TEST_CASE("table builder tests")
 {
 	Check(""
-		  "<S> - int <idList> # / int\n"
-		  "<idList> - <idList> , <id> / <idList> <id> B C A\n"
-		  "<idList> - <id> / A C B\n"
-		  "<id> - A / A\n"
-		  "<id> - B / B\n"
-		  "<id> - C / C\n",
+		"<S> - int <idList> # / int\n"
+		"<idList> - <idList> , <id> / <idList> <id> B C A\n"
+		"<idList> - <id> / A C B\n"
+		"<id> - A / A\n"
+		"<id> - B / B\n"
+		"<id> - C / C\n",
 		Table{
 			{ { "<S>", { .isOk = true } },
-				{ "int", { ActionType::SHIFT, 1 } } },
+			  { "int", { ActionType::SHIFT, 1 } } },
 			{
 				{ "<idList>", { ActionType::SHIFT, 2 } },
 				{ "<id>", { ActionType::SHIFT, 3 } },
@@ -29,19 +28,19 @@ TEST_CASE("table builder tests")
 				{ "C", { ActionType::SHIFT, 6 } },
 			},
 			{ { ",", { ActionType::SHIFT, 7 } },
-				{ "#", { ActionType::RULE, 0, "<S>", 2 } } },
+			  { "#", { ActionType::RULE, 0, "<S>", 2 } } },
 
 			{ { ",", { ActionType::RULE, 2, "<idList>", 1 } },
-				{ "#", { ActionType::RULE, 2, "<idList>", 1 } } },
+			  { "#", { ActionType::RULE, 2, "<idList>", 1 } } },
 
 			{ { ",", { ActionType::RULE, 3, "<id>", 1 } },
-				{ "#", { ActionType::RULE, 3, "<id>", 1 } } },
+			  { "#", { ActionType::RULE, 3, "<id>", 1 } } },
 
 			{ { ",", { ActionType::RULE, 4, "<id>", 1 } },
-				{ "#", { ActionType::RULE, 4, "<id>", 1 } } },
+			  { "#", { ActionType::RULE, 4, "<id>", 1 } } },
 
 			{ { ",", { ActionType::RULE, 5, "<id>", 1 } },
-				{ "#", { ActionType::RULE, 5, "<id>", 1 } } },
+			  { "#", { ActionType::RULE, 5, "<id>", 1 } } },
 
 			{
 				{ "<id>", { ActionType::SHIFT, 8 } },
@@ -51,5 +50,21 @@ TEST_CASE("table builder tests")
 			},
 
 			{ { ",", { ActionType::RULE, 1, "<idList>", 3 } },
-				{ "#", { ActionType::RULE, 1, "<idList>", 3 } } } });
+			  { "#", { ActionType::RULE, 1, "<idList>", 3 } } } });
+}
+
+TEST_CASE("list")
+{
+	Check(""
+		"<S> - ( <optList> ) # / (\n"
+		"<optList> - <list> / <list> id\n"
+		"<optList> - e / )\n"
+		"<list> - <list> , id / <list> id\n"
+		"<list> - id / id\n",
+		Table{
+			{ { "<S>", { .isOk = true } },
+			  { "(", { ActionType::SHIFT, 1 } } },
+
+			{ {} }
+		});
 }
