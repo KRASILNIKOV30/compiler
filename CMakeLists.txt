@@ -47,18 +47,20 @@ set(TABLE_BUILDER_TESTS
 )
 
 set(GUIDES_BUILDER_SOURCES
+        src/guidesBuilder/emptyRulesDeleter/EmptyRulesDeleter.h
         src/guidesBuilder/GuidesBuilder.h
+        src/guidesBuilder/GuidesBuilder.cpp
         src/parseRules/ParseRules.h
         src/parseRules/ParseRawRules.cpp
         src/parseRules/ParseRules.cpp
         src/parseRules/StringifyRules.h
         src/parseRules/StringifyRules.cpp
         src/print/PrintContainer.h
-        src/guidesBuilder/GuidesBuilder.cpp
 )
 
 set(GUIDES_BUILDER_TESTS
         tests/guidesBuilder/GuidesBuilder_tests.cpp
+        tests/emptyRulesDeleter/EmptyRulesDeleter_tests.cpp
 )
 
 set(PARSER_TESTS
