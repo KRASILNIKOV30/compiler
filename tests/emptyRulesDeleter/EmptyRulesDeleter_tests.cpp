@@ -1,8 +1,8 @@
 #include "catch.hpp"
 #include <sstream>
-#include "../../src/emptyRulesDeleter/EmptyRulesDeleter.h"
-#include "../../src/parseRawRules/ParseRules.h"
-#include "../../src/parseRawRules/StringifyRules.h"
+#include "../../src/guidesBuilder/emptyRulesDeleter/EmptyRulesDeleter.h"
+#include "../../src/parseRules/ParseRules.h"
+#include "../../src/parseRules/StringifyRules.h"
 
 void Check(std::string const& rulesStr, std::string const& expectedStr)
 {

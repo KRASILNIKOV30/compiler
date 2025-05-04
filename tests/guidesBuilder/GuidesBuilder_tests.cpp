@@ -1,6 +1,6 @@
 #include "../../src/guidesBuilder/GuidesBuilder.h"
 #include "catch.hpp"
-#include "../../src/parseRawRules/StringifyRules.h"
+#include "../../src/parseRules/StringifyRules.h"
 
 void CheckGuidesBuilder(std::string const& rawRules, std::string const& expected)
 {

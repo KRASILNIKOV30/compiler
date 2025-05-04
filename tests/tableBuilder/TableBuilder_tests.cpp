@@ -1,4 +1,5 @@
 #include "../../src/tableBuilder/TableBuilder.h"
+#include "../../src/parseRules/ParseRules.h"
 #include "catch.hpp"
 #include <sstream>
 

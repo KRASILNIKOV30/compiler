@@ -1,41 +1,40 @@
 #pragma once
 #include "../lexer/Lexer.h"
+#include "../table/Table.h"
 
-#include <optional>
+#include <stack>
+
+struct ErrorReason
+{
+	Guides expected;
+	Token received;
+	bool operator==(const ErrorReason&) const = default;
+};
 
 class Parser
 {
 public:
-	explicit Parser(std::string const& str)
-		: m_lexer(str)
-	{
-	}
-
-	bool Parse();
-	Error GetError() const;
-	std::optional<Token> GetLastToken() const;
+	explicit Parser(Table table);
+	bool Parse(std::string const& input);
+	ErrorReason GetError() const;
 
 private:
-	Token Get();
+	void Shift(size_t value);
+	void Fold(std::string const& ruleName, size_t ruleSize);
+	bool NextAction();
+	std::string GetCurrentSymbol();
+	Action GetCurrentAction();
 	Token Peek();
 	bool Empty();
 	void RecordToken(Token const& token);
-	bool Panic(Error error);
-	bool Expression();
-	bool ExpressionRem();
-	bool ExpressionList();
-	bool ExpressionListRem();
-	bool Ident();
-	bool Id();
-	bool IdRem();
-	bool SimExp();
-	bool SimExpRem();
-	bool SimTerm();
-	bool SimTermRem();
-	bool Term();
 
 private:
-	Lexer m_lexer;
-	Error m_error = Error::NONE;
-	std::optional<Token> m_token = std::nullopt;
+	Lexer m_lexer{ "" };
+	Table m_table{};
+	std::optional<Token> m_lastToken;
+	ErrorReason m_error{};
+	std::stack<size_t> m_stateStack;
+	std::stack<std::string> m_readStack;
+	std::stack<std::string> m_foldStack;
+	Action m_action{};
 };

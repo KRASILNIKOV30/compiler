@@ -1,4 +1,4 @@
 #pragma once
-#include "../LLParser.h"
+#include "../Parser.h"
 
 std::string StringifyError(ErrorReason const& error);

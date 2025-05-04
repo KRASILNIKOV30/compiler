@@ -1,7 +1,7 @@
 #include "guidesBuilder/GuidesBuilder.h"
-#include "LLParser/LLParser.h"
-#include "LLParser/error/StringifyError.h"
-#include "parseRawRules/StringifyRules.h"
+#include "parser/Parser.h"
+#include "parser/error/StringifyError.h"
+#include "parseRules/StringifyRules.h"
 
 #include <stdexcept>
 #include <string>
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 		const auto rules = guidesBuilder.BuildGuidedRules();
 		TableBuilder tableBuilder(rules);
 		const auto table = tableBuilder.BuildTable();
-		LLParser parser(table);
+		Parser parser(table);
 
 		std::string line;
 		while (std::getline(std::cin, line))

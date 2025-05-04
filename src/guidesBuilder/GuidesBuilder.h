@@ -1,5 +1,5 @@
 #pragma once
-#include "../parseRawRules/ParseRules.h"
+#include "../parseRules/ParseRules.h"
 #include "../print/PrintContainer.h"
 #include "../tableBuilder/TableBuilder.h"
 #include <string>

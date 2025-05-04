@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "../src/guidesBuilder/GuidesBuilder.h"
-#include "../src/LLParser/LLParser.h"
+#include "../src/parser/Parser.h"
 
 const std::string INPUT_FILE = "rules.txt";
 
@@ -13,7 +13,7 @@ TEST_CASE("slr e2e tests")
 	const auto rules = guidesBuilder.BuildGuidedRules();
 	TableBuilder tableBuilder(rules);
 	const auto table = tableBuilder.BuildTable();
-	LLParser parser(table);
+	Parser parser(table);
 
 	const auto Check = [&](std::string const& expr) {
 		CHECK(parser.Parse(expr));

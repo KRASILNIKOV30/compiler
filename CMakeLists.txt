@@ -29,36 +29,17 @@ set(LEXER_TESTS
 )
 
 set(PARSER_SOURCES
-        src/parser/rules/Ident.cpp
-        src/parser/rules/Expression.cpp
-        src/parser/rules/ExpressionList.cpp
-        src/parser/rules/Operations.h
-        src/parser/rules/Term.cpp
-        src/parser/rules/SimTerm.cpp
-        src/parser/rules/SimExp.cpp
+        ${LEXER_SOURCES}
         src/parser/Parser.h
         src/parser/Parser.cpp
-)
-
-set(PARSER_TESTS
-        tests/parser/Parser_tests.cpp
-        tests/parser/Expression_tests.cpp
-)
-
-set(LL_PARSER_SOURCES
-        ${LEXER_SOURCES}
-        src/LLParser/LLParser.h
-        src/LLParser/LLParser.cpp
         src/table/Table.h
-        src/LLParser/RemapToken.h
-        src/LLParser/error/StringifyError.h
-        src/LLParser/error/StringifyError.cpp
+        src/parser/RemapToken.h
+        src/parser/error/StringifyError.h
+        src/parser/error/StringifyError.cpp
 )
 
 set(TABLE_BUILDER_SOURCES
         src/tableBuilder/TableBuilder.h
-        src/tableBuilder/parseRules/ParseRules.h
-        src/tableBuilder/parseRules/ParseRules.cpp
 )
 
 set(TABLE_BUILDER_TESTS
@@ -67,10 +48,11 @@ set(TABLE_BUILDER_TESTS
 
 set(GUIDES_BUILDER_SOURCES
         src/guidesBuilder/GuidesBuilder.h
-        src/parseRawRules/ParseRules.h
-        src/parseRawRules/ParseRules.cpp
-        src/parseRawRules/StringifyRules.h
-        src/parseRawRules/StringifyRules.cpp
+        src/parseRules/ParseRules.h
+        src/parseRules/ParseRawRules.cpp
+        src/parseRules/ParseRules.cpp
+        src/parseRules/StringifyRules.h
+        src/parseRules/StringifyRules.cpp
         src/print/PrintContainer.h
         src/guidesBuilder/GuidesBuilder.cpp
 )
@@ -79,77 +61,33 @@ set(GUIDES_BUILDER_TESTS
         tests/guidesBuilder/GuidesBuilder_tests.cpp
 )
 
-set(LL_PARSER_TESTS
+set(PARSER_TESTS
         ${LEXER_TESTS}
-        tests/LLParser/LLParser_tests.cpp
-        src/LLParser/error/StringifyError.cpp
+        tests/e2e-parser-tests.cpp
 )
 
-add_executable(parser_tests
-        ${LEXER_SOURCES}
-        ${PARSER_SOURCES}
-        ${LEXER_TESTS}
-        ${PARSER_TESTS}
-)
-
-add_executable(ll-parser_tests
-        ${TABLE_BUILDER_SOURCES}
-        ${GUIDES_BUILDER_SOURCES}
-        ${LL_PARSER_SOURCES}
-        ${LL_PARSER_TESTS}
-        ${TABLE_BUILDER_TESTS}
-        ${GUIDES_BUILDER_TESTS}
-)
-
-add_executable(ll_parser
+add_executable(compiler
         ${TABLE_BUILDER_SOURCES}
         ${GUIDES_BUILDER_SOURCES}
         ${LL_PARSER_SOURCES}
         src/main.cpp
 )
 
-add_executable(guides-builder_tests
-        ${GUIDES_BUILDER_SOURCES}
-        tests/guidesBuilder/GuidesBuilder_tests.cpp
-)
-
-add_executable(table-builder_tests
+add_executable(tests
         ${TABLE_BUILDER_SOURCES}
+        ${GUIDES_BUILDER_SOURCES}
+        ${PARSER_SOURCES}
+        ${PARSER_TESTS}
         ${TABLE_BUILDER_TESTS}
-)
-
-add_executable(empty-rules-deleter_tests
-        src/emptyRulesDeleter/EmptyRulesDeleter.h
-        src/parseRawRules/ParseRules.h
-        src/parseRawRules/ParseRules.cpp
-        src/parseRawRules/StringifyRules.h
-        src/parseRawRules/StringifyRules.cpp
-        tests/emptyRulesDeleter/EmptyRulesDeleter_tests.cpp
-)
-
-add_executable(slr_tests
-        ${TABLE_BUILDER_SOURCES}
-        ${GUIDES_BUILDER_SOURCES}
-        ${LL_PARSER_SOURCES}
-        tests/slr_tests.cpp
-        tests/emptyRulesDeleter/EmptyRulesDeleter_tests.cpp
-        tests/guidesBuilder/GuidesBuilder_tests.cpp
-        tests/tableBuilder/TableBuilder_tests.cpp
-        tests/lexer/Lexer_tests.cpp
-        tests/lexer/Reader_tests.cpp
+        ${GUIDES_BUILDER_TESTS}
 )
 
 add_custom_command(
-        TARGET slr_tests POST_BUILD
+        TARGET tests POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/rules.txt"
         "${CMAKE_CURRENT_BINARY_DIR}/rules.txt"
         COMMENT "Copying tests/rules.txt to output dir"
 )
 
-target_link_libraries(parser_tests PUBLIC catch2)
-target_link_libraries(ll-parser_tests PUBLIC catch2)
-target_link_libraries(guides-builder_tests PUBLIC catch2)
-target_link_libraries(table-builder_tests PUBLIC catch2)
-target_link_libraries(empty-rules-deleter_tests PUBLIC catch2)
-target_link_libraries(slr_tests PUBLIC catch2)
+target_link_libraries(tests PUBLIC catch2)

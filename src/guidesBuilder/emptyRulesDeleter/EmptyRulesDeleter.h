@@ -1,6 +1,6 @@
 #pragma once
-#include "../parseRawRules/ParseRules.h"
-#include "../table/Table.h"
+#include "../../parseRules/ParseRules.h"
+#include "../../table/Table.h"
 #include <algorithm>
 #include <optional>
 #include <ranges>

@@ -1,6 +1,6 @@
 #include "GuidesBuilder.h"
 #include <sstream>
-#include "../emptyRulesDeleter/EmptyRulesDeleter.h"
+#include "emptyRulesDeleter/EmptyRulesDeleter.h"
 
 GuidesBuilder::GuidesBuilder(std::string const& str)
 {
