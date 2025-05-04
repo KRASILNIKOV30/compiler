@@ -2,7 +2,7 @@
 #include "catch.hpp"
 #include "../../src/emptyRulesDeleter/EmptyRulesDeleter.h"
 #include "../../src/parseRawRules/ParseRules.h"
-#include "../../src/parseRawRules/StringifyRawRules.h"
+#include "../../src/parseRawRules/StringifyRules.h"
 
 void Check(std::string const& rulesStr, std::string const& expectedStr)
 {

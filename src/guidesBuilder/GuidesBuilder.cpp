@@ -15,11 +15,34 @@ GuidesBuilder::GuidesBuilder(std::istream const& strm)
 	Init();
 }
 
-std::optional<std::string> GuidesBuilder::BuildGuidedRules()
+Rules GuidesBuilder::BuildGuidedRules()
 {
 	BuildRelationFirst();
 	TransitiveClosure();
+	return GetRules();
+}
 
+void AddRule(Rules& rules, std::string const& left, std::vector<std::string> const& alternative, Guides const& guides)
+{
+	const auto it = std::ranges::find_if(rules, [&](const auto& r) {
+		return r.name == left;
+	});
+	if (it == rules.end())
+	{
+		rules.push_back({
+			.name = left,
+			.alternatives = { { alternative, guides } },
+		});
+	}
+	else
+	{
+		it->alternatives.push_back({ alternative, guides });
+	}
+}
+
+Rules GuidesBuilder::GetRules()
+{
+	Rules rules{};
 	std::stringstream ss;
 	for (const auto& [left, alternatives] : m_rules)
 	{
@@ -46,18 +69,17 @@ std::optional<std::string> GuidesBuilder::BuildGuidedRules()
 				alternativeGuides.emplace(first);
 				nonTermGuides.extract(first);
 			}
-
-			ss << left << " -" << alternative << " /" << alternativeGuides << std::endl;
+			AddRule(rules, left, alternative, alternativeGuides);
 		}
 
 		for (const auto& alternative : alternatives
-				| std::views::filter([](const auto& alt) { return alt[0] == EMPTY; }))
+		     | std::views::filter([](const auto& alt) { return alt[0] == EMPTY; }))
 		{
-			ss << left << " -" << alternative << " /" << nonTermGuides << std::endl;
+			AddRule(rules, left, alternative, nonTermGuides);
 		}
 	}
 
-	return ss.str();
+	return rules;
 }
 
 void GuidesBuilder::Init()
@@ -108,8 +130,8 @@ std::unordered_set<std::string> GuidesBuilder::GetFollow(std::string const& nonT
 				const bool isLast = i == alternative.size() - 1;
 				std::unordered_set<std::string> follow = isLast
 					? left != nonTerm
-						? GetFollow(left)
-						: std::unordered_set<std::string>{}
+					? GetFollow(left)
+					: std::unordered_set<std::string>{}
 					: std::unordered_set{ alternative[i + 1] };
 
 				followLexemes.merge(follow);

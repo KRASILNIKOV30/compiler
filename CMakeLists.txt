@@ -69,6 +69,8 @@ set(GUIDES_BUILDER_SOURCES
         src/guidesBuilder/GuidesBuilder.h
         src/parseRawRules/ParseRules.h
         src/parseRawRules/ParseRules.cpp
+        src/parseRawRules/StringifyRules.h
+        src/parseRawRules/StringifyRules.cpp
         src/print/PrintContainer.h
         src/guidesBuilder/GuidesBuilder.cpp
 )
@@ -120,8 +122,8 @@ add_executable(empty-rules-deleter_tests
         src/emptyRulesDeleter/EmptyRulesDeleter.h
         src/parseRawRules/ParseRules.h
         src/parseRawRules/ParseRules.cpp
-        src/parseRawRules/StringifyRawRules.h
-        src/parseRawRules/StringifyRawRules.cpp
+        src/parseRawRules/StringifyRules.h
+        src/parseRawRules/StringifyRules.cpp
         tests/emptyRulesDeleter/EmptyRulesDeleter_tests.cpp
 )
 

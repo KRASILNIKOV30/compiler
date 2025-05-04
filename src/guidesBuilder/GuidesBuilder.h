@@ -2,7 +2,6 @@
 #include "../parseRawRules/ParseRules.h"
 #include "../print/PrintContainer.h"
 #include "../tableBuilder/TableBuilder.h"
-#include <optional>
 #include <string>
 
 class GuidesBuilder
@@ -10,9 +9,10 @@ class GuidesBuilder
 public:
 	explicit GuidesBuilder(std::string const& str);
 	explicit GuidesBuilder(std::istream const& strm);
-	std::optional<std::string> BuildGuidedRules();
+	Rules BuildGuidedRules();
 
 private:
+	[[nodiscard]] Rules GetRules();
 	void Init();
 	void BuildRelationFirst();
 	std::unordered_set<std::string> GetFollow(std::string const& nonTerm) const;

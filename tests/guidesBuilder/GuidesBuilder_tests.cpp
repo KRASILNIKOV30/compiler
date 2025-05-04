@@ -1,12 +1,14 @@
+#define CATCH_CONFIG_MAIN
 #include "../../src/guidesBuilder/GuidesBuilder.h"
 #include "catch.hpp"
+#include "../../src/parseRawRules/StringifyRules.h"
 
 void Check(std::string const& rawRules, std::string const& expected)
 {
 	GuidesBuilder builder(rawRules);
 	const auto rules = builder.BuildGuidedRules();
-	CHECK(rules.has_value());
-	CHECK(rules.value() == expected);
+	const auto rulesStr = StringifyRules(rules);
+	CHECK(rulesStr == expected);
 }
 
 TEST_CASE("guides builder tests")
