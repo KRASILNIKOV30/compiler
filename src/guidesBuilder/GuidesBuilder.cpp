@@ -89,42 +89,9 @@ void GuidesBuilder::BuildRelationFirst()
 	{
 		for (auto const& alternative : alternatives)
 		{
-			const auto& guide = alternative[0];
-			std::unordered_set<std::string> guides = guide == EMPTY
-				? GetFollow(left)
-				: std::unordered_set{ guide };
-
-			m_guides[left].merge(guides);
+			m_guides[left].insert(alternative[0]);
 		}
 	}
-}
-
-std::unordered_set<std::string> GuidesBuilder::GetFollow(std::string const& nonTerm) const
-{
-	std::unordered_set<std::string> followLexemes;
-	for (const auto& [left, alternatives] : m_rules)
-	{
-		for (auto const& alternative : alternatives)
-		{
-			for (int i = 0; i < alternative.size(); ++i)
-			{
-				if (alternative[i] != nonTerm)
-				{
-					continue;
-				}
-				const bool isLast = i == alternative.size() - 1;
-				std::unordered_set<std::string> follow = isLast
-					? left != nonTerm
-					? GetFollow(left)
-					: std::unordered_set<std::string>{}
-					: std::unordered_set{ alternative[i + 1] };
-
-				followLexemes.merge(follow);
-			}
-		}
-	}
-
-	return followLexemes;
 }
 
 void GuidesBuilder::TransitiveClosure()

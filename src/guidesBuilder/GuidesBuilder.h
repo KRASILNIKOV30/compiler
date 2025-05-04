@@ -15,7 +15,6 @@ private:
 	[[nodiscard]] Rules GetRules();
 	void Init();
 	void BuildRelationFirst();
-	std::unordered_set<std::string> GetFollow(std::string const& nonTerm) const;
 	void TransitiveClosure();
 
 private:
