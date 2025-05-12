@@ -1,0 +1,36 @@
+const MAX = 100;
+
+for (var n: int = 2; n <= MAX; i++) {
+    var isPrime: boolean = false;
+
+    for (var i: int = 2; i < n) {
+        isPrime |= (n % i == 0); // проверяем остаток деления
+    }
+
+    if (isPrime) {
+        write(n)
+    }
+
+    for (var i of array
+        | filter(a -> a % 2 == 0)
+        | drop(2)
+        | take(10)
+        | drop(2)
+        | drop_until()
+    ) {
+        print(i)
+    }
+}
+
+function print(n: int) {
+
+}
+
+function sum(a, b): int -> int -> int {
+    return a + b
+}
+
+const addTo5 = sum(5) // int -> int
+
+addTo5(4)
+
