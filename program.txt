@@ -1,48 +1,83 @@
 <Z> -> <program> #
-<program> -> main <block>
-<block> -> <dcls> begin <stms>
-<dcls> -> <dclList> <dclsRem>
-<dclsRem> -> ; <dclList> <dclsRem>
-<dclsRem> -> e
-<dclList> -> <constDcl>
-<dclList> -> <varDcl>
-<dclList> -> <funcDcl>
-<constDcl> -> const <ident> : <type> = <expression>
-<varDcl> -> var <ident> : <type> = <expression>
-<varDcl> -> var <ident> : <type>
-<funcDcl> -> function <ident> ( <paramList> ) : <type>
-<paramList> -> <param> <paramListRem>
-<paramListRem> -> , <param> <paramListRem>
-<paramListRem> -> e
-<param> -> <ident> : <type>
-<stms> -> <stm> <stms>
-<stmsRem> -> <stm> <stmsRem>
-<stmsRem> -> e
-<stm> -> <ass>
-<stm> -> <if>
-<stm> -> <while>
-<stm> -> <read>
-<stm> -> <write>
-<while> -> while ( <expression> ) <stms> wend
-<if> -> if ( <expression> ) <stms> <else> iend
-<else> -> elif ( <expression> ) <stms> <else>
-<else> -> else <stms>
-<else> -> e
-<read> -> read ( <identList> ) ;
-<ass> -> <ident> = <expression> ;
-<expression> -> <simexp> <expressionRem>
-<expressionRem> -> <relOp> <simexp> <expressionRem>
-<expressionRem> -> e
-<expList> -> <expression> <expListRemainder>
-<expList> -> e
-<expListRemainder> -> , <expression> <expListRemainder>
-<expListRemainder> -> e
-<simexp> -> <simterm> <simexpRem>
-<simexpRem> -> <lowPriorityOp> <simterm> <simexpRem>
-<simexpRem> -> e
-<simterm> -> <term> <simtermRem>
-<simtermRem> -> <highPriorityOp> <term> <simtermRem>
-<simtermRem> -> e
+<program> -> <programBody> ; <program> | e
+<programBody> -> <declaration> | <statement>
+
+<declaration> -> <variableDeclaration> | <functionDeclaration>
+
+<variableDeclaration> -> <declarationKind> <ident> = <variableInit>
+<declarationKind> -> const | let
+<variableInit> -> <expression>
+<functionDeclaration> -> function <ident> ( <paramList> ) <blockStatement>
+<paramList> -> <parameter> <paramListRem> | e
+<paramListRem> -> , <parameter> <paramListRem> | e
+<parameter> -> <ident> <defaultParameter>
+<defaultParameter> -> = <expression> | e
+
+<statement> -> <blockStatement> | <expressionStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <labeledStatement>
+
+<blockStatement> -> { <blockActions> }
+<blockActions> -> <blockAction> ; <blockActions> | e
+<blockAction> -> <declaration> | <statement>
+
+<expressionStatement> -> <expression>
+
+<whileStatement> -> while ( <expression> ) <blockStatement>
+
+<returnStatement> -> return <expression>
+
+<ifStatement> -> if ( <expression> ) <blockStatement> <else>
+<else> -> else <elseStatement> | e
+<elseStatement> -> <ifStatement> | <blockStatement>
+
+<labeledStatement> -> <ident> : <expressionStatement>
+
+<expression> -> <callExpression>
+<expression> -> <arrayExpression>
+<expression> -> <memberExpression>
+<expression> -> <arrowFunctionExpression>
+<expression> -> <binaryExpression>
+<expression> -> <objectExpression>
+<expression> -> <newExpression>
+<expression> -> <assignmentExpression>
+<expression> -> <commonExpression>
+
+<callExpression> -> <callObject> ( <expression> )
+<callObject> -> <ident> | <memberExpression>
+
+<arrayExpression> -> [ <arrayList> ]
+<arrayList> -> <arrayItem> <arrayListRem> | e
+<arrayListRem> -> , <arrayItem> <arrayListRem> | e
+
+<memberExpression> -> <memberObject> <memberExpressionRem>
+<memberObject> -> <expression>
+<memberExpressionRem> -> . <expression> | e
+
+<arrowFunctionExpression> -> <arrowFunctionParamList> => <arrowFunctionBody>
+<arrowFunctionParamList> -> <ident>
+<arrowFunctionParamList> -> ( <paramList> )
+<arrowFunctionBody> -> <blockStatement> | <expression>
+
+<objectExpression> -> { <objectDeclaration> }
+<objectDeclaration> -> <objectProperty> <objectDeclarationRem> | e
+<objectDeclarationRem> -> <objectProperty> <objectDeclarationRem> | e
+<objectProperty> -> <ident> : <objectPropertyType>
+<objectPropertyType> -> <expression>
+
+<newExpression> -> new <newExpressionCallee>
+<newExpressionCallee> -> <ident> | <memberExpression>
+
+<assignmentExpression> -> <assignmentPart> = <assignmentPart>
+<assignmentPart> -> <expression>
+
+<commonExpression> -> <expression> <relOp> <simexp>
+<commonExpression> -> <simexp>
+<expListOpt> -> <expList> | e
+<expList> -> <expList> , <expression>
+<expList> -> <expression>
+<simexp> -> <simexp> <lowPriorityOp> <simterm>
+<simexp> -> <simterm>
+<simterm> -> <simterm> <highPriorityOp> <term>
+<simterm> -> <term>
 <term> -> ( <expression> )
 <term> -> + <term>
 <term> -> - <term>
@@ -54,10 +89,9 @@
 <term> -> true
 <term> -> false
 <term> -> string
-<ident> -> id <idRem>
-<idRem> -> [ <expression> ] <idRem>
-<idRem> -> ( <expList> ) <idRem>
-<idRem> -> e
+<ident> -> <ident> [ <expression> ]
+<ident> -> <ident> ( <expListOpt> )
+<ident> -> id
 <relOp> -> <
 <relOp> -> >
 <relOp> -> <=
@@ -68,7 +102,6 @@
 <lowPriorityOp> -> -
 <lowPriorityOp> -> or
 <highPriorityOp> -> *
-<highPriorityOp> -> /
 <highPriorityOp> -> mod
 <highPriorityOp> -> div
 <highPriorityOp> -> and
