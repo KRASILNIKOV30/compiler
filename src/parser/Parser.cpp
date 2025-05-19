@@ -58,8 +58,8 @@ void Parser::Shift(const size_t value)
 		const auto token = m_lexer.Get();
 		RecordToken(token);
 		m_readStack.push(token.error == Error::EMPTY_INPUT
-			? END_SYMBOL
-			: RemapTokenTypeToString(token.type));
+				? END_SYMBOL
+				: RemapTokenTypeToString(token.type));
 	}
 	else
 	{
@@ -95,8 +95,8 @@ bool Parser::NextAction()
 	};
 
 	for (const auto& lexeme : row
-	     | std::views::keys
-	     | std::views::filter([](const auto& s) { return IsTerm(s); }))
+			| std::views::keys
+			| std::views::filter([](const auto& s) { return IsTerm(s); }))
 	{
 		m_error.expected.insert(lexeme);
 	}

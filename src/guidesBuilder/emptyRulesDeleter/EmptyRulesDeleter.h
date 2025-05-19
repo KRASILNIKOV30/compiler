@@ -57,7 +57,7 @@ private:
 				{
 					raw::Alternative newAlternative;
 					for (const auto& symbol : alternative
-					     | std::ranges::views::filter([&](const auto& x) { return x != emptyRule; }))
+							| std::ranges::views::filter([&](const auto& x) { return x != emptyRule; }))
 					{
 						newAlternative.emplace_back(symbol);
 					}

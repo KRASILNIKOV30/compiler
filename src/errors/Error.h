@@ -11,4 +11,3 @@ enum class Error
 	TERM_EXPECTED,
 	PARAN_CLOSE_EXPECTED,
 };
-

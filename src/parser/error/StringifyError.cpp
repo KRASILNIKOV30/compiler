@@ -1,7 +1,7 @@
 #include "StringifyError.h"
 
-#include "../RemapToken.h"
 #include "../../print/PrintContainer.h"
+#include "../RemapToken.h"
 
 std::string StringifyLexerError(Token const& token)
 {

@@ -8,7 +8,7 @@ namespace raw
 using Alternative = std::vector<std::string>;
 using Alternatives = std::vector<Alternative>;
 using Rules = std::vector<std::pair<std::string, Alternatives>>;
-}
+} // namespace raw
 
 struct Alternative
 {

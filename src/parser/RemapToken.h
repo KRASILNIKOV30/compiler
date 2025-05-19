@@ -1,7 +1,7 @@
 #pragma once
+#include "../lexer/token/Token.h"
 #include <string>
 #include <unordered_map>
-#include "../lexer/token/Token.h"
 
 inline std::unordered_map<TokenType, std::string> TokenTypeToString = {
 	{ TokenType::ERROR, "error" },

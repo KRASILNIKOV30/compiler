@@ -30,9 +30,9 @@ inline Token CheckReserved(Token const& token)
 	return it == RESERVED_WORDS.end()
 		? token
 		: Token{
-			.type = it->second,
-			.value = token.value,
-			.pos = token.pos,
-			.error = token.error,
-		};
+			  .type = it->second,
+			  .value = token.value,
+			  .pos = token.pos,
+			  .error = token.error,
+		  };
 }

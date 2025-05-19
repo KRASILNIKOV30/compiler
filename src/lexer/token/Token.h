@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
 #include "../../errors/Error.h"
+#include <string>
 
 enum class TokenType
 {
@@ -53,4 +53,3 @@ inline bool operator==(Token const& left, Token const& right)
 {
 	return left.type == right.type && left.value == right.value && left.pos == right.pos && left.error == right.error;
 }
-

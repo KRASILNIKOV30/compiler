@@ -1,6 +1,6 @@
 #include "StringifyRules.h"
-#include <sstream>
 #include "../print/PrintContainer.h"
+#include <sstream>
 
 std::string StringifyRules(raw::Rules const& rules)
 {

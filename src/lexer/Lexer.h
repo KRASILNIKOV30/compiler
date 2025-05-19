@@ -20,4 +20,3 @@ private:
 private:
 	Reader m_reader;
 };
-

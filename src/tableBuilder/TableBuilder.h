@@ -238,8 +238,8 @@ private:
 					const bool isLast = i == rule.size() - 1;
 					std::unordered_set<std::string> follow = isLast
 						? name != nonTerm
-						? GetFollow(name)
-						: std::unordered_set<std::string>{}
+							? GetFollow(name)
+							: std::unordered_set<std::string>{}
 						: ExtendSymbol(rule[i + 1]);
 
 					followLexemes.merge(follow);

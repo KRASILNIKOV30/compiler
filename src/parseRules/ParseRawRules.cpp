@@ -1,7 +1,7 @@
-#include "ParseRules.h"
 #include "../table/Table.h"
-#include <sstream>
+#include "ParseRules.h"
 #include <algorithm>
+#include <sstream>
 
 namespace
 {

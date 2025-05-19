@@ -83,7 +83,7 @@ inline bool IdRemainder(Reader& reader)
 }
 
 /**
-* id -> simpleId idRemainder
+ * id -> simpleId idRemainder
  * idRemainder -> e | .id
  * simpleId -> idChar simpleIdRemainder
  * simpleIdRemainder -> e | idPart simpleIdRemainder
