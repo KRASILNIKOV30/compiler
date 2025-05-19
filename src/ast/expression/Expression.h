@@ -1,11 +1,7 @@
 #pragma once
-#include "../CodeGenerator.h"
 #include "ExpressionType.h"
 
-struct Expression : public CodeGenerator
+struct Expression
 {
 	ExpressionType type;
-
-	void Generate() override
-	{}
 };
