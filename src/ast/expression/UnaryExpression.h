@@ -4,6 +4,6 @@
 
 struct UnaryExpression : public Expression
 {
-	BinaryOperators oper;
+	UnaryOperators oper;
 	Expression argument;
 };
