@@ -242,3 +242,4 @@ samples/01-basics/string-joiner/out.txt
 cmake-build-*/
 .idea/
 build
+sandbox/
