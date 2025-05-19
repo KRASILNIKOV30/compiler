@@ -1,5 +1,0 @@
-/home/vladimirfedoseev/project/compiler/cmake-build-debug/CMakeFiles/compiler.dir
-/home/vladimirfedoseev/project/compiler/cmake-build-debug/CMakeFiles/tests.dir
-/home/vladimirfedoseev/project/compiler/cmake-build-debug/CMakeFiles/test.dir
-/home/vladimirfedoseev/project/compiler/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/vladimirfedoseev/project/compiler/cmake-build-debug/CMakeFiles/rebuild_cache.dir
