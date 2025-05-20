@@ -222,8 +222,9 @@ private:
 		return GetAlternative(entry.rule).rule.at(entry.pos);
 	}
 
-	[[nodiscard]] std::unordered_set<std::string> GetFollow(std::string const& nonTerm) const
+	[[nodiscard]] std::unordered_set<std::string> GetFollow(std::string const& nonTerm, std::unordered_set<std::string> trace = {}) const
 	{
+		trace.insert(nonTerm);
 		std::unordered_set<std::string> followLexemes;
 		for (const auto& [name, alternatives] : m_rules)
 		{
@@ -237,8 +238,8 @@ private:
 					}
 					const bool isLast = i == rule.size() - 1;
 					std::unordered_set<std::string> follow = isLast
-						? name != nonTerm
-							? GetFollow(name)
+						? !trace.contains(name)
+							? GetFollow(name, trace)
 							: std::unordered_set<std::string>{}
 						: ExtendSymbol(rule[i + 1]);
 

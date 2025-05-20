@@ -39,6 +39,11 @@ raw::Rules ParseRawRules(std::stringstream& input)
 	std::string rule;
 	while (std::getline(input, rule))
 	{
+		if (rule.empty())
+		{
+			continue;
+		}
+
 		std::istringstream iss(rule);
 		std::string nonTerm;
 		iss >> nonTerm;

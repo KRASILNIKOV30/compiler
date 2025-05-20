@@ -1,6 +1,6 @@
 <Z> -> <program> #
-<program> -> <programBody> ; <program> | e
-<programBody> -> <declaration> | <statement>
+<program> -> <programNode> ; <programNodes> | <programNode>
+<programNode> -> <declaration> | <statement>
 
 <declaration> -> <variableDeclaration> | <functionDeclaration>
 
