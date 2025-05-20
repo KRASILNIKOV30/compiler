@@ -3,7 +3,7 @@
 #include "../src/guidesBuilder/GuidesBuilder.h"
 #include "../src/parser/Parser.h"
 
-const std::string INPUT_FILE = "rules.txt";
+const std::string INPUT_FILE = "program.txt";
 
 TEST_CASE("slr e2e tests")
 {

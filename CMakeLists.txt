@@ -71,7 +71,7 @@ set(PARSER_TESTS
 add_executable(compiler
         ${TABLE_BUILDER_SOURCES}
         ${GUIDES_BUILDER_SOURCES}
-        ${LL_PARSER_SOURCES}
+        ${PARSER_SOURCES}
         src/main.cpp
 )
 
@@ -85,11 +85,12 @@ add_executable(tests
 )
 
 add_custom_command(
-        TARGET tests POST_BUILD
+        TARGET tests PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/program.txt"
         COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_CURRENT_SOURCE_DIR}/tests/rules.txt"
-        "${CMAKE_CURRENT_BINARY_DIR}/rules.txt"
-        COMMENT "Copying tests/rules.txt to output dir"
+        "${CMAKE_CURRENT_SOURCE_DIR}/program.txt"
+        "${CMAKE_CURRENT_BINARY_DIR}/program.txt"
+        COMMENT "Copying /program.txt to binary dir"
 )
 
 target_link_libraries(tests PUBLIC catch2)
