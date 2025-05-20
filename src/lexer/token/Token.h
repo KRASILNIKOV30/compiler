@@ -45,6 +45,7 @@ enum class TokenType
 	FUNCTION, // function
 	WHILE, // while
 	RETURN, // return
+	ARROW, // ->
 };
 
 struct Token

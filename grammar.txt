@@ -2,15 +2,16 @@
 <program> -> <program> ; <programNode> | <programNode> ;
 <programNode> -> <declaration> | <statement>
 
-<declaration> -> <variableDeclaration> | <functionDeclaration>
+<declaration> -> <variableDeclaration> | <constDeclaration> | <functionDeclaration>
 
-<variableDeclaration> -> <declarationKind> <ident> <typeGuide> = <expression>
-<declarationKind> -> const | let
-<typeGuide> -> : <type> | e
-<functionDeclaration> -> function id ( <paramList> ) <blockStatement>
+<variableDeclaration> -> let <parameter>
+<constDeclaration> -> const id <typeGuideOpt> = <expression>
+<functionDeclaration> -> function id ( <paramList> ) <typeGuide> <blockStatement>
 <paramList> -> <parameter> <paramListRem> | e
 <paramListRem> -> , <parameter> <paramListRem> | e
-<parameter> -> <ident> = <expression> | <ident>
+<parameter> -> id <typeGuideOpt> = <expression> | id <typeGuide>
+<typeGuideOpt> -> <typeGuide> | e
+<typeGuide> -> : <type>
 
 <statement> -> <blockStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <expressionStatement>
 
@@ -28,41 +29,18 @@
 <else> -> else <elseStatement> | e
 <elseStatement> -> <ifStatement> | <blockStatement>
 
-<expression> -> <expression> <relOp> <simexp>
-<expression> -> <simexp>
+<expression> -> <expression> <relOp> <simexp> | <simexp> | <arrowFunctionExpression>
 <expListOpt> -> <expList> | e
-<expList> -> <expList> , <expression>
-<expList> -> <expression>
-<simexp> -> <simexp> <lowPriorityOp> <simterm>
-<simexp> -> <simterm>
-<simterm> -> <simterm> <highPriorityOp> <term>
-<simterm> -> <term>
-<term> -> ( <expression> )
-<term> -> + <term>
-<term> -> - <term>
-<term> -> not <term>
-<term> -> ! <term>
-<term> -> <ident>
-<term> -> int
-<term> -> float
-<term> -> true
-<term> -> false
-<term> -> string
-<ident> -> <ident> [ <expression> ]
-<ident> -> <ident> ( <expListOpt> )
-<ident> -> id
-<relOp> -> <
-<relOp> -> >
-<relOp> -> <=
-<relOp> -> >=
-<relOp> -> ==
-<relOp> -> !=
-<lowPriorityOp> -> +
-<lowPriorityOp> -> -
-<lowPriorityOp> -> or
-<highPriorityOp> -> *
-<highPriorityOp> -> mod
-<highPriorityOp> -> div
-<highPriorityOp> -> and
+<expList> -> <expList> , <expression> | <expression>
+<simexp> -> <simexp> <lowPriorityOp> <simterm> | <simterm>
+<simterm> -> <simterm> <highPriorityOp> <term> | <term>
+<term> -> ( <expression> ) | + <term> | - <term> | not <term> | ! <term> | <ident> | int | float | true | false | string
+<ident> -> <ident> [ <expression> ] | <ident> ( <expListOpt> ) | id
+<relOp> -> < | > | <= | >= | == | !=
+<lowPriorityOp> -> + | - | or
+<highPriorityOp> -> * | mod | div | and
 
-<type> -> id
+<arrowFunctionExpression> -> ( <paramList> ) -> <arrowFunctionNode>
+<arrowFunctionNode> -> <expression> | <blockStatement>
+
+<type> -> id | id -> <type>
