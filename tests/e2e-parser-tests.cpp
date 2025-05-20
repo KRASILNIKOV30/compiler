@@ -3,7 +3,7 @@
 #include "../src/guidesBuilder/GuidesBuilder.h"
 #include "../src/parser/Parser.h"
 
-const std::string INPUT_FILE = "program.txt";
+const std::string INPUT_FILE = "grammar.txt";
 
 TEST_CASE("slr e2e tests")
 {
@@ -44,8 +44,18 @@ TEST_CASE("slr e2e tests")
 	Check("(((a) +(a))+ not - (not a));");
 	Check("0.5E-20;");
 	Check("+not-not-+not-(-not-a);");
+	Check("let bcd = 1;");
+	Check("let bcd : Set = 1;");
+	Check("const MAX = 0.5E-20;");
+	Check("while (a < b) {};");
+	Check("{};");
+	Check("function fn(a = 3) { return \'temp\'; };");
+	Check("if (a) {};");
+	Check("if (a) {} else {};");
 
+	CheckFalse("");
 	CheckFalse(";");
+	CheckFalse(";;;");
 	CheckFalse(")(;");
 	CheckFalse("ab.5;");
 	CheckFalse("ab.;");
@@ -64,4 +74,10 @@ TEST_CASE("slr e2e tests")
 	CheckFalse("05.E-20;");
 	CheckFalse("15.E-20;");
 	CheckFalse("(((a) +(a)) ! not - (not a));");
+	CheckFalse("let bcd;");
+	CheckFalse("let bcd = 3");
+	CheckFalse("while (a < b) ;");
+	CheckFalse("function fn(a =) { return \'temp\'; };");
+	CheckFalse("if (a);");
+	CheckFalse("if (a) else;");
 }

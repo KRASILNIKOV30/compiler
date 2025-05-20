@@ -4,16 +4,15 @@
 
 <declaration> -> <variableDeclaration> | <functionDeclaration>
 
-<variableDeclaration> -> <declarationKind> <ident> = <variableInit>
+<variableDeclaration> -> <declarationKind> <ident> <typeGuide> = <expression>
 <declarationKind> -> const | let
-<variableInit> -> <expression>
-<functionDeclaration> -> function <ident> ( <paramList> ) <blockStatement>
+<typeGuide> -> : <type> | e
+<functionDeclaration> -> function id ( <paramList> ) <blockStatement>
 <paramList> -> <parameter> <paramListRem> | e
 <paramListRem> -> , <parameter> <paramListRem> | e
-<parameter> -> <ident> <defaultParameter>
-<defaultParameter> -> = <expression> | e
+<parameter> -> <ident> = <expression> | <ident>
 
-<statement> -> <blockStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <labeledStatement> | <expressionStatement>
+<statement> -> <blockStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <expressionStatement>
 
 <blockStatement> -> { <blockActions> }
 <blockActions> -> <blockAction> ; <blockActions> | e
@@ -28,8 +27,6 @@
 <ifStatement> -> if ( <expression> ) <blockStatement> <else>
 <else> -> else <elseStatement> | e
 <elseStatement> -> <ifStatement> | <blockStatement>
-
-<labeledStatement> -> <ident> : <expressionStatement>
 
 <expression> -> <expression> <relOp> <simexp>
 <expression> -> <simexp>
@@ -67,3 +64,5 @@
 <highPriorityOp> -> mod
 <highPriorityOp> -> div
 <highPriorityOp> -> and
+
+<type> -> id

@@ -86,11 +86,11 @@ add_executable(tests
 
 add_custom_command(
         TARGET tests PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/program.txt"
+        COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
         COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_CURRENT_SOURCE_DIR}/program.txt"
-        "${CMAKE_CURRENT_BINARY_DIR}/program.txt"
-        COMMENT "Copying /program.txt to binary dir"
+        "${CMAKE_CURRENT_SOURCE_DIR}/grammar.txt"
+        "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
+        COMMENT "Copying grammar.txt to binary dir"
 )
 
 target_link_libraries(tests PUBLIC catch2)

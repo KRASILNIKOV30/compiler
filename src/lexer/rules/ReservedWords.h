@@ -15,6 +15,11 @@ const std::unordered_map<std::string, TokenType> RESERVED_WORDS = {
 	{ "if", TokenType::IF },
 	{ "then", TokenType::THEN },
 	{ "else", TokenType::ELSE },
+	{ "const", TokenType::CONST },
+	{ "let", TokenType::LET },
+	{ "function", TokenType::FUNCTION },
+	{ "while", TokenType::WHILE },
+	{ "return", TokenType::RETURN },
 };
 
 inline std::string ToLower(std::string s)

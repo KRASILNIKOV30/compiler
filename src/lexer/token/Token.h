@@ -37,8 +37,14 @@ enum class TokenType
 	FALSE, // false
 	IF, // if
 	SEMICOLON, // ;
+	COLON, // :
 	THEN, // then
 	ELSE, // else
+	CONST, // const
+	LET, // let
+	FUNCTION, // function
+	WHILE, // while
+	RETURN, // return
 };
 
 struct Token
