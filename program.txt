@@ -1,0 +1,69 @@
+<Z> -> <program> #
+<program> -> <program> ; <programNode> | <programNode> ;
+<programNode> -> <declaration> | <statement>
+
+<declaration> -> <variableDeclaration> | <functionDeclaration>
+
+<variableDeclaration> -> <declarationKind> <ident> = <variableInit>
+<declarationKind> -> const | let
+<variableInit> -> <expression>
+<functionDeclaration> -> function <ident> ( <paramList> ) <blockStatement>
+<paramList> -> <parameter> <paramListRem> | e
+<paramListRem> -> , <parameter> <paramListRem> | e
+<parameter> -> <ident> <defaultParameter>
+<defaultParameter> -> = <expression> | e
+
+<statement> -> <blockStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <labeledStatement> | <expressionStatement>
+
+<blockStatement> -> { <blockActions> }
+<blockActions> -> <blockAction> ; <blockActions> | e
+<blockAction> -> <declaration> | <statement>
+
+<expressionStatement> -> <expression>
+
+<whileStatement> -> while ( <expression> ) <blockStatement>
+
+<returnStatement> -> return <expression>
+
+<ifStatement> -> if ( <expression> ) <blockStatement> <else>
+<else> -> else <elseStatement> | e
+<elseStatement> -> <ifStatement> | <blockStatement>
+
+<labeledStatement> -> <ident> : <expressionStatement>
+
+<expression> -> <expression> <relOp> <simexp>
+<expression> -> <simexp>
+<expListOpt> -> <expList> | e
+<expList> -> <expList> , <expression>
+<expList> -> <expression>
+<simexp> -> <simexp> <lowPriorityOp> <simterm>
+<simexp> -> <simterm>
+<simterm> -> <simterm> <highPriorityOp> <term>
+<simterm> -> <term>
+<term> -> ( <expression> )
+<term> -> + <term>
+<term> -> - <term>
+<term> -> not <term>
+<term> -> ! <term>
+<term> -> <ident>
+<term> -> int
+<term> -> float
+<term> -> true
+<term> -> false
+<term> -> string
+<ident> -> <ident> [ <expression> ]
+<ident> -> <ident> ( <expListOpt> )
+<ident> -> id
+<relOp> -> <
+<relOp> -> >
+<relOp> -> <=
+<relOp> -> >=
+<relOp> -> ==
+<relOp> -> !=
+<lowPriorityOp> -> +
+<lowPriorityOp> -> -
+<lowPriorityOp> -> or
+<highPriorityOp> -> *
+<highPriorityOp> -> mod
+<highPriorityOp> -> div
+<highPriorityOp> -> and
