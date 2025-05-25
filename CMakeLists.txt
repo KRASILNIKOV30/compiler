@@ -66,6 +66,16 @@ set(GUIDES_BUILDER_TESTS
 set(PARSER_TESTS
         ${LEXER_TESTS}
         tests/e2e-parser-tests.cpp
+        src/astGenerator/Type.h
+)
+
+set(AST_GENERATOR_SOURCES
+        src/astGenerator/SymbolTable.h
+        src/astGenerator/Type.h
+)
+
+set(AST_GENERATOR_TESTS
+        tests/astGenerator/SymbolTable_tests.cpp
 )
 
 add_executable(compiler
@@ -82,6 +92,8 @@ add_executable(tests
         ${PARSER_TESTS}
         ${TABLE_BUILDER_TESTS}
         ${GUIDES_BUILDER_TESTS}
+        ${AST_GENERATOR_SOURCES}
+        ${AST_GENERATOR_TESTS}
 )
 
 add_custom_command(
