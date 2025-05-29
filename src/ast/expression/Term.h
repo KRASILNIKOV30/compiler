@@ -23,7 +23,6 @@ class Term : Expression
 			pos = generator.GetConstantPosOrAdd(type, value);
 			generator.AddInstruction("getlocal " + std::to_string(pos));
 		}
-		generator.AddInstruction("setlocal " + std::to_string(pos));
 	}
 
 	std::string value;
