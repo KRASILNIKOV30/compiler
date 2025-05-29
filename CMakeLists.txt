@@ -42,6 +42,10 @@ set(TABLE_BUILDER_SOURCES
         src/tableBuilder/TableBuilder.h
 )
 
+set(CODE_GENERATOR_TESTS
+        tests/codeGenerator/CodeGenerator_tests.cpp
+)
+
 set(TABLE_BUILDER_TESTS
         tests/tableBuilder/TableBuilder_tests.cpp
 )
@@ -66,6 +70,7 @@ set(GUIDES_BUILDER_TESTS
 set(PARSER_TESTS
         ${LEXER_TESTS}
         tests/e2e-parser-tests.cpp
+        src/ast/expression/Term.h
 )
 
 add_executable(compiler
@@ -80,6 +85,7 @@ add_executable(tests
         ${GUIDES_BUILDER_SOURCES}
         ${PARSER_SOURCES}
         ${PARSER_TESTS}
+        ${CODE_GENERATOR_TESTS}
         ${TABLE_BUILDER_TESTS}
         ${GUIDES_BUILDER_TESTS}
 )

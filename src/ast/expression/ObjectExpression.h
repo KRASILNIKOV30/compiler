@@ -8,7 +8,7 @@ struct Property
 	Expression value;
 };
 
-struct ObjectExpression : public Expression
+struct ObjectExpression : Expression
 {
 	std::vector<Property> properties;
 };

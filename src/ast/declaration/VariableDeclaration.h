@@ -2,8 +2,13 @@
 #include "Declaration.h"
 #include "../expression/Expression.h"
 
-struct VariableDeclaration : public Declaration
+struct VariableDeclaration : Declaration
 {
-	bool isConst;
+	void Generate(CodeGenerator& generator) const override
+	{
+		 generator.AddInstruction("const " + generator.GetVariablePosOrAdd(id));
+	}
+
+	bool isConst = false;
 	Expression init;
 };

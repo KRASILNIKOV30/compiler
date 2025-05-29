@@ -1,7 +1,7 @@
 #pragma once
 #include "Expression.h"
 
-struct ArrayExpression : public Expression
+struct ArrayExpression : Expression
 {
 	std::string id;
 	Expression index;

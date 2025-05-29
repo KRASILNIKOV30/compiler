@@ -2,8 +2,13 @@
 #include "Expression.h"
 #include "Operators.h"
 
-struct BinaryExpression : public Expression
+struct BinaryExpression : Expression
 {
+	void Generate(CodeGenerator& generator) const override
+	{
+
+	}
+
 	Expression left, right;
 	BinaryOperators oper;
 };
