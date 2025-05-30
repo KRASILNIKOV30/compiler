@@ -1,8 +1,9 @@
 #pragma once
-#include "../ast/expression/ExpressionType.h"
+#include "../ast/Type.h"
 #include <format>
 #include <sstream>
 #include <string>
+#include <vector>
 
 class CodeGenerator
 {
@@ -40,7 +41,7 @@ public:
 		return pos;
 	}
 
-	size_t GetConstantPos(ExpressionType const& type, std::string const& value)
+	size_t GetConstantPos(PrimitiveType const& type, std::string const& value)
 	{
 		const auto pos = std::ranges::find(m_constants, std::make_pair(type, value)) - m_constants.begin();
 		if (pos >= m_constants.size())
@@ -55,9 +56,9 @@ public:
 		return GetValuePosOrAdd<std::string>(m_variables, variableName);
 	}
 
-	size_t GetConstantPosOrAdd(ExpressionType const& type, std::string const& value)
+	size_t GetConstantPosOrAdd(PrimitiveType const& type, std::string const& value)
 	{
-		return GetValuePosOrAdd<std::pair<ExpressionType, std::string>>(m_constants, std::make_pair(type, value));
+		return GetValuePosOrAdd<std::pair<PrimitiveType, std::string>>(m_constants, std::make_pair(type, value));
 	}
 
 	void PrintCode(std::ostream& outFile)
@@ -70,14 +71,14 @@ public:
 		}
 		for (auto const& [type, value] : m_constants)
 		{
-			const auto constValue = type == STRING ? std::format("\"{}\"", value) : value;
-			outFile << type << " " << constValue << std::endl;
+			const auto constValue = type == PrimitiveType::STRING ? std::format("\"{}\"", value) : value;
+			outFile << StringifyPrimitiveType(type) << " " << constValue << std::endl;
 		}
 
 		outFile << std::endl
 				<< ".code" << std::endl
 				<< m_codeBlock.str()
-				<< "ret";
+				<< m_rowId << " ret";
 	}
 
 private:
@@ -97,6 +98,6 @@ private:
 
 	std::ostringstream m_codeBlock;
 	std::vector<std::string> m_variables;
-	std::vector<std::pair<ExpressionType, std::string>> m_constants;
-	int m_rowId = 0;
+	std::vector<std::pair<PrimitiveType, std::string>> m_constants;
+	int m_rowId = 1;
 };

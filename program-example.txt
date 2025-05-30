@@ -32,5 +32,24 @@ function sum(a, b): int -> int -> int {
 
 const addTo5 = sum(5) // int -> int
 
+const sum = (a: int, b: int) -> a + b
+
+const sum = (a: int, b: int) -> {
+    return a + b;
+}
+{
+const a
+    {
+        const a = (10 + 2) * 10
+        const a
+    }
+
+    {
+        const a
+    }
+}
+
+
+
 addTo5(4)
 

@@ -69,8 +69,21 @@ set(GUIDES_BUILDER_TESTS
 
 set(PARSER_TESTS
         ${LEXER_TESTS}
-        tests/e2e-parser-tests.cpp
+        tests/parser/parser-tests.cpp
+        src/ast/Type.h
         src/ast/expression/Term.h
+)
+
+set(AST_GENERATOR_SOURCES
+        src/astGenerator/SymbolTable.h
+        src/ast/Type.h
+)
+
+set(AST_GENERATOR_TESTS
+        tests/astGenerator/SymbolTable_tests.cpp
+        src/astGenerator/ASTGenerator.cpp
+        src/astGenerator/ASTGenerator.h
+        tests/astGenerator/ASTGenerator_tests.cpp
 )
 
 add_executable(compiler
@@ -78,6 +91,7 @@ add_executable(compiler
         ${GUIDES_BUILDER_SOURCES}
         ${PARSER_SOURCES}
         src/main.cpp
+        src/Compiler.h
 )
 
 add_executable(tests
@@ -88,10 +102,22 @@ add_executable(tests
         ${CODE_GENERATOR_TESTS}
         ${TABLE_BUILDER_TESTS}
         ${GUIDES_BUILDER_TESTS}
+        ${AST_GENERATOR_SOURCES}
+        ${AST_GENERATOR_TESTS}
+        tests/Compiler_tests.cpp
 )
 
 add_custom_command(
         TARGET tests PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_CURRENT_SOURCE_DIR}/grammar.txt"
+        "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
+        COMMENT "Copying grammar.txt to binary dir"
+)
+
+add_custom_command(
+        TARGET compiler PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
         COMMAND ${CMAKE_COMMAND} -E copy
         "${CMAKE_CURRENT_SOURCE_DIR}/grammar.txt"
