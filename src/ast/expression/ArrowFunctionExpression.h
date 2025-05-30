@@ -4,7 +4,7 @@
 #include <vector>
 #include <variant>
 
-struct ArrowFunctionExpression : public Expression
+struct ArrowFunctionExpression : Expression
 {
 	std::vector<std::string> params;
 	std::variant<Expression, BlockStatement> body;

@@ -1,8 +1,13 @@
 #pragma once
-#include "Statement.h"
 #include "../expression/Expression.h"
+#include "Statement.h"
 
-struct ReturnStatement : public Statement
+struct ReturnStatement : Statement
 {
+	void Generate(CodeGenerator& generator) const override
+	{
+		argument.Generate(generator);
+	}
+
 	Expression argument;
 };

@@ -2,5 +2,5 @@
 
 enum ExpressionType
 {
-	INT, FLOAT;
+	INT, FLOAT, STRING
 };

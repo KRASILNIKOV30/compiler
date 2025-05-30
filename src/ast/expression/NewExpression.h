@@ -1,7 +1,7 @@
 #pragma once
 #include "Expression.h"
 
-struct NewExpression : public Expression
+struct NewExpression : Expression
 {
 	std::string callee;
 };

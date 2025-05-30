@@ -2,7 +2,7 @@
 #include "Expression.h"
 #include <vector>
 
-struct CallExpression : public Expression
+struct CallExpression : Expression
 {
 	std::string callee;
 	std::vector<Expression> arguments;
