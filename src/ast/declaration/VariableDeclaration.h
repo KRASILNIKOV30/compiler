@@ -2,16 +2,21 @@
 #include "../expression/Expression.h"
 #include "Declaration.h"
 
-struct VariableDeclaration : Declaration
+class VariableDeclaration : public Declaration
 {
+public:
+	explicit VariableDeclaration(ExpressionPtr&& init)
+		: m_init(std::move(init))
+	{
+	}
+
 	void Generate(CodeGenerator& generator) const override
 	{
 		const auto pos = generator.GetVariablePosOrAdd(id);
 		generator.AddInstruction("const " + std::to_string(pos));
-		init.Generate(generator);
+		m_init->Generate(generator);
 		generator.AddInstruction("setlocal " + std::to_string(pos));
 	}
 
-	bool isConst = false;
-	Expression init;
+	ExpressionPtr m_init;
 };

@@ -1,10 +1,12 @@
 #pragma once
 #include "../Entity.h"
-#include "../expression/ExpressionType.h"
 #include <string>
+#include <vector>
 
 struct Declaration : Entity
 {
 	std::string id;
-	std::vector<ExpressionType> type;
+	Type type;
 };
+
+using DeclarationPtr = std::unique_ptr<Declaration>;

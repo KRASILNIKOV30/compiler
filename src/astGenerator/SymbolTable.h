@@ -1,5 +1,5 @@
 #pragma once
-#include "Type.h"
+#include "../ast/Type.h"
 #include <deque>
 #include <optional>
 #include <ranges>

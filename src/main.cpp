@@ -1,7 +1,4 @@
-#include "guidesBuilder/GuidesBuilder.h"
-#include "parser/error/StringifyError.h"
-#include "parser/Parser.h"
-
+#include "Compiler.h"
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -28,25 +25,21 @@ int main(int argc, char* argv[])
 {
 	try
 	{
-		const auto [grammarFileName] = ParseArgs(argc, argv);
-		std::ifstream input(grammarFileName);
 
-		GuidesBuilder guidesBuilder(input);
-		const auto rules = guidesBuilder.BuildGuidedRules();
-		TableBuilder tableBuilder(rules);
-		const auto table = tableBuilder.BuildTable();
-		Parser parser(table);
+		const auto [grammarFileName] = ParseArgs(argc, argv);
+		Compiler compiler(grammarFileName);
 
 		std::string line;
 		while (std::getline(std::cin, line))
 		{
-			if (parser.Parse(line))
+			std::ofstream output("byte-code.prmbc");
+			if (compiler.Compile(line, output))
 			{
 				std::cout << "OK" << std::endl;
 			}
 			else
 			{
-				std::cout << StringifyError(parser.GetError()) << std::endl;
+				std::cout << StringifyError(compiler.GetError()) << std::endl;
 			}
 		}
 	}

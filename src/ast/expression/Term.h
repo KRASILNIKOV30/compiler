@@ -1,16 +1,26 @@
 #pragma once
+#include <utility>
+
 #include "Expression.h"
 
-class Term : Expression
+class Term : public Expression
 {
+public:
+	explicit Term(std::string value, PrimitiveType const& type, bool isReference = false)
+		: Expression(type)
+		, m_value(std::move(value))
+		, m_isReference(isReference)
+	{
+	}
+
 	void Generate(CodeGenerator& generator) const override
 	{
 		size_t pos;
-		if (isReference)
+		if (m_isReference)
 		{
 			try
 			{
-				pos = generator.GetVariablePos(value);
+				pos = generator.GetVariablePos(m_value);
 				generator.AddInstruction("const" + std::to_string(pos));
 			}
 			catch (std::invalid_argument const& e)
@@ -20,11 +30,11 @@ class Term : Expression
 		}
 		else
 		{
-			pos = generator.GetConstantPosOrAdd(type, value);
+			pos = generator.GetConstantPosOrAdd(m_type, m_value);
 			generator.AddInstruction("getlocal " + std::to_string(pos));
 		}
 	}
 
-	std::string value;
-	bool isReference = false;
+	std::string m_value;
+	bool m_isReference = false;
 };

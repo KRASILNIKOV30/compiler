@@ -75,26 +75,18 @@ void Parser::Shift(const size_t value)
 
 void Parser::Fold(std::string const& ruleName, const size_t ruleSize)
 {
-	std::cout << "fold: " << ruleName << " |";
+	std::vector<Node> nodes;
 	for (size_t i = 0; i < ruleSize; ++i)
 	{
 		m_stateStack.pop();
 
 		const auto& node = m_readStack.top();
-		if (holds_alternative<std::string>(node))
-		{
-			std::cout << " " << get<std::string>(node);
-		}
-		else
-		{
-			const auto token = get<Token>(node);
-			std::cout << " token: " << RemapTokenTypeToString(token.type)
-					  << " " << token.value << " ";
-		}
-
+		nodes.emplace_back(node);
 		m_readStack.pop();
 	}
-	std::cout << std::endl;
+
+	std::ranges::reverse(nodes);
+	m_generator.Generate(ruleName, nodes);
 
 	m_foldStack.push(ruleName);
 }

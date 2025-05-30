@@ -1,6 +1,6 @@
 #pragma once
 #include "../codeGenerator/CodeGenerator.h"
-
+#include <memory>
 
 struct Entity
 {
@@ -8,3 +8,5 @@ struct Entity
 
 	virtual void Generate(CodeGenerator& generator) const = 0;
 };
+
+using EntityPtr = std::unique_ptr<Entity>;
