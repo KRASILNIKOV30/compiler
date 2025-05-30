@@ -1,5 +1,8 @@
 #pragma once
+#include "../Entity.h"
 
-struct Statement
+struct Statement : Entity
 {
 };
+
+using StatementPtr = std::unique_ptr<Statement>;

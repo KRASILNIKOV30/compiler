@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
+#include "../../src/guidesBuilder/GuidesBuilder.h"
+#include "../../src/parser/Parser.h"
 #include "catch.hpp"
-#include "../src/guidesBuilder/GuidesBuilder.h"
-#include "../src/parser/Parser.h"
 
 const std::string INPUT_FILE = "grammar.txt";
 
@@ -48,7 +48,7 @@ TEST_CASE("slr e2e tests")
 	Check("let bcd : int = 1;");
 	Check("let bcd : Set;");
 	Check("const MAX = 0.5E-20;");
-	Check("const MAX : int= 0.5E-20;");
+	Check("const MIN : int= 0.5E-20;");
 	Check("while (a < b) {};");
 	Check("{};");
 	Check("function fn(a = 3): string { return \'temp\'; };");
@@ -59,8 +59,8 @@ TEST_CASE("slr e2e tests")
 	Check("if (a) {} else if (b) {} else {};");
 	Check("let a = (a: int) -> {};");
 	Check("let a: string -> int -> int -> bool = (a: string) -> (a: int, b = 0) -> a > b;");
-	Check("const b = (b = 0) -> {};");
-	Check("const b: int-> void = (b = 0) -> {};");
+	Check("const B = (b = 0) -> {};");
+	Check("const A: int-> void = (b = 0) -> {};");
 
 	CheckFalse("");
 	CheckFalse(";");
