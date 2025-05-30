@@ -57,24 +57,44 @@ void Parser::Shift(const size_t value)
 	{
 		const auto token = m_lexer.Get();
 		RecordToken(token);
-		m_readStack.push(token.error == Error::EMPTY_INPUT
-				? END_SYMBOL
-				: RemapTokenTypeToString(token.type));
+		if (token.error == Error::EMPTY_INPUT)
+		{
+			m_readStack.emplace(END_SYMBOL);
+		}
+		else
+		{
+			m_readStack.emplace(token);
+		}
 	}
 	else
 	{
-		m_readStack.push(m_foldStack.top());
+		m_readStack.emplace(m_foldStack.top());
 		m_foldStack.pop();
 	}
 }
 
 void Parser::Fold(std::string const& ruleName, const size_t ruleSize)
 {
+	std::cout << "fold: " << ruleName << " |";
 	for (size_t i = 0; i < ruleSize; ++i)
 	{
 		m_stateStack.pop();
+
+		const auto& node = m_readStack.top();
+		if (holds_alternative<std::string>(node))
+		{
+			std::cout << " " << get<std::string>(node);
+		}
+		else
+		{
+			const auto token = get<Token>(node);
+			std::cout << " token: " << RemapTokenTypeToString(token.type)
+					  << " " << token.value << " ";
+		}
+
 		m_readStack.pop();
 	}
+	std::cout << std::endl;
 
 	m_foldStack.push(ruleName);
 }
@@ -101,11 +121,6 @@ bool Parser::NextAction()
 		m_error.expected.insert(lexeme);
 	}
 	return false;
-}
-
-Action Parser::GetCurrentAction()
-{
-	return m_table[m_stateStack.top()][GetCurrentSymbol()];
 }
 
 std::string Parser::GetCurrentSymbol()

@@ -76,6 +76,8 @@ set(AST_GENERATOR_SOURCES
 
 set(AST_GENERATOR_TESTS
         tests/astGenerator/SymbolTable_tests.cpp
+        src/astGenerator/ASTGenerator.cpp
+        src/astGenerator/ASTGenerator.h
 )
 
 add_executable(compiler
@@ -98,6 +100,15 @@ add_executable(tests
 
 add_custom_command(
         TARGET tests PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_CURRENT_SOURCE_DIR}/grammar.txt"
+        "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
+        COMMENT "Copying grammar.txt to binary dir"
+)
+
+add_custom_command(
+        TARGET compiler PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
         COMMAND ${CMAKE_COMMAND} -E copy
         "${CMAKE_CURRENT_SOURCE_DIR}/grammar.txt"

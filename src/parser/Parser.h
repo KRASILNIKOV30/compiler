@@ -1,8 +1,8 @@
 #pragma once
 #include "../lexer/Lexer.h"
 #include "../table/Table.h"
-
 #include <stack>
+#include <variant>
 
 struct ErrorReason
 {
@@ -23,7 +23,6 @@ private:
 	void Fold(std::string const& ruleName, size_t ruleSize);
 	bool NextAction();
 	std::string GetCurrentSymbol();
-	Action GetCurrentAction();
 	Token Peek();
 	bool Empty();
 	void RecordToken(Token const& token);
@@ -34,7 +33,9 @@ private:
 	std::optional<Token> m_lastToken;
 	ErrorReason m_error{};
 	std::stack<size_t> m_stateStack;
-	std::stack<std::string> m_readStack;
+
+	using Node = std::variant<std::string, Token>;
+	std::stack<Node> m_readStack;
 	std::stack<std::string> m_foldStack;
 	Action m_action{};
 };

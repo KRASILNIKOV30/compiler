@@ -1,6 +1,6 @@
 #include "guidesBuilder/GuidesBuilder.h"
-#include "parser/Parser.h"
 #include "parser/error/StringifyError.h"
+#include "parser/Parser.h"
 
 #include <fstream>
 #include <iostream>
@@ -9,7 +9,7 @@
 
 struct Args
 {
-	std::string inputFileName;
+	std::string grammarFileName;
 };
 
 Args ParseArgs(int argc, char* argv[])
@@ -20,7 +20,7 @@ Args ParseArgs(int argc, char* argv[])
 	}
 
 	return {
-		.inputFileName = argv[1]
+		.grammarFileName = argv[1]
 	};
 }
 
@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
 {
 	try
 	{
-		const auto [inputFileName] = ParseArgs(argc, argv);
-		std::ifstream input(inputFileName);
+		const auto [grammarFileName] = ParseArgs(argc, argv);
+		std::ifstream input(grammarFileName);
 
 		GuidesBuilder guidesBuilder(input);
 		const auto rules = guidesBuilder.BuildGuidedRules();
