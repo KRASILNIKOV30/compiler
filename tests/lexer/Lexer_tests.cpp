@@ -113,7 +113,7 @@ TEST_CASE("reserved words tests")
 
 TEST_CASE("valid special chars tests")
 {
-	Check(Lexer("(){}[],+-*/===<><=>=!=!"),
+	Check(Lexer("(){}[],+-*/===<><=>=!=->!"),
 		Token{ TokenType::PARAN_OPEN, "(", 0 },
 		Token{ TokenType::PARAN_CLOSE, ")", 1 },
 		Token{ TokenType::CURLY_OPEN, "{", 2 },
@@ -132,7 +132,8 @@ TEST_CASE("valid special chars tests")
 		Token{ TokenType::OP_LESS_OR_EQUAL, "<=", 16 },
 		Token{ TokenType::OP_GREATER_OR_EQUAL, ">=", 18 },
 		Token{ TokenType::OP_NOT_EQUAL, "!=", 20 },
-		Token{ TokenType::OP_NOT_MARK, "!", 22 }
+		Token{ TokenType::ARROW, "->", 22 },
+		Token{ TokenType::OP_NOT_MARK, "!", 24 }
 		);
 }
 

@@ -25,6 +25,7 @@ inline std::unordered_map<TokenType, std::string> TokenTypeToString = {
 	{ TokenType::OP_GREATER, ">" },
 	{ TokenType::OP_LESS_OR_EQUAL, "<=" },
 	{ TokenType::OP_GREATER_OR_EQUAL, ">=" },
+	{ TokenType::ARROW, "->" },
 	{ TokenType::OP_AND, "and" },
 	{ TokenType::OP_OR, "or" },
 	{ TokenType::OP_NOT, "not" },

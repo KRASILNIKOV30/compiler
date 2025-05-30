@@ -45,13 +45,22 @@ TEST_CASE("slr e2e tests")
 	Check("0.5E-20;");
 	Check("+not-not-+not-(-not-a);");
 	Check("let bcd = 1;");
-	Check("let bcd : Set = 1;");
+	Check("let bcd : int = 1;");
+	Check("let bcd : Set;");
 	Check("const MAX = 0.5E-20;");
+	Check("const MAX : int= 0.5E-20;");
 	Check("while (a < b) {};");
 	Check("{};");
-	Check("function fn(a = 3) { return \'temp\'; };");
+	Check("function fn(a = 3): string { return \'temp\'; };");
+	Check("function fn(a: int): int -> int { };");
+	Check("function fn(): void { };");
 	Check("if (a) {};");
 	Check("if (a) {} else {};");
+	Check("if (a) {} else if (b) {} else {};");
+	Check("let a = (a: int) -> {};");
+	Check("let a: string -> int -> int -> bool = (a: string) -> (a: int, b = 0) -> a > b;");
+	Check("const b = (b = 0) -> {};");
+	Check("const b: int-> void = (b = 0) -> {};");
 
 	CheckFalse("");
 	CheckFalse(";");
@@ -76,8 +85,15 @@ TEST_CASE("slr e2e tests")
 	CheckFalse("(((a) +(a)) ! not - (not a));");
 	CheckFalse("let bcd;");
 	CheckFalse("let bcd = 3");
+	CheckFalse("const MAX: int;");
+	CheckFalse("const MAX;");
+	CheckFalse("const MAX[3] = 123");
 	CheckFalse("while (a < b) ;");
-	CheckFalse("function fn(a =) { return \'temp\'; };");
+	CheckFalse("function fn(a =): string { return \'temp\'; };");
+	CheckFalse("function fn(a): void { };");
+	CheckFalse("function fn() { };");
 	CheckFalse("if (a);");
 	CheckFalse("if (a) else;");
+	CheckFalse("a = b");
+	CheckFalse("{;};");
 }
