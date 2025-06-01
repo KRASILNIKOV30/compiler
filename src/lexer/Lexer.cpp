@@ -12,12 +12,12 @@ Lexer::Lexer(std::string const& input)
 
 Token Lexer::Get()
 {
-	SkipWhitespaces();
 	if (Empty())
 	{
 		return Token{
 			.type = TokenType::ERROR,
 			.pos = m_reader.Count(),
+			.line = m_reader.LineCount(),
 			.error = Error::EMPTY_INPUT
 		};
 	}
@@ -45,12 +45,22 @@ Token Lexer::Get()
 		.type = TokenType::ERROR,
 		.value = std::string{ ch },
 		.pos = m_reader.Count(),
+		.line = m_reader.LineCount(),
 		.error = Error::UNKNOWN_SYMBOL,
 	};
 }
 
 Token Lexer::Peek()
 {
+	if (Empty())
+	{
+		return Token{
+			.type = TokenType::ERROR,
+			.pos = m_reader.Count(),
+			.line = m_reader.LineCount(),
+			.error = Error::EMPTY_INPUT
+		};
+	}
 	const auto pos = m_reader.Count();
 	const auto token = Get();
 	m_reader.Seek(pos);
@@ -60,7 +70,7 @@ Token Lexer::Peek()
 bool Lexer::Empty()
 {
 	SkipWhitespaces();
-	return m_reader.Empty();
+	return m_reader.EndOfFile();
 }
 
 Token Lexer::Id()
@@ -72,6 +82,7 @@ Token Lexer::Id()
 		return Token{
 			.type = TokenType::ERROR,
 			.pos = startPos,
+			.line = m_reader.LineCount(),
 			.error = Error::INVALID_ID,
 		};
 	}
@@ -80,6 +91,7 @@ Token Lexer::Id()
 		.type = TokenType::ID,
 		.value = m_reader.StopRecord(),
 		.pos = startPos,
+		.line = m_reader.LineCount()
 	};
 }
 
@@ -93,7 +105,8 @@ Token Lexer::Number()
 		return Token{
 			.type = TokenType::ERROR,
 			.pos = startPos,
-			.error = Error::INVALID_NUMBER,
+			.line = m_reader.LineCount(),
+			.error = Error::INVALID_NUMBER
 		};
 	}
 
@@ -101,6 +114,7 @@ Token Lexer::Number()
 		.type = isInteger ? TokenType::INTEGER : TokenType::FLOAT,
 		.value = m_reader.StopRecord(),
 		.pos = startPos,
+		.line = m_reader.LineCount()
 	};
 }
 
@@ -113,6 +127,7 @@ Token Lexer::String()
 		return Token{
 			.type = TokenType::ERROR,
 			.pos = startPos,
+			.line = m_reader.LineCount(),
 			.error = Error::STRING_LITERAL_INCOMPLETE,
 		};
 	}
@@ -121,6 +136,7 @@ Token Lexer::String()
 		.type = TokenType::STRING_LITERAL,
 		.value = m_reader.StopRecord(),
 		.pos = startPos,
+		.line = m_reader.LineCount()
 	};
 }
 
@@ -133,12 +149,13 @@ Token Lexer::SpecialChar()
 		.type = tokenType,
 		.value = m_reader.StopRecord(),
 		.pos = startPos,
+		.line = m_reader.LineCount(),
 	};
 }
 
 void Lexer::SkipWhitespaces()
 {
-	while (!m_reader.Empty() && m_reader.Peek() == ' ')
+	while (!m_reader.EndOfFile() && (m_reader.Peek() == ' ' || m_reader.Peek() == '\n'))
 	{
 		m_reader.Get();
 	}

@@ -5,14 +5,15 @@
 class VariableDeclaration : public Declaration
 {
 public:
-	explicit VariableDeclaration(ExpressionPtr&& init)
-		: m_init(std::move(init))
+	explicit VariableDeclaration(std::string id, Type type, ExpressionPtr&& init)
+		: Declaration(std::move(id), std::move(type))
+		, m_init(std::move(init))
 	{
 	}
 
 	void Generate(CodeGenerator& generator) const override
 	{
-		const auto pos = generator.GetVariablePosOrAdd(id);
+		const auto pos = generator.GetVariablePosOrAdd(GetId());
 		generator.AddInstruction("const " + std::to_string(pos));
 		m_init->Generate(generator);
 		generator.AddInstruction("setlocal " + std::to_string(pos));

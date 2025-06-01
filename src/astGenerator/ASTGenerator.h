@@ -49,10 +49,11 @@ private:
 	{
 		const auto& token = get<Token>(nodes[1]);
 		auto& expr = m_exprStack.top();
-		const auto& type = expr->GetType();
-		m_table.Add(token.value, { isConst, { type } });
+		const auto type = expr->GetType();
+		const auto id = token.value;
+		m_table.Add(id, { isConst, { type } });
 
-		DeclarationPtr decl = std::make_unique<VariableDeclaration>(std::move(expr));
+		DeclarationPtr decl = std::make_unique<VariableDeclaration>(id, Type{ type }, std::move(expr));
 		m_program.Add(std::move(decl));
 	}
 

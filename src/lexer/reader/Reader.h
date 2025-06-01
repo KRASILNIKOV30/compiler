@@ -20,13 +20,22 @@ public:
 
 	char Get()
 	{
-		if (Empty())
+		if (EndOfFile())
 		{
 			throw std::runtime_error("EOF Error: tried to get char from an empty reader");
 		}
-		++m_count;
 		const auto ch = static_cast<char>(m_input.get());
+		if (ch == '\n')
+		{
+			++m_lineCount;
+			m_count = 0;
+		}
+		else
+		{
+			++m_count;
+		}
 		m_record += ch;
+
 		return ch;
 	}
 
@@ -47,7 +56,17 @@ public:
 		return m_count;
 	}
 
+	[[nodiscard]] size_t LineCount() const
+	{
+		return m_lineCount;
+	}
+
 	[[nodiscard]] bool Empty()
+	{
+		return m_input.peek() == '\n' || m_input.eof();
+	}
+
+	[[nodiscard]] bool EndOfFile()
 	{
 		m_input.peek();
 		return m_input.eof();
@@ -64,9 +83,10 @@ public:
 		{
 			m_record.clear();
 		}
+		const auto offset = pos - m_count;
 		m_count = pos;
 		m_input.clear();
-		m_input.seekg(static_cast<long>(pos));
+		m_input.seekg(static_cast<long>(offset), std::ios_base::cur);
 	}
 
 	void Record()
@@ -82,5 +102,6 @@ public:
 private:
 	std::stringstream m_input;
 	size_t m_count = 0;
+	size_t m_lineCount = 0;
 	std::string m_record;
 };

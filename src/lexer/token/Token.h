@@ -41,7 +41,7 @@ enum class TokenType
 	THEN, // then
 	ELSE, // else
 	CONST, // const
-	LET, // let
+	VAR, // var
 	FUNCTION, // function
 	WHILE, // while
 	RETURN, // return
@@ -53,6 +53,7 @@ struct Token
 	TokenType type;
 	std::string value;
 	size_t pos;
+	size_t line;
 	Error error = Error::NONE;
 };
 
