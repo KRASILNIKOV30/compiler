@@ -53,6 +53,7 @@ struct Token
 	TokenType type;
 	std::string value;
 	size_t pos;
+	size_t line;
 	Error error = Error::NONE;
 };
 

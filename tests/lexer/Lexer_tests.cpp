@@ -1,14 +1,15 @@
-#include <catch.hpp>
 #include "../../src/lexer/Lexer.h"
+#include <catch.hpp>
 
 template <typename... Args>
 void Check(Lexer lexer, Args&&... args)
 {
-	auto checkOne = [&lexer](auto token) {
-		const auto [type, value, pos, error] = lexer.Get();
+	auto checkOne = [&lexer](const auto& token) {
+		const auto [type, value, pos, line, error] = lexer.Get();
 		CHECK(type == token.type);
 		CHECK(value == token.value);
 		CHECK(pos == token.pos);
+		CHECK(line == token.line);
 		CHECK(error == token.error);
 	};
 	(checkOne(args), ...);
@@ -17,22 +18,23 @@ void Check(Lexer lexer, Args&&... args)
 TEST_CASE("peek token")
 {
 	Lexer lexer("first second");
-	CHECK(lexer.Peek() == Token{ TokenType::ID, "first", 0});
-	CHECK(lexer.Peek() == Token{ TokenType::ID, "first", 0});
-	CHECK(lexer.Get() == Token{ TokenType::ID, "first", 0});
-	CHECK(lexer.Peek() == Token{ TokenType::ID, "second", 6});
-	CHECK(lexer.Get() == Token{ TokenType::ID, "second", 6});
+	CHECK(lexer.Peek() == Token{ TokenType::ID, "first", 0 });
+	CHECK(lexer.Peek() == Token{ TokenType::ID, "first", 0 });
+	CHECK(lexer.Get() == Token{ TokenType::ID, "first", 0 });
+	CHECK(lexer.Peek() == Token{ TokenType::ID, "second", 6 });
+	CHECK(lexer.Get() == Token{ TokenType::ID, "second", 6 });
 }
 
 TEST_CASE("empty lexer")
 {
 	Check(Lexer(""),
-		Token{ TokenType::ERROR, "", 0, Error::EMPTY_INPUT }
-		);
+		Token{ TokenType::ERROR, "", 0, 0, Error::EMPTY_INPUT });
 
 	Check(Lexer("    "),
-		Token{ TokenType::ERROR, "", 4, Error::EMPTY_INPUT }
-		);
+		Token{ TokenType::ERROR, "", 4, 0, Error::EMPTY_INPUT });
+
+	Check(Lexer("   \n   "),
+		Token{ TokenType::ERROR, "", 3, 1, Error::EMPTY_INPUT });
 }
 
 TEST_CASE("valid id tests")
@@ -44,18 +46,15 @@ TEST_CASE("valid id tests")
 		Token{ TokenType::ID, "m_id", 15 },
 		Token{ TokenType::ID, "a", 20 },
 		Token{ TokenType::ID, "_$s123", 22 },
-		Token{ TokenType::ID, "plus", 29 }
-		);
+		Token{ TokenType::ID, "plus", 29 });
 }
 
 TEST_CASE("invalid id tests")
 {
 	Check(Lexer("obj.id.field error."),
 		Token{ TokenType::ID, "obj.id.field", 0 },
-		Token{ TokenType::ERROR, "", 13, Error::INVALID_ID }
-		);
+		Token{ TokenType::ERROR, "", 13, 0, Error::INVALID_ID });
 }
-
 
 TEST_CASE("valid numbers tests")
 {
@@ -67,33 +66,31 @@ TEST_CASE("valid numbers tests")
 		Token{ TokenType::FLOAT, "0.25", 14 },
 		Token{ TokenType::FLOAT, "0.0013", 19 },
 		Token{ TokenType::FLOAT, "1e+10", 26 },
-		Token{ TokenType::FLOAT, "100.53E-15", 32 }
-		);
+		Token{ TokenType::FLOAT, "100.53E-15", 32 });
 }
 
 TEST_CASE("invalid numbers tests")
 {
-	Check(Lexer("05"), Token{ TokenType::ERROR, "", 0, Error::INVALID_NUMBER });
-	Check(Lexer("00.5"), Token{ TokenType::ERROR, "", 0, Error::INVALID_NUMBER });
-	Check(Lexer("12e+"), Token{ TokenType::ERROR, "", 0, Error::INVALID_NUMBER });
-	Check(Lexer("12.e+10"), Token{ TokenType::ERROR, "", 0, Error::INVALID_NUMBER });
-	Check(Lexer("42.53e"), Token{ TokenType::ERROR, "", 0, Error::INVALID_NUMBER });
-	Check(Lexer(" 42.53e10"), Token{ TokenType::ERROR, "", 1, Error::INVALID_NUMBER });
-	Check(Lexer("  42.53e+0"), Token{ TokenType::ERROR, "", 2, Error::INVALID_NUMBER });
+	Check(Lexer("05"), Token{ TokenType::ERROR, "", 0, 0, Error::INVALID_NUMBER });
+	Check(Lexer("00.5"), Token{ TokenType::ERROR, "", 0, 0, Error::INVALID_NUMBER });
+	Check(Lexer("12e+"), Token{ TokenType::ERROR, "", 0, 0, Error::INVALID_NUMBER });
+	Check(Lexer("12.e+10"), Token{ TokenType::ERROR, "", 0, 0, Error::INVALID_NUMBER });
+	Check(Lexer("42.53e"), Token{ TokenType::ERROR, "", 0, 0, Error::INVALID_NUMBER });
+	Check(Lexer(" 42.53e10"), Token{ TokenType::ERROR, "", 1, 0, Error::INVALID_NUMBER });
+	Check(Lexer("  42.53e+0"), Token{ TokenType::ERROR, "", 2, 0, Error::INVALID_NUMBER });
 }
 
 TEST_CASE("valid string tests")
 {
 	Check(Lexer("'' 'Hello, World!'"),
 		Token{ TokenType::STRING_LITERAL, "''", 0 },
-		Token{ TokenType::STRING_LITERAL, "'Hello, World!'", 3 }
-		);
+		Token{ TokenType::STRING_LITERAL, "'Hello, World!'", 3 });
 }
 
 TEST_CASE("invalid string tests")
 {
-	Check(Lexer("'"), Token{ TokenType::ERROR, "", 0, Error::STRING_LITERAL_INCOMPLETE });
-	Check(Lexer("   'Hello"), Token{ TokenType::ERROR, "", 3, Error::STRING_LITERAL_INCOMPLETE });
+	Check(Lexer("'"), Token{ TokenType::ERROR, "", 0, 0, Error::STRING_LITERAL_INCOMPLETE });
+	Check(Lexer("   'Hello"), Token{ TokenType::ERROR, "", 3, 0, Error::STRING_LITERAL_INCOMPLETE });
 }
 
 TEST_CASE("reserved words tests")
@@ -105,8 +102,7 @@ TEST_CASE("reserved words tests")
 		Token{ TokenType::OP_OR, "or", 12 },
 		Token{ TokenType::OP_NOT, "not", 15 },
 		Token{ TokenType::TRUE, "true", 19 },
-		Token{ TokenType::FALSE, "false", 24 }
-		);
+		Token{ TokenType::FALSE, "false", 24 });
 
 	Check(Lexer("nott"), Token{ TokenType::ID, "nott", 0 });
 }
@@ -133,14 +129,28 @@ TEST_CASE("valid special chars tests")
 		Token{ TokenType::OP_GREATER_OR_EQUAL, ">=", 18 },
 		Token{ TokenType::OP_NOT_EQUAL, "!=", 20 },
 		Token{ TokenType::ARROW, "->", 22 },
-		Token{ TokenType::OP_NOT_MARK, "!", 24 }
-		);
+		Token{ TokenType::OP_NOT_MARK, "!", 24 });
 }
 
 TEST_CASE("invalid special chars tests")
 {
-	Check(Lexer("#"), Token{ TokenType::ERROR, "#", 0, Error::UNKNOWN_SYMBOL });
-	Check(Lexer("@"), Token{ TokenType::ERROR, "@", 0, Error::UNKNOWN_SYMBOL });
+	Check(Lexer("#"), Token{ TokenType::ERROR, "#", 0, 0, Error::UNKNOWN_SYMBOL });
+	Check(Lexer("@"), Token{ TokenType::ERROR, "@", 0, 0, Error::UNKNOWN_SYMBOL });
+}
+
+TEST_CASE("multi strings")
+{
+	Check(Lexer("\nd 5"),
+		Token{ TokenType::ID, "d", 0, 1 },
+		Token{ TokenType::INTEGER, "5", 2, 1 });
+
+	Check(Lexer("id-b\nid 5\n2"),
+		Token{ TokenType::ID, "id", 0 },
+		Token{ TokenType::OP_MINUS, "-", 2 },
+		Token{ TokenType::ID, "b", 3 },
+		Token{ TokenType::ID, "id", 0, 1 },
+		Token{ TokenType::INTEGER, "5", 3, 1 },
+		Token{ TokenType::INTEGER, "2", 0, 2 });
 }
 
 TEST_CASE("complex expressions")
@@ -168,8 +178,7 @@ TEST_CASE("complex expressions")
 		Token{ TokenType::ID, "c", 36 },
 		Token{ TokenType::PARAN_CLOSE, ")", 37 },
 		Token{ TokenType::OP_NOT_EQUAL, "!=", 39 },
-		Token{ TokenType::ID, "abc", 42 }
-		);
+		Token{ TokenType::ID, "abc", 42 });
 
 	Check(Lexer("5 + 10 * 3.14 - 'test' / 2.5"),
 		Token{ TokenType::INTEGER, "5", 0 },
@@ -180,8 +189,7 @@ TEST_CASE("complex expressions")
 		Token{ TokenType::OP_MINUS, "-", 14 },
 		Token{ TokenType::STRING_LITERAL, "'test'", 16 },
 		Token{ TokenType::OP_DIVISION, "/", 23 },
-		Token{ TokenType::FLOAT, "2.5", 25 }
-		);
+		Token{ TokenType::FLOAT, "2.5", 25 });
 
 	Check(Lexer("true and false or x > 10"),
 		Token{ TokenType::TRUE, "true", 0 },
@@ -190,8 +198,7 @@ TEST_CASE("complex expressions")
 		Token{ TokenType::OP_OR, "or", 15 },
 		Token{ TokenType::ID, "x", 18 },
 		Token{ TokenType::OP_GREATER, ">", 20 },
-		Token{ TokenType::INTEGER, "10", 22 }
-		);
+		Token{ TokenType::INTEGER, "10", 22 });
 
 	Check(Lexer("((5 + 2) * (3 - 1)) / 4"),
 		Token{ TokenType::PARAN_OPEN, "(", 0 },
@@ -208,6 +215,5 @@ TEST_CASE("complex expressions")
 		Token{ TokenType::PARAN_CLOSE, ")", 17 },
 		Token{ TokenType::PARAN_CLOSE, ")", 18 },
 		Token{ TokenType::OP_DIVISION, "/", 20 },
-		Token{ TokenType::INTEGER, "4", 22 }
-		);
+		Token{ TokenType::INTEGER, "4", 22 });
 }

@@ -20,7 +20,7 @@ public:
 
 	char Get()
 	{
-		if (Empty())
+		if (EndOfFile())
 		{
 			throw std::runtime_error("EOF Error: tried to get char from an empty reader");
 		}
@@ -63,6 +63,11 @@ public:
 
 	[[nodiscard]] bool Empty()
 	{
+		return m_input.peek() == '\n' || m_input.eof();
+	}
+
+	[[nodiscard]] bool EndOfFile()
+	{
 		m_input.peek();
 		return m_input.eof();
 	}
@@ -78,9 +83,10 @@ public:
 		{
 			m_record.clear();
 		}
+		const auto offset = pos - m_count;
 		m_count = pos;
 		m_input.clear();
-		m_input.seekg(static_cast<long>(pos));
+		m_input.seekg(static_cast<long>(offset), std::ios_base::cur);
 	}
 
 	void Record()
