@@ -41,7 +41,7 @@ enum class TokenType
 	THEN, // then
 	ELSE, // else
 	CONST, // const
-	LET, // let
+	VAR, // var
 	FUNCTION, // function
 	WHILE, // while
 	RETURN, // return

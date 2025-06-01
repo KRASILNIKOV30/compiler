@@ -4,7 +4,7 @@
 
 <declaration> -> <variableDeclaration> | <constDeclaration> | <functionDeclaration>
 
-<variableDeclaration> -> let <parameter>
+<variableDeclaration> -> var <parameter>
 <constDeclaration> -> const id <typeGuideOpt> = <expression>
 <functionDeclaration> -> function id ( <paramList> ) <typeGuide> <blockStatement>
 <paramList> -> <parameter> <paramListRem> | e

@@ -44,9 +44,9 @@ TEST_CASE("slr e2e tests")
 	Check("(((a) +(a))+ not - (not a));");
 	Check("0.5E-20;");
 	Check("+not-not-+not-(-not-a);");
-	Check("let bcd = 1;");
-	Check("let bcd : int = 1;");
-	Check("let bcd : Set;");
+	Check("var bcd = 1;");
+	Check("var bcd : int = 1;");
+	Check("var bcd : Set;");
 	Check("const MAX = 0.5E-20;");
 	Check("const MIN : int= 0.5E-20;");
 	Check("while (a < b) {};");
@@ -57,8 +57,8 @@ TEST_CASE("slr e2e tests")
 	Check("if (a) {};");
 	Check("if (a) {} else {};");
 	Check("if (a) {} else if (b) {} else {};");
-	Check("let a = (a: int) -> {};");
-	Check("let a: string -> int -> int -> bool = (a: string) -> (a: int, b = 0) -> a > b;");
+	Check("var a = (a: int) -> {};");
+	Check("var a: string -> int -> int -> bool = (a: string) -> (a: int, b = 0) -> a > b;");
 	Check("const B = (b = 0) -> {};");
 	Check("const A: int-> void = (b = 0) -> {};");
 	Check("1;5;");
@@ -93,8 +93,8 @@ TEST_CASE("slr e2e tests")
 	CheckFalse("05.E-20;");
 	CheckFalse("15.E-20;");
 	CheckFalse("(((a) +(a)) ! not - (not a));");
-	CheckFalse("let bcd;");
-	CheckFalse("let bcd = 3");
+	CheckFalse("var bcd;");
+	CheckFalse("var bcd = 3");
 	CheckFalse("const MAX: int;");
 	CheckFalse("const MAX;");
 	CheckFalse("const MAX[3] = 123");

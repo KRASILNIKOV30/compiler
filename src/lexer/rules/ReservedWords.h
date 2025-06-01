@@ -16,7 +16,7 @@ const std::unordered_map<std::string, TokenType> RESERVED_WORDS = {
 	{ "then", TokenType::THEN },
 	{ "else", TokenType::ELSE },
 	{ "const", TokenType::CONST },
-	{ "let", TokenType::LET },
+	{ "var", TokenType::VAR },
 	{ "function", TokenType::FUNCTION },
 	{ "while", TokenType::WHILE },
 	{ "return", TokenType::RETURN },

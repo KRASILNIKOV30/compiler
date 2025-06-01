@@ -42,7 +42,7 @@ inline std::unordered_map<TokenType, std::string> TokenTypeToString = {
 	{ TokenType::THEN, "then" },
 	{ TokenType::ELSE, "else" },
 	{ TokenType::CONST, "const" },
-	{ TokenType::LET, "let" },
+	{ TokenType::VAR, "var" },
 	{ TokenType::FUNCTION, "function" },
 	{ TokenType::WHILE, "while" },
 	{ TokenType::RETURN, "return" },
