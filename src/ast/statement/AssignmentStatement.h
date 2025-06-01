@@ -11,6 +11,6 @@ struct AssignmentStatement : Statement
 	}
 
 	std::string left;
-	std::optional<PrimitiveType> type = std::nullopt;
+	Type type;
 	Expression right;
 };

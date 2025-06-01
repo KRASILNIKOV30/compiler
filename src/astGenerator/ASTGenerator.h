@@ -39,7 +39,8 @@ private:
 			{
 				const auto& token = get<Token>(node);
 				const auto& type = GetPrimitiveType(token.type);
-				ExpressionPtr term = std::make_unique<Term>(token.value, type, false);
+				const Type termType = { type };
+				ExpressionPtr term = std::make_unique<Term>(token.value, termType, false);
 				m_exprStack.emplace(std::move(term));
 			}
 		}

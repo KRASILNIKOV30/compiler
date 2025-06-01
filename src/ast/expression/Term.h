@@ -6,7 +6,7 @@
 class Term : public Expression
 {
 public:
-	explicit Term(std::string value, PrimitiveType const& type, bool isReference = false)
+	explicit Term(std::string value, Type const& type, bool isReference = false)
 		: Expression(type)
 		, m_value(std::move(value))
 		, m_isReference(isReference)

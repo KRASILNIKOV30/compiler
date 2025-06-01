@@ -41,7 +41,7 @@ public:
 		return pos;
 	}
 
-	size_t GetConstantPos(PrimitiveType const& type, std::string const& value)
+	size_t GetConstantPos(Type const& type, std::string const& value)
 	{
 		const auto pos = std::ranges::find(m_constants, std::make_pair(type, value)) - m_constants.begin();
 		if (pos >= m_constants.size())
@@ -56,9 +56,9 @@ public:
 		return GetValuePosOrAdd<std::string>(m_variables, variableName);
 	}
 
-	size_t GetConstantPosOrAdd(PrimitiveType const& type, std::string const& value)
+	size_t GetConstantPosOrAdd(Type const& type, std::string const& value)
 	{
-		return GetValuePosOrAdd<std::pair<PrimitiveType, std::string>>(m_constants, std::make_pair(type, value));
+		return GetValuePosOrAdd<std::pair<Type, std::string>>(m_constants, std::make_pair(type, value));
 	}
 
 	void PrintCode(std::ostream& outFile)
@@ -74,14 +74,16 @@ public:
 		}
 		for (auto const& [type, value] : m_constants)
 		{
-			const auto constValue = type == PrimitiveType::STRING ? std::format("\"{}\"", value) : value;
-			outFile << StringifyPrimitiveType(type) << " " << constValue << std::endl;
+			// FIXME: Hardcoded. Fix when adding arrow functions
+			const auto outputType = type.back();
+			const auto constValue = outputType == PrimitiveType::STRING ? std::format("\"{}\"", value) : value;
+			outFile << StringifyPrimitiveType(outputType) << " " << constValue << std::endl;
 		}
 
 		outFile << std::endl
 				<< ".code" << std::endl
 				<< m_codeBlock.str()
-				<< m_rowId << " return";
+				<< m_rowId << " return" << std::endl;
 	}
 
 private:
@@ -101,6 +103,6 @@ private:
 
 	std::ostringstream m_codeBlock;
 	std::vector<std::string> m_variables;
-	std::vector<std::pair<PrimitiveType, std::string>> m_constants;
+	std::vector<std::pair<Type, std::string>> m_constants;
 	int m_rowId = 1;
 };

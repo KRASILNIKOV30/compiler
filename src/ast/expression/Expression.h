@@ -7,7 +7,7 @@
 class Expression : public Entity
 {
 public:
-	explicit Expression(PrimitiveType type)
+	explicit Expression(Type const& type)
 		: m_type(type)
 	{
 	}
@@ -17,13 +17,13 @@ public:
 		throw std::runtime_error("Generating abstract expression");
 	};
 
-	[[nodiscard]] PrimitiveType GetType() const
+	[[nodiscard]] Type GetType() const
 	{
 		return m_type;
 	}
 
 protected:
-	PrimitiveType m_type;
+	Type m_type;
 };
 
 using ExpressionPtr = std::unique_ptr<Expression>;
