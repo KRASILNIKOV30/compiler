@@ -1,5 +1,5 @@
-#include <catch.hpp>
 #include "../../src/lexer/reader/Reader.h"
+#include <catch.hpp>
 
 SCENARIO("Reader reads characters and tracks position")
 {
@@ -140,3 +140,60 @@ SCENARIO("Reader reads characters and tracks position")
 	}
 }
 
+SCENARIO("Reader with many strings")
+{
+	GIVEN("Reader")
+	{
+		std::stringstream input;
+		input << "ABC" << std::endl;
+		input << "DEF" << std::endl;
+
+		Reader reader(input);
+
+		WHEN("Read symbols the first line")
+		{
+			CHECK(reader.LineCount() == 0);
+			reader.Record();
+			reader.Get();
+			reader.Get();
+			reader.Get();
+
+			THEN("Reader is on the first line")
+			{
+				CHECK(reader.StopRecord() == "ABC");
+				CHECK(reader.LineCount() == 0);
+				CHECK(reader.Peek() == '\n');
+				CHECK(reader.Count() == 3);
+			}
+
+			AND_WHEN("Read the next symbol")
+			{
+				CHECK(reader.Get() == '\n');
+
+				THEN("Line count increase")
+				{
+					CHECK(reader.LineCount() == 1);
+					CHECK(reader.Count() == 0);
+				}
+
+				AND_WHEN("Read to the end")
+				{
+					reader.Get();
+					reader.Get();
+					reader.Get();
+					reader.Get();
+
+					THEN("Reader is empty")
+					{
+						CHECK(reader.Empty());
+					}
+
+					AND_THEN("Trying to read should throw an exception")
+					{
+						CHECK_THROWS_AS(reader.Get(), std::runtime_error);
+					}
+				}
+			}
+		}
+	}
+}

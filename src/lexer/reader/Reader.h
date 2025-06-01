@@ -24,9 +24,18 @@ public:
 		{
 			throw std::runtime_error("EOF Error: tried to get char from an empty reader");
 		}
-		++m_count;
 		const auto ch = static_cast<char>(m_input.get());
+		if (ch == '\n')
+		{
+			++m_lineCount;
+			m_count = 0;
+		}
+		else
+		{
+			++m_count;
+		}
 		m_record += ch;
+
 		return ch;
 	}
 
@@ -45,6 +54,11 @@ public:
 	[[nodiscard]] size_t Count() const
 	{
 		return m_count;
+	}
+
+	[[nodiscard]] size_t LineCount() const
+	{
+		return m_lineCount;
 	}
 
 	[[nodiscard]] bool Empty()
@@ -82,5 +96,6 @@ public:
 private:
 	std::stringstream m_input;
 	size_t m_count = 0;
+	size_t m_lineCount = 0;
 	std::string m_record;
 };
