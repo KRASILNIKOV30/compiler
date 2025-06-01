@@ -15,15 +15,18 @@ SCENARIO("compiler tests")
 
 			THEN("code generated")
 			{
-				CHECK(output.str() == "def 0 0 1\n"
+				CHECK(output.str() == ".def\n"
+									  ".argc 0\n"
+									  ".locals 1\n"
+									  ".name __EntryPoint__\n"
+									  "\n"
 									  ".constants\n"
 									  "number 3\n"
 									  "\n"
 									  ".code\n"
 									  "1 const 0\n"
-									  "1 get_local 0\n"
 									  "1 set_local 0\n"
-									  "1 ret");
+									  "1 return");
 			}
 		}
 
@@ -37,19 +40,21 @@ SCENARIO("compiler tests")
 
 			THEN("code generated")
 			{
-				CHECK(output.str() == "def 0 0 2\n"
+				CHECK(output.str() == ".def\n"
+									  ".argc 0\n"
+									  ".locals 2\n"
+									  ".name __EntryPoint__\n"
+									  "\n"
 									  ".constants\n"
 									  "number 3\n"
 									  "number 5\n"
 									  "\n"
 									  ".code\n"
 									  "1 const 0\n"
-									  "1 get_local 0\n"
 									  "1 set_local 0\n"
 									  "1 const 1\n"
-									  "1 get_local 1\n"
 									  "1 set_local 1\n"
-									  "1 ret");
+									  "1 return");
 			}
 		}
 	}

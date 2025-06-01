@@ -21,7 +21,7 @@ public:
 			try
 			{
 				pos = generator.GetVariablePos(m_value);
-				generator.AddInstruction("const" + std::to_string(pos));
+				generator.AddInstruction("get_local" + std::to_string(pos));
 			}
 			catch (std::invalid_argument const& e)
 			{
@@ -31,7 +31,7 @@ public:
 		else
 		{
 			pos = generator.GetConstantPosOrAdd(m_type, m_value);
-			generator.AddInstruction("get_local " + std::to_string(pos));
+			generator.AddInstruction("const " + std::to_string(pos));
 		}
 	}
 
