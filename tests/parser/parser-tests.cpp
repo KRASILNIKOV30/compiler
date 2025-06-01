@@ -61,6 +61,16 @@ TEST_CASE("slr e2e tests")
 	Check("let a: string -> int -> int -> bool = (a: string) -> (a: int, b = 0) -> a > b;");
 	Check("const B = (b = 0) -> {};");
 	Check("const A: int-> void = (b = 0) -> {};");
+	Check("1;5;");
+	Check("1;5;\n");
+	Check("1;\n5;");
+	Check("\n1;5;");
+	Check("\n1;\n5;");
+	Check("1;\n5;\n");
+	Check("\n1;\n5;\n");
+	Check("\n\n\n1;\n\n5;\n");
+	Check("const a = 3; const b = 5;\n");
+	Check("const a1 = 3;\nconst b1 = 5;\n");
 
 	CheckFalse("");
 	CheckFalse(";");

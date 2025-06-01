@@ -1,5 +1,5 @@
 <Z> -> <program> #
-<program> -> <program> ; <programNode> | <programNode> ;
+<program> -> <program> <programNode> ; | <programNode> ;
 <programNode> -> <declaration> | <statement>
 
 <declaration> -> <variableDeclaration> | <constDeclaration> | <functionDeclaration>

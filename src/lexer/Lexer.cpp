@@ -12,7 +12,6 @@ Lexer::Lexer(std::string const& input)
 
 Token Lexer::Get()
 {
-	SkipWhitespaces();
 	if (Empty())
 	{
 		return Token{
@@ -53,6 +52,15 @@ Token Lexer::Get()
 
 Token Lexer::Peek()
 {
+	if (Empty())
+	{
+		return Token{
+			.type = TokenType::ERROR,
+			.pos = m_reader.Count(),
+			.line = m_reader.LineCount(),
+			.error = Error::EMPTY_INPUT
+		};
+	}
 	const auto pos = m_reader.Count();
 	const auto token = Get();
 	m_reader.Seek(pos);

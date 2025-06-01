@@ -20,9 +20,9 @@ public:
 		m_parser.LoadTable(std::move(table));
 	}
 
-	bool Compile(std::string const& codeLine, std::ostream& output)
+	bool Compile(std::string const& code, std::ostream& output)
 	{
-		const auto success = m_parser.Parse(codeLine);
+		const auto success = m_parser.Parse(code);
 		Program program = m_parser.GetProgram();
 		CodeGenerator generator;
 		program.Generate(generator);
