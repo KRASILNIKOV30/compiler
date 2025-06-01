@@ -1,5 +1,7 @@
 #pragma once
 #include <unordered_map>
+#include <string>
+#include <vector>
 
 enum class UnaryOperators
 {
@@ -25,20 +27,20 @@ enum class BinaryOperators
 	OR, // or
 };
 
-inline std::unordered_map<BinaryOperators, std::string> BinaryOperatorsToString = {
-	{BinaryOperators::PLUS, "add"},
-	{BinaryOperators::MINUS, "sub"},
-	{BinaryOperators::MUL, "mul"},
-	{BinaryOperators::MOD, "div"},
-	{BinaryOperators::DIV, "div"},
-	{BinaryOperators::DIVISION, "div"},
-	{BinaryOperators::ASSIGNMENT, "not found"},
-	{BinaryOperators::EQUAL, "ceq"},
-	{BinaryOperators::NOT_EQUAL, "not found"},
-	{BinaryOperators::LESS, "not found"},
-	{BinaryOperators::GREATER, "not found"},
-	{BinaryOperators::LESS_OR_EQUAL, "not found"},
-	{BinaryOperators::GREATER_OR_EQUAL, "not found"},
-	{BinaryOperators::AND, "not found"},
-	{BinaryOperators::OR, "not found"},
+inline std::unordered_map<BinaryOperators, std::vector<std::string>> BinaryOperatorsToString = {
+	{BinaryOperators::PLUS, { "add" } },
+	{BinaryOperators::MINUS, { "sub" } },
+	{BinaryOperators::MUL, { "mul" } },
+	{BinaryOperators::MOD, { "div" } },
+	{BinaryOperators::DIV, { "div" } },
+	{BinaryOperators::DIVISION, { "div" } },
+	{BinaryOperators::ASSIGNMENT, { "not found" } },
+	{BinaryOperators::EQUAL, { "ceq" } },
+	{BinaryOperators::NOT_EQUAL, { "ceq", "not" } },
+	{BinaryOperators::LESS, { "clt" } },
+	{BinaryOperators::GREATER, { "cgt" } },
+	{BinaryOperators::LESS_OR_EQUAL, { "cgt", "not" } },
+	{BinaryOperators::GREATER_OR_EQUAL, { "clt", "not" } },
+	{BinaryOperators::AND, { "and" } },
+	{BinaryOperators::OR, { "or" } },
 };

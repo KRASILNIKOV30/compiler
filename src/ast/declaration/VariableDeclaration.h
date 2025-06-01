@@ -14,9 +14,8 @@ public:
 	void Generate(CodeGenerator& generator) const override
 	{
 		const auto pos = generator.GetVariablePosOrAdd(GetId());
-		generator.AddInstruction("const " + std::to_string(pos));
 		m_init->Generate(generator);
-		generator.AddInstruction("setlocal " + std::to_string(pos));
+		generator.AddInstruction("set_local " + std::to_string(pos));
 	}
 
 	ExpressionPtr m_init;

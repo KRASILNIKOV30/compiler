@@ -10,7 +10,8 @@ SCENARIO("compiler tests")
 		WHEN("compile const declaration")
 		{
 			std::ostringstream output;
-			compiler.Compile("const i = 3;", output);
+			std::istringstream input("const i = 3;");
+			compiler.Compile(input, output);
 
 			THEN("code generated")
 			{
@@ -20,8 +21,8 @@ SCENARIO("compiler tests")
 									  "\n"
 									  ".code\n"
 									  "1 const 0\n"
-									  "1 getlocal 0\n"
-									  "1 setlocal 0\n"
+									  "1 get_local 0\n"
+									  "1 set_local 0\n"
 									  "1 ret");
 			}
 		}
@@ -29,10 +30,10 @@ SCENARIO("compiler tests")
 		WHEN("compile two constants")
 		{
 			std::ostringstream output;
-			compiler.Compile(""
-							 "const a = 3;\n"
-							 "const b = 5;\n",
-				output);
+			std::istringstream input(""
+									 "const a = 3;\n"
+									 "const b = 5;\n");
+			compiler.Compile(input,output);
 
 			THEN("code generated")
 			{
@@ -43,11 +44,11 @@ SCENARIO("compiler tests")
 									  "\n"
 									  ".code\n"
 									  "1 const 0\n"
-									  "1 getlocal 0\n"
-									  "1 setlocal 0\n"
+									  "1 get_local 0\n"
+									  "1 set_local 0\n"
 									  "1 const 1\n"
-									  "1 getlocal 1\n"
-									  "1 setlocal 1\n"
+									  "1 get_local 1\n"
+									  "1 set_local 1\n"
 									  "1 ret");
 			}
 		}

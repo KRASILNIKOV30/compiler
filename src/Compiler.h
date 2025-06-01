@@ -2,6 +2,7 @@
 #include "guidesBuilder/GuidesBuilder.h"
 #include "parser/error/StringifyError.h"
 #include "parser/Parser.h"
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -20,8 +21,9 @@ public:
 		m_parser.LoadTable(std::move(table));
 	}
 
-	bool Compile(std::string const& code, std::ostream& output)
+	bool Compile(std::istream const& input, std::ostream& output)
 	{
+		const auto code = ReadCodeFromFile(input);
 		const auto success = m_parser.Parse(code);
 		Program program = m_parser.GetProgram();
 		CodeGenerator generator;
@@ -37,5 +39,12 @@ public:
 	}
 
 private:
+	static std::string ReadCodeFromFile(std::istream const& input)
+	{
+		std::stringstream buffer;
+		buffer << input.rdbuf();
+		return buffer.str();
+	}
+
 	Parser m_parser;
 };

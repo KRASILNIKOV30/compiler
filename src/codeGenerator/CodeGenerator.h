@@ -63,7 +63,10 @@ public:
 
 	void PrintCode(std::ostream& outFile)
 	{
-		outFile << std::format("def 0 0 {}", m_constants.size()) << std::endl;
+		outFile << ".def" << std::endl
+				<< ".argc 0" << std::endl
+				<< ".locals " << m_variables.size() << std::endl
+				<< ".name __EntryPoint__" << std::endl << std::endl;
 
 		if (!m_constants.empty())
 		{
@@ -78,7 +81,7 @@ public:
 		outFile << std::endl
 				<< ".code" << std::endl
 				<< m_codeBlock.str()
-				<< m_rowId << " ret";
+				<< m_rowId << " return";
 	}
 
 private:

@@ -8,12 +8,13 @@ struct IfStatement : Statement
 {
 	void Generate(CodeGenerator& generator) const override
 	{
+		static int ifId = 0;
 		++ifId;
 
 		condition.Generate(generator);
 
 		std::string jmpLabel = alternate.has_value() ? "else" : "endif";
-		generator.AddInstruction("jmpfalse" + jmpLabel + std::to_string(ifId));
+		generator.AddInstruction("jmp_false" + jmpLabel + std::to_string(ifId));
 
 		body.Generate(generator);
 		generator.AddInstruction("jmp endif" + ifId);
@@ -28,7 +29,6 @@ struct IfStatement : Statement
 		generator.AddLabel("endif" + ifId);
 	}
 
-	static int ifId = 0;
 	Expression condition;
 	BlockStatement body;
 	std::optional<std::variant<BlockStatement, IfStatement>> alternate = std::nullopt;

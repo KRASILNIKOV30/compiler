@@ -8,7 +8,11 @@ struct BinaryExpression : Expression
 	{
 		left.Generate(generator);
 		right.Generate(generator);
-		generator.AddInstruction(BinaryOperatorsToString.at(oper));
+
+		for (auto const& byteCodeOper: BinaryOperatorsToString.at(oper))
+		{
+			generator.AddInstruction(byteCodeOper);
+		}
 	}
 
 	Expression left, right;

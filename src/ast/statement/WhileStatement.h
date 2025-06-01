@@ -7,11 +7,12 @@ struct WhileStatement : Statement
 {
 	void Generate(CodeGenerator& generator) const override
 	{
+		static int whileId = 0;
 		++whileId;
 
 		generator.AddLabel("while" + whileId);
 		condition.Generate(generator);
-		generator.AddInstruction("jmpfalse endwhile" + whileId);
+		generator.AddInstruction("jmp_false endwhile" + whileId);
 
 		body.Generate(generator);
 		generator.AddInstruction("jmp while" + whileId);
@@ -21,5 +22,4 @@ struct WhileStatement : Statement
 
 	Expression condition;
 	BlockStatement body;
-	static int whileId = 0;
 };

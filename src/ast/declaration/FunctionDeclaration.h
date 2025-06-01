@@ -10,7 +10,7 @@ struct FunctionDeclaration : Declaration
 
 		generator.AddInstruction(".function" + ++functionId);
 		body.Generate(generator);
-		generator.AddInstruction("ret");
+		generator.AddInstruction("return");
 	}
 
 	BlockStatement body;

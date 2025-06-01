@@ -31,7 +31,7 @@ public:
 		else
 		{
 			pos = generator.GetConstantPosOrAdd(m_type, m_value);
-			generator.AddInstruction("getlocal " + std::to_string(pos));
+			generator.AddInstruction("get_local " + std::to_string(pos));
 		}
 	}
 
