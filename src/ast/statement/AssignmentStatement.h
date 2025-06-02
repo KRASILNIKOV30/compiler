@@ -8,13 +8,17 @@ class AssignmentStatement : public Statement
 {
 public:
 	AssignmentStatement(std::string left, ExpressionPtr&& right)
-		: m_left(left)
+		: m_left(std::move(left))
 		, m_right(std::move(right))
 	{
 	}
 
 	void Generate(CodeGenerator& generator) const override
 	{
+		m_right->Generate(generator);
+
+		auto pos = generator.GetVariablePos(m_left);
+		generator.AddInstruction("set_local " + pos);
 	}
 
 private:
