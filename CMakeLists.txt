@@ -99,6 +99,7 @@ add_executable(tests
         ${GUIDES_BUILDER_TESTS}
         ${AST_GENERATOR_SOURCES}
         ${AST_GENERATOR_TESTS}
+        src/utils/FoldLeft.h
         tests/Compiler_tests.cpp
 )
 

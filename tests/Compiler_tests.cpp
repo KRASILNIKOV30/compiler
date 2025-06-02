@@ -1,4 +1,5 @@
 #include "../src/Compiler.h"
+#include "../src/utils/FoldLeft.h"
 #include "catch.hpp"
 
 struct TestData
@@ -50,12 +51,7 @@ std::vector<TestData> LoadTestCases()
 
 std::string CombineStringLines(std::vector<std::string> const& lines)
 {
-	std::string result = "";
-	for (auto const& line: lines)
-	{
-		result += line + "\n";
-	}
-	return result;
+	return FoldLeft(lines, [](auto&& acc, auto const& line) { return acc + line + '\n'; });
 }
 
 SCENARIO("compiler tests")
