@@ -3,6 +3,7 @@
 #include "../ast/expression/Operators.h"
 #include "../ast/expression/Term.h"
 #include "../ast/Program.h"
+#include "../ast/statement/AssignmentStatement.h"
 #include "../lexer/token/Token.h"
 #include "Calculate.h"
 #include "SymbolTable.h"
@@ -36,6 +37,10 @@ public:
 		{
 			SaveIdent(nodes);
 		}
+		else if (rule == "<assignmentStatement>")
+		{
+			GenerateAssignment(nodes);
+		}
 	}
 
 	Program GetProgram()
@@ -44,6 +49,17 @@ public:
 	}
 
 private:
+	void GenerateAssignment(Nodes const& nodes)
+	{
+		const auto left = get<Token>(nodes[0]).value;
+		const auto [isConst, type] = m_table.Get(left);
+		if (isConst)
+		{
+			throw std::runtime_error("Attempt to assign value to constant " + left);
+		}
+		m_program.Add(std::make_unique<AssignmentStatement>(left, PopExpression()));
+	}
+
 	void SaveIdent(Nodes const& nodes)
 	{
 		m_ident = get<Token>(nodes[0]).value;
@@ -56,12 +72,9 @@ private:
 			return;
 		}
 
-		const auto right = std::move(m_exprStack.top());
-		m_exprStack.pop();
-		const auto left = std::move(m_exprStack.top());
-		m_exprStack.pop();
-		const auto binOp = m_binOps.top();
-		m_binOps.pop();
+		const auto right = PopExpression();
+		const auto left = PopExpression();
+		const auto binOp = PopBinaryOperator();
 
 		if (left->HasValue() && right->HasValue())
 		{
@@ -105,14 +118,27 @@ private:
 	void DeclareVar(Nodes const& nodes, bool isConst)
 	{
 		const auto& token = get<Token>(nodes[1]);
-		auto expr = std::move(m_exprStack.top());
-		m_exprStack.pop();
+		auto expr = PopExpression();
 		const auto type = expr->GetType();
 		const auto id = token.value;
 		m_table.Add(id, { isConst, { type } });
 
 		DeclarationPtr decl = std::make_unique<VariableDeclaration>(id, Type{ type }, std::move(expr));
 		m_program.Add(std::move(decl));
+	}
+
+	ExpressionPtr PopExpression()
+	{
+		auto expr = std::move(m_exprStack.top());
+		m_exprStack.pop();
+		return expr;
+	}
+
+	BinaryOperators PopBinaryOperator()
+	{
+		auto binOp = m_binOps.top();
+		m_binOps.pop();
+		return binOp;
 	}
 
 private:

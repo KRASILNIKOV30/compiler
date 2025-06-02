@@ -4,13 +4,20 @@
 #include <assert.h>
 #include <optional>
 
-struct AssignmentStatement : Statement
+class AssignmentStatement : public Statement
 {
+public:
+	AssignmentStatement(std::string left, ExpressionPtr&& right)
+		: m_left(left)
+		, m_right(std::move(right))
+	{
+	}
+
 	void Generate(CodeGenerator& generator) const override
 	{
 	}
 
-	std::string left;
-	Type type;
-	Expression right;
+private:
+	std::string m_left;
+	ExpressionPtr m_right;
 };

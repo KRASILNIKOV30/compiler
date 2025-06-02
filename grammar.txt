@@ -13,7 +13,9 @@
 <typeGuideOpt> -> <typeGuide> | e
 <typeGuide> -> : <type>
 
-<statement> -> <blockStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <expressionStatement>
+<statement> -> <assignmentStatement> | <blockStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <expressionStatement>
+
+<assignmentStatement> -> id = <expression>
 
 <blockStatement> -> { <blockActions> }
 <blockActions> -> <blockAction> ; <blockActions> | e
