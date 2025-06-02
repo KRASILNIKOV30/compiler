@@ -9,6 +9,13 @@ struct TestData
 	std::vector<std::string> expectedByteCodeLines;
 };
 
+struct NegativeTestData
+{
+	std::string description;
+	std::vector<std::string> codeLines;
+	std::string expectedErrorMessage;
+};
+
 std::vector<TestData> LoadTestCases()
 {
 	return {
@@ -49,6 +56,15 @@ std::vector<TestData> LoadTestCases()
 	};
 }
 
+std::vector<NegativeTestData> LoadNegativeTestCases()
+{
+	return {
+		{ "declare two constants with the same names",
+			{ "const a = 3; const a = 5;" },
+			"Symbol a is already defined" }
+	};
+}
+
 std::string CombineStringLines(std::vector<std::string> const& lines)
 {
 	return FoldLeft(lines, [](auto&& acc, auto const& line) { return acc + line + '\n'; });
@@ -71,6 +87,28 @@ SCENARIO("compiler tests")
 				THEN("code generated")
 				{
 					CHECK(output.str() == CombineStringLines(testCase.expectedByteCodeLines));
+				}
+			}
+		}
+	}
+}
+
+SCENARIO("compiler negative tests")
+{
+	GIVEN("compiler")
+	{
+		Compiler compiler("grammar.txt");
+
+		for (auto const& [description, codeLines, expectedErrorMessage] : LoadNegativeTestCases())
+		{
+			WHEN(description)
+			{
+				std::ostringstream output;
+				std::istringstream input(CombineStringLines(codeLines));
+
+				THEN("error is thrown")
+				{
+					CHECK_THROWS_WITH(compiler.Compile(input, output), expectedErrorMessage);
 				}
 			}
 		}
