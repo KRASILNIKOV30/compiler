@@ -16,7 +16,7 @@ class Parser
 {
 public:
 	Parser() = default;
-	explicit Parser(Table table);
+	explicit Parser(Table table, bool buildAST = true);
 	bool Parse(std::string const& input);
 	ErrorReason GetError() const;
 
@@ -49,4 +49,5 @@ private:
 	std::stack<std::string> m_foldStack;
 	Action m_action{};
 	ASTGenerator m_generator;
+	bool m_buildAST = true;
 };

@@ -35,6 +35,17 @@ public:
 		}
 	}
 
+	[[nodiscard]] bool HasValue() const override
+	{
+		return !m_isReference;
+	}
+
+	[[nodiscard]] std::string GetValue() const override
+	{
+		return m_value;
+	}
+
+private:
 	std::string m_value;
 	bool m_isReference = false;
 };

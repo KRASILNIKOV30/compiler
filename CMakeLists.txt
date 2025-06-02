@@ -73,13 +73,13 @@ set(PARSER_TESTS
 set(AST_GENERATOR_SOURCES
         src/astGenerator/SymbolTable.h
         src/ast/Type.h
+        src/astGenerator/Calculate.h
 )
 
 set(AST_GENERATOR_TESTS
         tests/astGenerator/SymbolTable_tests.cpp
         src/astGenerator/ASTGenerator.cpp
         src/astGenerator/ASTGenerator.h
-        tests/astGenerator/ASTGenerator_tests.cpp
 )
 
 add_executable(compiler
@@ -101,6 +101,7 @@ add_executable(tests
         ${AST_GENERATOR_TESTS}
         src/utils/FoldLeft.h
         tests/Compiler_tests.cpp
+        tests/CombineStringLines.h
 )
 
 add_custom_command(

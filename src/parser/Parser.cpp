@@ -5,8 +5,9 @@
 #include <ranges>
 #include <utility>
 
-Parser::Parser(Table table)
+Parser::Parser(Table table, bool buildAST)
 	: m_table(std::move(table))
+	, m_buildAST(buildAST)
 {
 }
 
@@ -86,7 +87,10 @@ void Parser::Fold(std::string const& ruleName, const size_t ruleSize)
 	}
 
 	std::ranges::reverse(nodes);
-	m_generator.Generate(ruleName, nodes);
+	if (m_buildAST)
+	{
+		m_generator.Generate(ruleName, nodes);
+	}
 
 	m_foldStack.push(ruleName);
 }

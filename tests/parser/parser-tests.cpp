@@ -13,7 +13,7 @@ TEST_CASE("slr e2e tests")
 	const auto rules = guidesBuilder.BuildGuidedRules();
 	TableBuilder tableBuilder(rules);
 	const auto table = tableBuilder.BuildTable();
-	Parser parser(table);
+	Parser parser(table, false);
 
 	const auto Check = [&](std::string const& expr) {
 		const auto result = parser.Parse(expr);

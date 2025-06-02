@@ -1,6 +1,10 @@
 #include "../src/Compiler.h"
 #include "../src/utils/FoldLeft.h"
 #include "catch.hpp"
+#include "CombineStringLines.h"
+
+namespace
+{
 
 struct TestData
 {
@@ -35,6 +39,7 @@ std::vector<TestData> LoadTestCases()
 				"1 set_local 0",
 				"1 return",
 			} },
+
 		{ "compile two constants",
 			{ "const a = 3;"
 			  "const b = 5;" },
@@ -52,7 +57,24 @@ std::vector<TestData> LoadTestCases()
 				"1 set_local 0",
 				"1 const 1",
 				"1 set_local 1",
-				"1 return" } }
+				"1 return" } },
+
+		{ "const declaration with simple expression",
+			{ "const i = 5 == 2;" },
+			{
+				".def",
+				".argc 0",
+				".locals 1",
+				".name __EntryPoint__",
+				"",
+				".constants",
+				"number false",
+				"",
+				".code",
+				"1 const 0",
+				"1 set_local 0",
+				"1 return",
+			} }
 	};
 }
 
@@ -65,10 +87,7 @@ std::vector<NegativeTestData> LoadNegativeTestCases()
 	};
 }
 
-std::string CombineStringLines(std::vector<std::string> const& lines)
-{
-	return FoldLeft(lines, [](auto&& acc, auto const& line) { return acc + line + '\n'; });
-}
+} // namespace
 
 SCENARIO("compiler tests")
 {

@@ -3,12 +3,13 @@
 #include "../Type.h"
 #include <memory>
 #include <string>
+#include <utility>
 
 class Expression : public Entity
 {
 public:
-	explicit Expression(Type const& type)
-		: m_type(type)
+	explicit Expression(Type type)
+		: m_type(std::move(type))
 	{
 	}
 
@@ -21,6 +22,16 @@ public:
 	{
 		return m_type;
 	}
+
+	[[nodiscard]] virtual bool HasValue() const
+	{
+		return false;
+	}
+
+	[[nodiscard]] virtual std::string GetValue() const
+	{
+		return "";
+	};
 
 protected:
 	Type m_type;

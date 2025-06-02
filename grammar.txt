@@ -38,7 +38,7 @@
 <ident> -> <ident> [ <expression> ] | <ident> ( <expListOpt> ) | id
 <relOp> -> < | > | <= | >= | == | !=
 <lowPriorityOp> -> + | - | or
-<highPriorityOp> -> * | mod | div | and
+<highPriorityOp> -> * | / | mod | div | and
 
 <arrowFunctionExpression> -> ( <paramList> ) -> <arrowFunctionNode>
 <arrowFunctionNode> -> <expression> | <blockStatement>

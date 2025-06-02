@@ -5,10 +5,15 @@
 #include <variant>
 #include <vector>
 
+using ProgramNode = std::variant<DeclarationPtr, StatementPtr>;
+
 class Program : public Entity
 {
 public:
-	using ProgramNode = std::variant<DeclarationPtr, StatementPtr>;
+	explicit Program(std::vector<ProgramNode>&& nodes = {})
+		: m_body(std::move(nodes))
+	{
+	}
 
 	void Generate(CodeGenerator& generator) const override
 	{

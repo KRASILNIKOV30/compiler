@@ -31,12 +31,13 @@ inline std::string ToLower(std::string s)
 
 inline Token CheckReserved(Token const& token)
 {
-	const auto it = RESERVED_WORDS.find(ToLower(token.value));
+	const auto value = ToLower(token.value);
+	const auto it = RESERVED_WORDS.find(value);
 	return it == RESERVED_WORDS.end()
 		? token
 		: Token{
 			  .type = it->second,
-			  .value = token.value,
+			  .value = value,
 			  .pos = token.pos,
 			  .error = token.error,
 		  };
