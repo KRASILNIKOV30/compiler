@@ -17,9 +17,10 @@
 
 <assignmentStatement> -> id = <expression>
 
-<blockStatement> -> { <blockActions> }
-<blockActions> -> <blockAction> ; <blockActions> | e
-<blockAction> -> <declaration> | <statement>
+<blockStatement> -> <openBlock> <blockActions> <closeBlock>
+<openBlock> -> {
+<closeBlock> -> }
+<blockActions> -> <programNode> ; <blockActions> | e
 
 <expressionStatement> -> <expression>
 
