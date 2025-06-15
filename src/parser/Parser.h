@@ -34,7 +34,7 @@ public:
 	{
 		if (m_lastToken.has_value())
 		{
-			return std::to_string(m_lastToken->line);
+			return std::to_string(m_lastToken->line + 1);
 		}
 		else
 		{
