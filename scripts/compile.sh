@@ -5,10 +5,11 @@ set -o nounset
 set -o pipefail
 IFS=$'\n\t'
 
-readonly CALLER_DIR=$(pwd)
-readonly PARENT_DIR=$(dirname "$(readlink -f "$0")")
-readonly PROJECT_DIR=$(dirname "$PARENT_DIR")
-readonly BUILD_DIRS=("cmake-build-release" "cmake-build-debug")
+readonly SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+readonly PROJECT_DIR=$(dirname "$SCRIPT_DIR")
+
+readonly RELEASE_DIR_NAME="cmake-build-release"
+readonly DEBUG_DIR_NAME="cmake-build-debug"
 readonly COMPILER_EXECUTABLE="compiler"
 readonly VM_EXECUTABLE="PVM"
 readonly GRAMMAR_FILE="grammar.txt"
@@ -19,104 +20,153 @@ readonly GREEN='\033[0;32m'
 readonly YELLOW='\033[1;33m'
 readonly NC='\033[0m'
 
-error() {
-    echo -e "${RED}[ERROR]${NC} $*" >&2
+error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
+success() { echo -e "${GREEN}[SUCCESS]${NC} $*"; }
+info() { echo -e "${YELLOW}[INFO]${NC} $*"; }
+
+usage() {
+    echo "Usage: $0 [action] [--debug] [-h|--help] [input_file] [compiler_args...]"
+    echo ""
+    echo "A script to build, run, and clean the C++ project."
+    echo ""
+    echo "Actions (optional):"
+    echo "  (no action)           Builds and then runs the project (default behavior)."
+    echo "  --build-only          Only configures and builds the project."
+    echo "  --run-only            Only runs the already built project."
+    echo "  clean                 Removes build directories."
+    echo ""
+    echo "Options:"
+    echo "  --debug               Use the Debug configuration. Default is Release."
+    echo "  -h, --help            Show this help message."
+    echo ""
+    echo "Arguments:"
+    echo "  input_file            Optional path to the source code file for the compiler."
+    echo "  compiler_args...      Additional arguments to pass to the compiler."
 }
 
-success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $*"
+run_cmake_configure() {
+    local build_dir=$1
+    local build_type=$2
+
+    if ! command -v cmake &> /dev/null; then
+        error "CMake is not installed. Please install it to build the project."
+        exit 1
+    fi
+
+    info "Configuring project in '${build_dir}' with build type '${build_type}'..."
+    if ! cmake -S "${PROJECT_DIR}" -B "${build_dir}" -DCMAKE_BUILD_TYPE="${build_type}"; then
+        error "CMake configuration failed."
+        exit 1
+    fi
+    success "CMake configuration successful."
 }
 
-warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $*"
+run_cmake_build() {
+    local build_dir=$1
+    info "Building project in '${build_dir}'..."
+    if ! cmake --build "${build_dir}" --parallel; then
+        error "Project build failed."
+        exit 1
+    fi
+    success "Project built successfully."
 }
 
-run_compile() {
-    local dir=$1
-    local executable_path="${dir}/${COMPILER_EXECUTABLE}"
-    local input_file="${2:-}"
+execute_program() {
+    local build_dir=$1
+    shift
+    local program_args=("$@")
 
-    if [[ -d "${dir}" ]]; then
-        if [[ -f "${executable_path}" && -x "${executable_path}" ]]; then
-            success "Found compiler in ${dir}, running..."
+    local compiler_path="${build_dir}/${COMPILER_EXECUTABLE}"
+    local vm_path="${build_dir}/${VM_EXECUTABLE}"
 
-            local args=("${PROJECT_DIR}/${GRAMMAR_FILE}")
-            if [[ -n "${input_file}" && -f "${input_file}" ]]; then
-                args+=("${input_file}")
-            fi
-            if [[ $# -gt 2 ]]; then
-                args+=("${@:3}")
-            fi
+    if [[ ! -x "${compiler_path}" || ! -x "${vm_path}" ]]; then
+        error "Executable files not found in '${build_dir}'. Did you build the project?"
+        return 1
+    fi
 
-            if ! "${executable_path}" "${args[@]}"; then
-                error "Compile ${executable_path} failed with exit code $?"
-                return 1
-            fi
-
-            success "Compile finished successfully"
-            return 0
-        else
-            warning "Directory ${dir} exists but no executable found or it's not executable"
-            return 1
-        fi
+    info "Running compiler..."
+    local input_file=""
+    local compiler_args=()
+    if [[ ${#program_args[@]} -gt 0 && -f "${program_args[0]}" ]]; then
+        input_file="${program_args[0]}"
+        compiler_args=("${program_args[@]:1}")
     else
-        warning "Directory ${dir} does not exist"
+        compiler_args=("${program_args[@]}")
+    fi
+
+    local args_to_pass=("${PROJECT_DIR}/${GRAMMAR_FILE}")
+    [[ -n "${input_file}" ]] && args_to_pass+=("${input_file}")
+    [[ ${#compiler_args[@]} -gt 0 ]] && args_to_pass+=("${compiler_args[@]}")
+
+    if ! "${compiler_path}" "${args_to_pass[@]}"; then
+        error "Compiler failed. Aborting."
+        return 1
+    fi
+    success "Compiler finished."
+
+    local byte_code_path="${build_dir}/${BYTE_CODE_FILE}"
+    mv -f "${PROJECT_DIR}/${BYTE_CODE_FILE}" "${byte_code_path}"
+
+    if ! "${vm_path}" "${byte_code_path}"; then
+        error "Virtual Machine execution failed."
         return 1
     fi
 }
 
-run_code() {
-    local dir=$1
-    local executable_path="${dir}/${VM_EXECUTABLE}"
-    local byte_code="${dir}/${BYTE_CODE_FILE}"
+run_clean() {
+    local build_mode=$1
 
-    if [[ -f "${executable_path}" && -x "${executable_path}" ]]; then
-        if ! "${executable_path}" "${byte_code}"; then
-            error "Run code ${executable_path} failed with exit code $?"
-            return 1
-        fi
-    else
-        error "Failed to find virtual machine: ${executable_path}"
-        return 1
+    info "Cleaning build directories..."
+    if [[ "${build_mode}" == "debug" || "${build_mode}" == "all" ]]; then
+        info "Removing ${PROJECT_DIR}/${DEBUG_DIR_NAME}"
+        rm -rf "${PROJECT_DIR}/${DEBUG_DIR_NAME}"
     fi
+    if [[ "${build_mode}" == "release" || "${build_mode}" == "all" ]]; then
+        info "Removing ${PROJECT_DIR}/${RELEASE_DIR_NAME}"
+        rm -rf "${PROJECT_DIR}/${RELEASE_DIR_NAME}"
+    fi
+    success "Cleanup complete."
 }
 
 main() {
-    if [[ $# -gt 0 && ($1 == "-h" || $1 == "--help") ]]; then
-        local dirs_list=$(IFS=', '; echo "${missing_dirs[*]}")
-        echo "Usage: $0 [input_file] [executable_args...]"
-        echo "Runs compile in ${dirs_list} directories"
-        echo "If input_file is provided and exists, it will be passed as first argument"
-        echo "All additional arguments are passed to the executable"
+    local build_mode="release"
+    local do_build=true
+    local do_run=true
+    local do_clean=false
+    local program_args=()
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --debug)       build_mode="debug"; shift ;;
+            --build-only)  do_run=false; shift ;;
+            --run-only)    do_build=false; shift ;;
+            clean)         do_clean=true; shift ;;
+            -h|--help)     usage; exit 0 ;;
+            -*)            error "Unknown option: $1"; usage; exit 1 ;;
+            *)             program_args+=("$1"); shift ;;
+        esac
+    done
+
+    if [[ "${do_clean}" == true ]]; then
+        local clean_mode="all"
+        [[ "${#program_args[@]}" -eq 0 && "${build_mode}" != "release" ]] && clean_mode="debug"
+        run_clean "${clean_mode}"
         exit 0
     fi
 
-    local found=0
-    local input_file=""
+    local build_dir_name=$([[ "$build_mode" == "debug" ]] && echo "$DEBUG_DIR_NAME" || echo "$RELEASE_DIR_NAME")
+    local build_dir="${PROJECT_DIR}/${build_dir_name}"
+    local cmake_build_type=$([[ "$build_mode" == "debug" ]] && echo "Debug" || echo "Release")
 
-    if [[ $# -gt 0 && -f "$1" ]]; then
-        input_file="$1"
-        shift
+    info "Selected mode: ${build_mode}"
+
+    if [[ "${do_build}" == true ]]; then
+        run_cmake_configure "${build_dir}" "${cmake_build_type}"
+        run_cmake_build "${build_dir}"
     fi
 
-    for dir in "${BUILD_DIRS[@]}"; do
-        local build_dir="${PROJECT_DIR}/${dir}";
-        if run_compile "${build_dir}" "${input_file}" "$@"; then
-            success "Compile finished"
-
-            mv -f "${CALLER_DIR}/${BYTE_CODE_FILE}" "${build_dir}/"
-
-            run_code "${build_dir}"
-
-            found=1
-            break
-        fi
-    done
-
-    if [[ ${found} -eq 0 ]]; then
-        local dirs_list=$(IFS=', '; echo "${missing_dirs[*]}")
-        error "No valid directory with compiler found. Tried: ${dirs_list}"
-        exit 1
+    if [[ "${do_run}" == true ]]; then
+        execute_program "${build_dir}" "${program_args[@]}"
     fi
 }
 
