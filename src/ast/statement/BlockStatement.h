@@ -17,14 +17,36 @@ public:
 		}
 	}
 
-	void Add(DeclarationPtr&& decl)
+	void Add(ProgramNode&& node)
 	{
-		m_body.emplace_back(std::move(decl));
+		if (m_topBlock)
+		{
+			m_topBlock->Add(std::move(node));
+			return;
+		}
+		m_body.emplace_back(std::move(node));
 	}
 
-	void Add(StatementPtr&& statement)
+	void OpenBlock()
 	{
-		m_body.emplace_back(std::move(statement));
+		if (m_topBlock)
+		{
+			m_topBlock->OpenBlock();
+			return;
+		}
+		auto block = std::make_unique<BlockStatement>();
+		m_topBlock = block.get();
+		m_body.emplace_back(std::move(block));
+	}
+
+	void CloseBlock()
+	{
+		if (m_topBlock)
+		{
+			m_topBlock->CloseBlock();
+			return;
+		}
+		m_topBlock = nullptr;
 	}
 
 private:
@@ -39,5 +61,6 @@ private:
 	}
 
 private:
+	BlockStatement* m_topBlock = nullptr;
 	std::vector<ProgramNode> m_body{};
 };

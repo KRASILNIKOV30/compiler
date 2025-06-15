@@ -113,6 +113,7 @@ private:
 				}
 			}
 		}
+		// TODO: добавить обработку более длинных терминалов
 	}
 
 	void DeclareVar(Nodes const& nodes, bool isConst)
