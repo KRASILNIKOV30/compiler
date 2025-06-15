@@ -41,8 +41,7 @@ std::vector<TestData> LoadTestCases()
 			} },
 
 		{ "compile two constants",
-			{ "const a = 3;"
-			  "const b = 5;" },
+			{ "const a = 3;", "const b = 5;" },
 			{ ".def",
 				".argc 0",
 				".locals 2",
