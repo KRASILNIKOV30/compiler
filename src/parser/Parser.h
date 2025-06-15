@@ -30,6 +30,18 @@ public:
 		return m_generator.GetProgram();
 	}
 
+	std::string GetLastTokenPlace()
+	{
+		if (m_lastToken.has_value())
+		{
+			return std::to_string(m_lastToken->line);
+		}
+		else
+		{
+			return "";
+		}
+	}
+
 private:
 	void Shift(size_t value);
 	void Fold(std::string const& ruleName, size_t ruleSize);

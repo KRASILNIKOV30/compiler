@@ -74,6 +74,7 @@ set(AST_GENERATOR_SOURCES
         src/astGenerator/SymbolTable.h
         src/ast/Type.h
         src/astGenerator/Calculate.h
+        src/astGenerator/CalculateType.h
 )
 
 set(AST_GENERATOR_TESTS

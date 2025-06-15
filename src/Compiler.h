@@ -24,7 +24,17 @@ public:
 	bool Compile(std::istream const& input, std::ostream& output)
 	{
 		const auto code = ReadCodeFromFile(input);
-		const auto success = m_parser.Parse(code);
+		bool success;
+
+		try
+		{
+			success = m_parser.Parse(code);
+		}
+		catch (std::exception const& e)
+		{
+			throw std::runtime_error("Error at line " + m_parser.GetLastTokenPlace() + ": " + e.what());
+		}
+
 		Program program = m_parser.GetProgram();
 		CodeGenerator generator;
 		program.Generate(generator);

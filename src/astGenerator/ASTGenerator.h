@@ -1,11 +1,13 @@
 #pragma once
 #include "../ast/declaration/VariableDeclaration.h"
+#include "../ast/expression/BinaryExpression.h"
 #include "../ast/expression/Operators.h"
 #include "../ast/expression/Term.h"
 #include "../ast/Program.h"
 #include "../ast/statement/AssignmentStatement.h"
 #include "../lexer/token/Token.h"
 #include "Calculate.h"
+#include "CalculateType.h"
 #include "SymbolTable.h"
 #include <stack>
 
@@ -20,6 +22,10 @@ public:
 		if (rule == "<term>")
 		{
 			GenerateTerm(nodes);
+		}
+		else if (rule == "<ident>")
+		{
+			GenerateIdent(nodes);
 		}
 		else if (rule == "<constDeclaration>")
 		{
@@ -72,15 +78,33 @@ private:
 			return;
 		}
 
-		const auto right = PopExpression();
-		const auto left = PopExpression();
+		auto right = PopExpression();
+		auto left = PopExpression();
 		const auto binOp = PopBinaryOperator();
+
+		const auto leftType = left->GetType()[0];
+		const auto rightType = right->GetType()[0];
+		const auto type = CalculateType(leftType, rightType, binOp);
 
 		if (left->HasValue() && right->HasValue())
 		{
-			// TODO: Проверить типы
-			const auto result = Calculate(left->GetValue(), right->GetValue(), binOp);
-			GenerateTerm({ { Token{ TokenType::FLOAT, result, 0, 0 } } });
+			const auto result = Calculate(
+				left->GetValue(),
+				right->GetValue(),
+				leftType,
+				rightType,
+				binOp);
+			ExpressionPtr term = std::make_unique<Term>(result, Type{ type }, false);
+			m_exprStack.emplace(std::move(term));
+		}
+		else
+		{
+			ExpressionPtr expr = std::make_unique<BinaryExpression>(
+				std::move(left),
+				std::move(right),
+				binOp,
+				Type{ type });
+			m_exprStack.emplace(std::move(expr));
 		}
 	}
 
@@ -96,24 +120,33 @@ private:
 		if (nodes.size() == 1)
 		{
 			const auto& node = nodes.back();
-			if (holds_alternative<Token>(node))
+
+			if (!std::holds_alternative<Token>(node))
 			{
-				const auto& token = get<Token>(node);
-				const auto& type = GetPrimitiveType(token.type);
-				const Type termType = { type };
-				ExpressionPtr term = std::make_unique<Term>(token.value, termType, false);
-				m_exprStack.emplace(std::move(term));
+				return;
 			}
-			else
-			{
-				const auto rule = get<std::string>(node);
-				if (rule == "<ident>")
-				{
-					// TODO: проверить по таблице символов
-				}
-			}
+
+			const auto& token = get<Token>(node);
+			const auto& type = GetPrimitiveType(token.type);
+			const Type termType = { type };
+			ExpressionPtr term = std::make_unique<Term>(token.value, termType, false);
+			m_exprStack.emplace(std::move(term));
 		}
 		// TODO: добавить обработку более длинных терминалов
+	}
+
+	void GenerateIdent(Nodes const& nodes)
+	{
+		if (nodes.size() == 1)
+		{
+			const auto& node = nodes.back();
+			const auto& token = get<Token>(node);
+			const auto name = token.value;
+			const auto& symbol = m_table.Get(name);
+			ExpressionPtr term = std::make_unique<Term>(name, symbol.type, true);
+			m_exprStack.emplace(std::move(term));
+		}
+		// TODO: обработка id[1] и id(1)
 	}
 
 	void DeclareVar(Nodes const& nodes, bool isConst)

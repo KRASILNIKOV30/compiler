@@ -1,20 +1,31 @@
 #pragma once
 #include "Expression.h"
 #include "Operators.h"
+#include <utility>
 
-struct BinaryExpression : Expression
+class BinaryExpression : public Expression
 {
+public:
+	BinaryExpression(ExpressionPtr&& left, ExpressionPtr&& right, BinaryOperators oper, Type type)
+		: Expression(std::move(type))
+		, m_left(std::move(left))
+		, m_right(std::move(right))
+		, m_oper(oper)
+	{
+	}
+
 	void Generate(CodeGenerator& generator) const override
 	{
-		left.Generate(generator);
-		right.Generate(generator);
+		m_left->Generate(generator);
+		m_right->Generate(generator);
 
-		for (auto const& byteCodeOper: BinaryOperatorsToString.at(oper))
+		for (auto const& byteCodeOper : BinaryOperatorsToString.at(m_oper))
 		{
 			generator.AddInstruction(byteCodeOper);
 		}
 	}
 
-	Expression left, right;
-	BinaryOperators oper;
+private:
+	ExpressionPtr m_left, m_right;
+	BinaryOperators m_oper;
 };
