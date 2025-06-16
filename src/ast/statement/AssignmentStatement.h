@@ -16,7 +16,6 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
-
 		if (m_left.IsPartOfArray())
 		{
 			m_left.Generate(generator);
