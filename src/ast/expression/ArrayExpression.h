@@ -12,6 +12,10 @@ public:
 
 	void Generate(CodeGenerator &generator) const override
 	{
+		for (const auto& arrayElement: m_elements)
+		{
+			arrayElement->Generate(generator);
+		}
 		generator.AddInstruction("create_arr " + m_elements.size());
 	}
 
