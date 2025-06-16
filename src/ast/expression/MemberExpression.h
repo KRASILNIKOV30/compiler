@@ -4,21 +4,32 @@
 class MemberExpression : public Expression
 {
 public:
-	explicit MemberExpression(Type type, std::string id, ExpressionPtr index)
+	explicit MemberExpression(Type type, std::string id, ExpressionPtr index, bool isLValue = true)
 		: Expression(std::move(type))
 		, m_id(std::move(id))
 		, m_index(std::move(index))
+		, m_isRValue(isLValue)
 	{
 	}
 
-	void Generate(CodeGenerator &generator) const override
+	void Generate(CodeGenerator& generator) const override
 	{
 		generator.AddInstruction("get_local " + std::to_string(generator.GetVariablePos(m_id)));
-		m_index->Generate(generator);
-		generator.AddInstruction("get_el");
+		if (m_index.has_value())
+		{
+			m_index.value()->Generate(generator);
+			if (m_isRValue)
+			{
+				generator.AddInstruction("get_el");
+			}
+		}
 	}
+
+	[[nodiscard]] std::string GetId() const { return m_id; }
+	[[nodiscard]] bool IsPartOfArray() const { return m_index.has_value(); }
 
 private:
 	std::string m_id;
-	ExpressionPtr m_index;
+	std::optional<ExpressionPtr> m_index;
+	bool m_isRValue = true;
 };
