@@ -29,7 +29,7 @@ class IfStatement : public Statement
 		if (m_alternate.has_value())
 		{
 			generator.AddLabel("else" + ifId);
-			std::visit([&](const auto& alternative) { Generate(generator, alternative); }, alternate.value());
+			std::visit([&](const auto& alternative) { Generate(generator, alternative); }, m_alternate.value());
 			generator.AddInstruction("jmp endif" + ifId);
 		}
 
@@ -37,17 +37,20 @@ class IfStatement : public Statement
 	}
 
 private:
-	void Generate(CodeGenerator& generator, const IfStatement& ifStatement)
+	using IfStatementPtr = std::unique_ptr<IfStatement>;
+	using BlockStatementPtr = std::unique_ptr<BlockStatement>;
+
+	static void Generate(CodeGenerator& generator, IfStatementPtr const& ifStatement)
 	{
-		ifStatement.Generate(generator);
+		ifStatement->Generate(generator);
 	}
 
-	void Generate(CodeGenerator& generator, const BlockStatement& block)
+	static void Generate(CodeGenerator& generator, BlockStatementPtr const& block)
 	{
-		block.Generate(generator);
+		block->Generate(generator);
 	}
 
 	ExpressionPtr m_condition;
 	BlockStatement m_body;
-	std::optional<std::variant<BlockStatement, IfStatement>> m_alternate = std::nullopt;
+	std::optional<std::variant<IfStatementPtr, BlockStatementPtr>> m_alternate = std::nullopt;
 };
