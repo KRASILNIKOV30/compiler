@@ -2,12 +2,12 @@
 #include "../expression/Expression.h"
 #include "Statement.h"
 
-struct ExpressionStatement : Statement
+class ExpressionStatement : Statement
 {
 	void Generate(CodeGenerator& generator) const override
 	{
-		expression.Generate(generator);
+		expression->Generate(generator);
 	}
 
-	Expression expression;
+	ExpressionPtr expression;
 };

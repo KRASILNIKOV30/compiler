@@ -75,12 +75,14 @@ set(AST_GENERATOR_SOURCES
         src/ast/Type.h
         src/astGenerator/Calculate.h
         src/astGenerator/CalculateType.h
+        src/astGenerator/CalculateCallExpressionType.h
 )
 
 set(AST_GENERATOR_TESTS
         tests/astGenerator/SymbolTable_tests.cpp
         src/astGenerator/ASTGenerator.cpp
         src/astGenerator/ASTGenerator.h
+        tests/astGenerator/CalculateCallExpressionType_tests.cpp
 )
 
 add_executable(compiler

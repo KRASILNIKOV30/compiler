@@ -2,17 +2,18 @@
 #include "Expression.h"
 #include <vector>
 
-class CallExpression : Expression
+class CallExpression : public Expression
 {
 public:
-	explicit CallExpression(std::string const& callee, Type const& type, std::vector<ExpressionPtr> const& arguments)
-		: Expression(type)
-		, m_callee(callee)
-		, m_arguments(arguments)
+	explicit CallExpression(std::string callee, Type type, std::vector<ExpressionPtr>&& arguments)
+		: Expression(std::move(type))
+		, m_callee(std::move(callee))
+		, m_arguments(std::move(arguments))
 	{
 	}
 
-	void Generate(CodeGenerator& generator) const override {
+	void Generate(CodeGenerator& generator) const override
+	{
 		for (auto const& argument : m_arguments)
 		{
 			argument->Generate(generator);
