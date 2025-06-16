@@ -15,6 +15,7 @@ public:
 	{
 		generator.AddInstruction("get_local " + generator.GetVariablePos(m_id));
 		m_index->Generate(generator);
+		generator.AddInstruction("get_el");
 	}
 
 private:
