@@ -20,7 +20,7 @@ public:
 		}
 
 		const auto functionPos = generator.GetConstantPosOrAdd(PrimitiveType::STRING, m_callee);
-		generator.AddInstruction("get_global " + functionPos);
+		generator.AddInstruction("get_global " + std::to_string(functionPos));
 		generator.AddInstruction("call");
 	};
 

@@ -16,7 +16,7 @@ public:
 		{
 			arrayElement->Generate(generator);
 		}
-		generator.AddInstruction("create_arr " + m_elements.size());
+		generator.AddInstruction("create_arr " + std::to_string(m_elements.size()));
 	}
 
 private:

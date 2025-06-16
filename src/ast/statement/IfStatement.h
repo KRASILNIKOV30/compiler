@@ -24,16 +24,16 @@ class IfStatement : public Statement
 		generator.AddInstruction("jmp_false" + jmpLabel + std::to_string(ifId));
 
 		m_body.Generate(generator);
-		generator.AddInstruction("jmp endif" + ifId);
+		generator.AddInstruction("jmp endif" + std::to_string(ifId));
 
 		if (m_alternate.has_value())
 		{
-			generator.AddLabel("else" + ifId);
+			generator.AddLabel("else" + std::to_string(ifId));
 			std::visit([&](const auto& alternative) { Generate(generator, alternative); }, m_alternate.value());
-			generator.AddInstruction("jmp endif" + ifId);
+			generator.AddInstruction("jmp endif" + std::to_string(ifId));
 		}
 
-		generator.AddLabel("endif" + ifId);
+		generator.AddLabel("endif" + std::to_string(ifId));
 	}
 
 private:

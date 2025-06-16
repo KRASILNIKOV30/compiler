@@ -13,7 +13,7 @@ public:
 
 	void Generate(CodeGenerator &generator) const override
 	{
-		generator.AddInstruction("get_local " + generator.GetVariablePos(m_id));
+		generator.AddInstruction("get_local " + std::to_string(generator.GetVariablePos(m_id)));
 		m_index->Generate(generator);
 		generator.AddInstruction("get_el");
 	}

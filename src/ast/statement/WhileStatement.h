@@ -10,14 +10,14 @@ struct WhileStatement : Statement
 		static int whileId = 0;
 		++whileId;
 
-		generator.AddLabel("while" + whileId);
+		generator.AddLabel("while" + std::to_string(whileId));
 		condition.Generate(generator);
-		generator.AddInstruction("jmp_false endwhile" + whileId);
+		generator.AddInstruction("jmp_false endwhile" + std::to_string(whileId));
 
 		body.Generate(generator);
-		generator.AddInstruction("jmp while" + whileId);
+		generator.AddInstruction("jmp while" + std::to_string(whileId));
 
-		generator.AddLabel("endwhile" + whileId);
+		generator.AddLabel("endwhile" + std::to_string(whileId));
 	}
 
 	Expression condition;

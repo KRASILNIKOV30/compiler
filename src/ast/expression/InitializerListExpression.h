@@ -2,15 +2,23 @@
 #include "Expression.h"
 #include <vector>
 
-struct InitializerListExpression : Expression
+class InitializerListExpression : public Expression
 {
+public:
+	explicit InitializerListExpression(Type type, std::vector<ExpressionPtr> elements)
+		: Expression(std::move(type))
+		, m_elements(std::move(elements))
+	{
+	}
+
 	void Generate(CodeGenerator& generator) const override
 	{
-		for (auto& element : elements)
+		for (auto& element : m_elements)
 		{
-			element.Generate(generator);
+			element->Generate(generator);
 		}
 	}
 
-	std::vector<Expression> elements;
+private:
+	std::vector<ExpressionPtr> m_elements;
 };
