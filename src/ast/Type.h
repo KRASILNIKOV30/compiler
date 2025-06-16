@@ -1,6 +1,7 @@
 #pragma once
 #include "../parser/RemapToken.h"
 #include <stdexcept>
+#include <variant>
 #include <vector>
 
 enum class PrimitiveType
@@ -11,7 +12,37 @@ enum class PrimitiveType
 	BOOL,
 };
 
-using Type = std::vector<PrimitiveType>;
+struct Type;
+using FunctionType = std::vector<Type>;
+struct Type
+{
+	std::variant<PrimitiveType, FunctionType> type;
+
+	Type(PrimitiveType pt)
+		: type(pt)
+	{
+	}
+
+	Type(FunctionType ft)
+		: type(ft)
+	{
+	}
+
+	Type(std::initializer_list<PrimitiveType> list)
+	{
+		FunctionType funcTypeVec;
+		funcTypeVec.reserve(list.size());
+
+		for (auto pt : list)
+		{
+			funcTypeVec.emplace_back(pt);
+		}
+
+		type = std::move(funcTypeVec);
+	}
+
+	bool operator==(const Type& rhs) const = default;
+};
 
 inline std::unordered_map<TokenType, PrimitiveType> TokenTypeToPrimitiveType = {
 	{ TokenType::INTEGER, PrimitiveType::INT },

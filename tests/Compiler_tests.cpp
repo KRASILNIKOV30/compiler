@@ -134,15 +134,15 @@ std::vector<NegativeTestData> LoadNegativeTestCases()
 	return {
 		{ "declare two constants with the same names",
 			{ "const a = 3;", "const a = 5;" },
-			"Error at line 1: Symbol a is already defined" },
+			"Error at line 2: Symbol a is already defined" },
 
 		{ "use undefined variable",
 			{ "const a = 2 + b;" },
-			"Error at line 0: Symbol b is undefined" },
+			"Error at line 1: Symbol b is undefined" },
 
 		{ "add bool and integer",
 			{ "const a = (2 > 3) + 5;" },
-			"Error at line 0: Binary operator '+' is not applicable to types 'BOOL' and 'INT'." }
+			"Error at line 1: Binary operator '+' is not applicable to types 'BOOL' and 'INT'." }
 	};
 }
 

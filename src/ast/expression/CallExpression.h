@@ -2,20 +2,21 @@
 #include "Expression.h"
 #include <vector>
 
-struct CallExpression : Expression
+class CallExpression : public Expression
 {
 public:
-	explicit CallExpression(std::string callee, Type const& type, std::vector<Expression> arguments)
-		: Expression(type)
-		, m_callee(callee)
-		, m_arguments(arguments)
+	explicit CallExpression(std::string callee, Type type, std::vector<ExpressionPtr>&& arguments)
+		: Expression(std::move(type))
+		, m_callee(std::move(callee))
+		, m_arguments(std::move(arguments))
 	{
 	}
 
-	void Generate(CodeGenerator& generator) const override {
+	void Generate(CodeGenerator& generator) const override
+	{
 		for (auto const& argument : m_arguments)
 		{
-			argument.Generate(generator);
+			argument->Generate(generator);
 		}
 
 		auto functionPos = generator.GetConstantPosOrAdd({ PrimitiveType::STRING }, m_callee);
@@ -25,5 +26,5 @@ public:
 
 private:
 	std::string m_callee;
-	std::vector<Expression> m_arguments;
+	std::vector<ExpressionPtr> m_arguments;
 };

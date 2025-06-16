@@ -1,12 +1,14 @@
 #pragma once
 #include "../ast/declaration/VariableDeclaration.h"
 #include "../ast/expression/BinaryExpression.h"
+#include "../ast/expression/CallExpression.h"
 #include "../ast/expression/Operators.h"
 #include "../ast/expression/Term.h"
 #include "../ast/Program.h"
 #include "../ast/statement/AssignmentStatement.h"
 #include "../lexer/token/Token.h"
 #include "Calculate.h"
+#include "CalculateCallExpressionType.h"
 #include "CalculateType.h"
 #include "SymbolTable.h"
 #include <stack>
@@ -82,8 +84,8 @@ private:
 		auto left = PopExpression();
 		const auto binOp = PopBinaryOperator();
 
-		const auto leftType = left->GetType()[0];
-		const auto rightType = right->GetType()[0];
+		const auto leftType = get<PrimitiveType>(left->GetType().type);
+		const auto rightType = get<PrimitiveType>(right->GetType().type);
 		const auto type = CalculateType(leftType, rightType, binOp);
 
 		if (left->HasValue() && right->HasValue())
@@ -94,7 +96,7 @@ private:
 				leftType,
 				rightType,
 				binOp);
-			ExpressionPtr term = std::make_unique<Term>(result, Type{ type }, false);
+			ExpressionPtr term = std::make_unique<Term>(result, type, false);
 			m_exprStack.emplace(std::move(term));
 		}
 		else
@@ -103,7 +105,7 @@ private:
 				std::move(left),
 				std::move(right),
 				binOp,
-				Type{ type });
+				type);
 			m_exprStack.emplace(std::move(expr));
 		}
 	}
@@ -128,8 +130,7 @@ private:
 
 			const auto& token = get<Token>(node);
 			const auto& type = GetPrimitiveType(token.type);
-			const Type termType = { type };
-			ExpressionPtr term = std::make_unique<Term>(token.value, termType, false);
+			ExpressionPtr term = std::make_unique<Term>(token.value, type, false);
 			m_exprStack.emplace(std::move(term));
 		}
 		// TODO: добавить обработку более длинных терминалов
@@ -145,8 +146,28 @@ private:
 			const auto& symbol = m_table.Get(name);
 			ExpressionPtr term = std::make_unique<Term>(name, symbol.type, true);
 			m_exprStack.emplace(std::move(term));
+			return;
 		}
-		// TODO: обработка id[1] и id(1)
+
+		const auto brace = get<Token>(nodes[1]).value;
+		if (brace == "(")
+		{
+			std::vector<ExpressionPtr> arguments;
+			while (m_exprStack.size() > 1)
+			{
+				arguments.emplace_back(PopExpression());
+			}
+			std::ranges::reverse(arguments);
+			auto callee = PopExpression()->GetValue();
+			const auto function = m_table.Get(callee);
+			const Type calleeType = CalculateCallExpressionType(function.type, arguments);
+			ExpressionPtr callExpr = std::make_unique<CallExpression>(callee, calleeType, std::move(arguments));
+			m_exprStack.emplace(std::move(callExpr));
+		}
+		else
+		{
+			// id[0]
+		}
 	}
 
 	void DeclareVar(Nodes const& nodes, bool isConst)
@@ -155,9 +176,9 @@ private:
 		auto expr = PopExpression();
 		const auto type = expr->GetType();
 		const auto id = token.value;
-		m_table.Add(id, { isConst, { type } });
+		m_table.Add(id, { isConst, type });
 
-		DeclarationPtr decl = std::make_unique<VariableDeclaration>(id, Type{ type }, std::move(expr));
+		DeclarationPtr decl = std::make_unique<VariableDeclaration>(id, type, std::move(expr));
 		m_program.Add(std::move(decl));
 	}
 
