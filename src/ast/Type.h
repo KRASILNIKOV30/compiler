@@ -10,6 +10,7 @@ enum class PrimitiveType
 	FLOAT,
 	STRING,
 	BOOL,
+	VOID,
 };
 
 struct Type;

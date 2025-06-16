@@ -6,6 +6,7 @@
 #include "../ast/expression/Term.h"
 #include "../ast/Program.h"
 #include "../ast/statement/AssignmentStatement.h"
+#include "../ast/statement/ExpressionStatement.h"
 #include "../lexer/token/Token.h"
 #include "Calculate.h"
 #include "CalculateCallExpressionType.h"
@@ -48,6 +49,10 @@ public:
 		else if (rule == "<assignmentStatement>")
 		{
 			GenerateAssignment(nodes);
+		}
+		else if (rule == "<expressionStatement>")
+		{
+			FlushExpression();
 		}
 	}
 
@@ -168,6 +173,12 @@ private:
 		{
 			// id[0]
 		}
+	}
+
+	void FlushExpression()
+	{
+		auto exprStatement = std::make_unique<ExpressionStatement>(PopExpression());
+		m_program.Add(std::move(exprStatement));
 	}
 
 	void DeclareVar(Nodes const& nodes, bool isConst)

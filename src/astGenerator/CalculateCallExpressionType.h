@@ -44,11 +44,45 @@ std::string TypeToString(const Type& type)
 	ss << TypeToString(funcType.back());
 	return ss.str();
 }
+
+Type CalculateFunctionWithoutArgs(const Type& calleeType)
+{
+	const auto& signature = std::get<FunctionType>(calleeType.type);
+	const Type& expectedParamType = signature.front();
+
+	if (std::holds_alternative<PrimitiveType>(expectedParamType.type) && std::get<PrimitiveType>(expectedParamType.type) == PrimitiveType::VOID)
+	{
+		if (signature.size() == 2)
+		{
+			return signature.back();
+		}
+		else // Тип был VOID -> T1 -> T2...
+		{
+			return FunctionType{ signature.begin() + 1, signature.end() };
+		}
+	}
+	else
+	{
+		throw std::runtime_error(
+			"Type mismatch: Function expects an argument of type '" + TypeToString(expectedParamType) + "' but was called with no arguments.");
+	}
+}
 } // namespace
 
 inline Type CalculateCallExpressionType(const Type& calleeType, const std::vector<ExpressionPtr>& arguments)
 {
 	Type currentType = calleeType;
+
+	if (!std::holds_alternative<FunctionType>(currentType.type))
+	{
+		throw std::runtime_error(
+			"Type error: Attempt to call a non-function type '" + TypeToString(currentType) + "'.");
+	}
+
+	if (arguments.empty())
+	{
+		return CalculateFunctionWithoutArgs(currentType);
+	}
 
 	for (size_t i = 0; i < arguments.size(); ++i)
 	{
@@ -77,12 +111,7 @@ inline Type CalculateCallExpressionType(const Type& calleeType, const std::vecto
 				"Type mismatch in function call: Argument " + std::to_string(i + 1) + " has type '" + TypeToString(actualArgType) + "', but function expects '" + TypeToString(expectedParamType) + "'.");
 		}
 
-		FunctionType newSignature;
-		newSignature.reserve(signature.size() - 1);
-		for (const auto& signItem : signature | std::views::drop(1))
-		{
-			newSignature.push_back(signItem);
-		}
+		FunctionType newSignature{ signature.begin() + 1, signature.end() };
 
 		if (newSignature.size() == 1)
 		{

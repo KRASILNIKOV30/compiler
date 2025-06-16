@@ -154,3 +154,69 @@ SCENARIO("Type checking function calls with value-like recursive types", "[type_
 		}
 	}
 }
+
+SCENARIO("function without args test")
+{
+	GIVEN("A function that expects arguments, e.g. INT -> BOOL")
+	{
+		Type funcType = { PrimitiveType::INT, PrimitiveType::BOOL };
+
+		WHEN("it is called with no arguments, i.e. func()")
+		{
+			THEN("it throws a type mismatch exception")
+			{
+				REQUIRE_THROWS_WITH(
+					CalculateCallExpressionType(funcType, {}),
+					"Type mismatch: Function expects an argument of type 'number' but was called with no arguments.");
+			}
+		}
+	}
+
+	GIVEN("A function of type () -> INT (represented as VOID -> INT)")
+	{
+		Type funcType = { PrimitiveType::VOID, PrimitiveType::INT };
+
+		WHEN("it is called with no arguments, i.e. func()")
+		{
+			std::vector<ExpressionPtr> args;
+			Type resultType = CalculateCallExpressionType(funcType, args);
+
+			THEN("the result is the final return type INT")
+			{
+				REQUIRE(resultType == Type(PrimitiveType::INT));
+			}
+		}
+	}
+
+	GIVEN("A procedure of type INT -> VOID")
+	{
+		Type funcType = { PrimitiveType::VOID, PrimitiveType::VOID };
+
+		WHEN("it is called correctly")
+		{
+			const auto resultType = CalculateCallExpressionType(funcType, {});
+
+			THEN("the result type is VOID")
+			{
+				REQUIRE(resultType == PrimitiveType::VOID);
+			}
+		}
+	}
+
+	GIVEN("A non-function type, e.g. INT")
+	{
+		Type nonFuncType(PrimitiveType::INT);
+
+		WHEN("an attempt is made to call it, i.e. my_int_var()")
+		{
+			std::vector<ExpressionPtr> args;
+
+			THEN("it throws a 'calling non-function' exception")
+			{
+				REQUIRE_THROWS_WITH(
+					CalculateCallExpressionType(nonFuncType, args),
+					"Type error: Attempt to call a non-function type 'number'.");
+			}
+		}
+	}
+}
