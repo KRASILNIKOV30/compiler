@@ -36,24 +36,24 @@ public:
 	void Generate(CodeGenerator& generator) const override
 	{
 		static int ifId = 0;
-		++ifId;
 
+		const auto currentIfId = ++ifId;
 		m_condition->Generate(generator);
 
 		std::string jmpLabel = m_alternate.has_value() ? "else" : "endif";
-		generator.AddInstruction("jmp_false " + jmpLabel + std::to_string(ifId));
+		generator.AddInstruction("jmp_false " + jmpLabel + std::to_string(currentIfId));
 
 		m_body->Generate(generator);
-		generator.AddInstruction("jmp endif" + std::to_string(ifId));
+		generator.AddInstruction("jmp endif" + std::to_string(currentIfId));
 
 		if (m_alternate.has_value())
 		{
-			generator.AddLabel("else" + std::to_string(ifId));
+			generator.AddLabel("else" + std::to_string(currentIfId));
 			std::visit([&](const auto& alternative) { Generate(generator, alternative); }, m_alternate.value());
-			generator.AddInstruction("jmp endif" + std::to_string(ifId));
+			generator.AddInstruction("jmp endif" + std::to_string(currentIfId));
 		}
 
-		generator.AddLabel("endif" + std::to_string(ifId));
+		generator.AddLabel("endif" + std::to_string(currentIfId));
 	}
 
 private:
