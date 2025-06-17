@@ -4,11 +4,11 @@
 class MemberExpression : public Expression
 {
 public:
-	explicit MemberExpression(Type type, std::string id, ExpressionPtr index, bool isLValue = true)
+	explicit MemberExpression(Type type, std::string id, std::optional<ExpressionPtr> index, bool isRValue = true)
 		: Expression(std::move(type))
 		, m_id(std::move(id))
 		, m_index(std::move(index))
-		, m_isRValue(isLValue)
+		, m_isRValue(isRValue)
 	{
 	}
 
@@ -25,6 +25,16 @@ public:
 		}
 	}
 
+	[[nodiscard]] std::string GetValue() const override
+	{
+		return m_id;
+	}
+
+	void MakeLValue()
+	{
+		m_isRValue = false;
+	}
+
 	[[nodiscard]] std::string GetId() const { return m_id; }
 	[[nodiscard]] bool IsPartOfArray() const { return m_index.has_value(); }
 
@@ -33,3 +43,5 @@ private:
 	std::optional<ExpressionPtr> m_index;
 	bool m_isRValue = true;
 };
+
+using MemberExpressionPtr = std::unique_ptr<MemberExpression>;

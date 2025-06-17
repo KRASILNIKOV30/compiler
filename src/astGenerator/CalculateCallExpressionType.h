@@ -3,13 +3,25 @@
 #include "../ast/Type.h"
 #include <ranges>
 
-namespace
-{
-std::string TypeToString(const Type& type)
+inline std::string TypeToString(const Type& type)
 {
 	if (std::holds_alternative<PrimitiveType>(type.type))
 	{
 		return StringifyPrimitiveType(std::get<PrimitiveType>(type.type));
+	}
+
+	if (std::holds_alternative<ArrayTypePtr>(type.type))
+	{
+		const auto value = get<ArrayTypePtr>(type.type);
+
+		std::string elementTypeStr = TypeToString(value->elementType);
+
+		if (std::holds_alternative<FunctionType>(value->elementType.type))
+		{
+			return "(" + elementTypeStr + ")[]";
+		}
+
+		return elementTypeStr + "[]";
 	}
 
 	std::stringstream ss;
@@ -44,6 +56,9 @@ std::string TypeToString(const Type& type)
 	ss << TypeToString(funcType.back());
 	return ss.str();
 }
+
+namespace
+{
 
 Type CalculateFunctionWithoutArgs(const Type& calleeType)
 {

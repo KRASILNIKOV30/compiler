@@ -49,3 +49,5 @@ private:
 	std::string m_value;
 	bool m_isReference = false;
 };
+
+using TermPtr = std::unique_ptr<Term>;

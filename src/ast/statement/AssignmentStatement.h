@@ -8,7 +8,7 @@
 class AssignmentStatement : public Statement
 {
 public:
-	AssignmentStatement(MemberExpression left, ExpressionPtr&& right)
+	AssignmentStatement(MemberExpressionPtr&& left, ExpressionPtr&& right)
 		: m_left(std::move(left))
 		, m_right(std::move(right))
 	{
@@ -16,21 +16,21 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
-		if (m_left.IsPartOfArray())
+		if (m_left->IsPartOfArray())
 		{
-			m_left.Generate(generator);
+			m_left->Generate(generator);
 			m_right->Generate(generator);
 			generator.AddInstruction("set_el");
 		}
 		else
 		{
 			m_right->Generate(generator);
-			auto pos = generator.GetVariablePos(m_left.GetId());
+			auto pos = generator.GetVariablePos(m_left->GetId());
 			generator.AddInstruction("set_local " + std::to_string(pos));
 		}
 	}
 
 private:
-	MemberExpression m_left;
+	MemberExpressionPtr m_left;
 	ExpressionPtr m_right;
 };

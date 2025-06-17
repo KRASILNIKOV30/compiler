@@ -15,7 +15,7 @@
 
 <statement> -> <assignmentStatement> | <blockStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <expressionStatement>
 
-<assignmentStatement> -> id = <expression>
+<assignmentStatement> -> <ident> = <expression>
 
 <blockStatement> -> <openBlock> <blockActions> <closeBlock>
 <openBlock> -> {
@@ -24,15 +24,18 @@
 
 <expressionStatement> -> <expression>
 
-<whileStatement> -> while ( <expression> ) <blockStatement>
+<whileStatement> -> <whileHead> <blockStatement>
+<whileHead> -> while ( <expression> )
 
 <returnStatement> -> return <expression>
 
-<ifStatement> -> if ( <expression> ) <blockStatement> <else>
-<else> -> else <elseStatement> | e
-<elseStatement> -> <ifStatement> | <blockStatement>
+<ifStatement> -> <ifHead> <blockStatement> <else>
+<ifHead> -> if ( <expression> )
+<else> -> <elseHead> <blockStatement> | <elseIfHead> <blockStatement> <else> | e
+<elseHead> -> else
+<elseIfHead> -> else if ( <expression> )
 
-<expression> -> <expression> <relOp> <simexp> | <simexp> | <arrowFunctionExpression>
+<expression> -> <expression> <relOp> <simexp> | <simexp> | <arrowFunctionExpression> | <initializerList>
 <expListOpt> -> <expList> | e
 <expList> -> <expList> , <expression> | <expression>
 <simexp> -> <simexp> <lowPriorityOp> <simterm> | <simterm>
@@ -45,5 +48,7 @@
 
 <arrowFunctionExpression> -> ( <paramList> ) -> <arrowFunctionNode>
 <arrowFunctionNode> -> <expression> | <blockStatement>
+
+<initializerList> -> [ <expList> ]
 
 <type> -> id | id -> <type>
