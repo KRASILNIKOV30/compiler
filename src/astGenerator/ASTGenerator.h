@@ -9,6 +9,7 @@
 #include "../ast/statement/AssignmentStatement.h"
 #include "../ast/statement/ExpressionStatement.h"
 #include "../ast/statement/IfStatement.h"
+#include "../ast/statement/WhileStatement.h"
 #include "../lexer/token/Token.h"
 #include "Calculate.h"
 #include "CalculateCallExpressionType.h"
@@ -80,6 +81,10 @@ public:
 		{
 			CloseBlock();
 		}
+		else if (rule == "<whileHead>")
+		{
+			GenerateWhile();
+		}
 		else if (rule == "<ifHead>")
 		{
 			GenerateIf();
@@ -92,7 +97,7 @@ public:
 		{
 			GenerateElseIf();
 		}
-		else if (rule == "<ifStatement>")
+		else if (rule == "<ifStatement>" || rule == "<whileStatement>")
 		{
 			CloseIf();
 		}
@@ -166,6 +171,15 @@ private:
 		auto arrayType = std::make_shared<ArrayType>(arrayElementType.value());
 		auto initializerList = std::make_unique<InitializerListExpression>(arrayType, std::move(exprList));
 		m_exprStack.emplace(std::move(initializerList));
+	}
+
+	void GenerateWhile()
+	{
+		auto condition = GetConditionExpression();
+		auto whileStatement = std::make_unique<WhileStatement>(std::move(condition));
+		auto blockPtr = whileStatement->GetBlock();
+		Add(std::move(whileStatement));
+		OpenOperatorBlock(blockPtr);
 	}
 
 	void CloseIf()

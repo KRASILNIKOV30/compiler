@@ -24,7 +24,8 @@
 
 <expressionStatement> -> <expression>
 
-<whileStatement> -> while ( <expression> ) <blockStatement>
+<whileStatement> -> <whileHead> <blockStatement>
+<whileHead> -> while ( <expression> )
 
 <returnStatement> -> return <expression>
 
