@@ -226,12 +226,14 @@ private:
 			m_blockStack.emplace(block.get());
 			Add(std::move(block));
 		}
+		m_table.CreateScope();
 		m_ignoreNextOpenBlock = false;
 	}
 
 	void CloseBlock()
 	{
 		m_blockStack.pop();
+		m_table.DeleteScope();
 	}
 
 	void GenerateAssignment(Nodes const& nodes)
