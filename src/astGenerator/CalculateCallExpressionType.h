@@ -3,9 +3,7 @@
 #include "../ast/Type.h"
 #include <ranges>
 
-namespace
-{
-std::string TypeToString(const Type& type)
+inline std::string TypeToString(const Type& type)
 {
 	if (std::holds_alternative<PrimitiveType>(type.type))
 	{
@@ -44,6 +42,9 @@ std::string TypeToString(const Type& type)
 	ss << TypeToString(funcType.back());
 	return ss.str();
 }
+
+namespace
+{
 
 Type CalculateFunctionWithoutArgs(const Type& calleeType)
 {

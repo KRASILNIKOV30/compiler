@@ -7,11 +7,13 @@
 #include "../ast/Program.h"
 #include "../ast/statement/AssignmentStatement.h"
 #include "../ast/statement/ExpressionStatement.h"
+#include "../ast/statement/IfStatement.h"
 #include "../lexer/token/Token.h"
 #include "Calculate.h"
 #include "CalculateCallExpressionType.h"
 #include "CalculateType.h"
 #include "SymbolTable.h"
+#include <iostream>
 #include <stack>
 
 using Node = std::variant<std::string, Token>;
@@ -20,8 +22,27 @@ using Nodes = std::vector<Node>;
 class ASTGenerator
 {
 public:
+	ASTGenerator()
+	{
+		m_blockStack.emplace(&m_program);
+	}
+
 	void Generate(std::string const& rule, Nodes const& nodes)
 	{
+		std::cout << rule << " |";
+		for (const auto& node : nodes)
+		{
+			if (holds_alternative<std::string>(node))
+			{
+				std::cout << " " << get<std::string>(node);
+			}
+			else
+			{
+				std::cout << " " << get<Token>(node).value;
+			}
+		}
+		std::cout << std::endl;
+
 		if (rule == "<term>")
 		{
 			GenerateTerm(nodes);
@@ -42,10 +63,6 @@ public:
 		{
 			FoldBinaryOperator(nodes);
 		}
-		else if (rule == "<ident>")
-		{
-			SaveIdent(nodes);
-		}
 		else if (rule == "<assignmentStatement>")
 		{
 			GenerateAssignment(nodes);
@@ -53,6 +70,30 @@ public:
 		else if (rule == "<expressionStatement>")
 		{
 			FlushExpression();
+		}
+		else if (rule == "<openBlock>")
+		{
+			OpenBlock();
+		}
+		else if (rule == "<closeBlock>")
+		{
+			CloseBlock();
+		}
+		else if (rule == "<ifHead>")
+		{
+			GenerateIf();
+		}
+		else if (rule == "<elseHead>")
+		{
+			GenerateElse();
+		}
+		else if (rule == "<elseIfHead>")
+		{
+			GenerateElseIf();
+		}
+		else if (rule == "<ifStatement>")
+		{
+			CloseIf();
 		}
 	}
 
@@ -62,6 +103,73 @@ public:
 	}
 
 private:
+	void CloseIf()
+	{
+		m_ifStack.pop();
+	}
+
+	void GenerateIf()
+	{
+		auto condition = GetConditionExpression();
+		auto ifStatement = std::make_unique<IfStatement>(std::move(condition));
+		const auto thenBlockPtr = ifStatement->GetThenBlock();
+		const auto ifPtr = ifStatement.get();
+		Add(std::move(ifStatement));
+		OpenOperatorBlock(thenBlockPtr);
+		m_ifStack.emplace(ifPtr);
+	}
+
+	ExpressionPtr GetConditionExpression()
+	{
+		auto expr = PopExpression();
+		auto type = expr->GetType();
+		if (!(type == PrimitiveType::BOOL))
+		{
+			throw std::runtime_error("Condition must be a boolean expression, but got '" + TypeToString(type) + "'.");
+		}
+
+		return std::move(expr);
+	}
+
+	void GenerateElse()
+	{
+		const auto currentIf = m_ifStack.top();
+		const auto elseBlock = currentIf->CreateElseBlock();
+		OpenOperatorBlock(elseBlock);
+	}
+
+	void GenerateElseIf()
+	{
+		const auto currentIf = m_ifStack.top();
+		m_ifStack.pop();
+		auto condition = GetConditionExpression();
+		const auto elseIf = currentIf->CreateElseIfBlock(std::move(condition));
+		OpenOperatorBlock(elseIf->GetThenBlock());
+		m_ifStack.emplace(elseIf);
+	}
+
+	void OpenOperatorBlock(BlockStatement* block)
+	{
+		m_blockStack.emplace(block);
+		m_ignoreNextOpenBlock = true;
+	}
+
+	void OpenBlock()
+	{
+		if (!m_ignoreNextOpenBlock)
+		{
+			auto block = std::make_unique<BlockStatement>();
+			m_blockStack.emplace(block.get());
+			Add(std::move(block));
+		}
+		m_ignoreNextOpenBlock = false;
+	}
+
+	void CloseBlock()
+	{
+		m_blockStack.pop();
+	}
+
 	void GenerateAssignment(Nodes const& nodes)
 	{
 		const auto left = get<Token>(nodes[0]).value;
@@ -70,12 +178,7 @@ private:
 		{
 			throw std::runtime_error("Attempt to assign value to constant " + left);
 		}
-		m_program.Add(std::make_unique<AssignmentStatement>(left, PopExpression()));
-	}
-
-	void SaveIdent(Nodes const& nodes)
-	{
-		m_ident = get<Token>(nodes[0]).value;
+		Add(std::make_unique<AssignmentStatement>(left, PopExpression()));
 	}
 
 	void FoldBinaryOperator(Nodes const& nodes)
@@ -178,7 +281,7 @@ private:
 	void FlushExpression()
 	{
 		auto exprStatement = std::make_unique<ExpressionStatement>(PopExpression());
-		m_program.Add(std::move(exprStatement));
+		Add(std::move(exprStatement));
 	}
 
 	void DeclareVar(Nodes const& nodes, bool isConst)
@@ -190,11 +293,15 @@ private:
 		m_table.Add(id, { isConst, type });
 
 		DeclarationPtr decl = std::make_unique<VariableDeclaration>(id, type, std::move(expr));
-		m_program.Add(std::move(decl));
+		Add(std::move(decl));
 	}
 
 	ExpressionPtr PopExpression()
 	{
+		if (m_exprStack.empty())
+		{
+			throw std::logic_error("Pop expression from an empty stack\n");
+		}
 		auto expr = std::move(m_exprStack.top());
 		m_exprStack.pop();
 		return expr;
@@ -207,10 +314,18 @@ private:
 		return binOp;
 	}
 
+	void Add(ProgramNode&& node)
+	{
+		m_blockStack.top()->Add(std::move(node));
+	}
+
 private:
 	SymbolTable m_table;
 	std::stack<ExpressionPtr> m_exprStack;
-	Program m_program;
 	std::stack<BinaryOperators> m_binOps;
-	std::optional<std::string> m_ident;
+
+	std::stack<BlockStatement*> m_blockStack;
+	std::stack<IfStatement*> m_ifStack;
+	Program m_program;
+	bool m_ignoreNextOpenBlock = false;
 };

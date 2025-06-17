@@ -28,9 +28,11 @@
 
 <returnStatement> -> return <expression>
 
-<ifStatement> -> if ( <expression> ) <blockStatement> <else>
-<else> -> else <elseStatement> | e
-<elseStatement> -> <ifStatement> | <blockStatement>
+<ifStatement> -> <ifHead> <blockStatement> <else>
+<ifHead> -> if ( <expression> )
+<else> -> <elseHead> <blockStatement> | <elseIfHead> <blockStatement> <else> | e
+<elseHead> -> else
+<elseIfHead> -> else if ( <expression> )
 
 <expression> -> <expression> <relOp> <simexp> | <simexp> | <arrowFunctionExpression>
 <expListOpt> -> <expList> | e
