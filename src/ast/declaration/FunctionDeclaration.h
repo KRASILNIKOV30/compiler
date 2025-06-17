@@ -8,7 +8,7 @@ struct FunctionDeclaration : Declaration
 	{
 		static int functionId = 0;
 
-		generator.AddInstruction(".function" + ++functionId);
+		generator.AddInstruction(".function" + std::to_string(++functionId));
 		body.Generate(generator);
 		generator.AddInstruction("return");
 	}

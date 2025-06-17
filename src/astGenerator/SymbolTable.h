@@ -19,6 +19,7 @@ public:
 	SymbolTable()
 	{
 		m_scopes.emplace_back();
+		DefNativeFunctions();
 	}
 
 	void CreateScope()
@@ -52,6 +53,14 @@ public:
 
 private:
 	using Scope = std::unordered_map<std::string, Symbol>;
+
+	void DefNativeFunctions()
+	{
+		Add("print", { true, FunctionType{ PrimitiveType::STRING, PrimitiveType::VOID } });
+		Add("println", { true, FunctionType{ PrimitiveType::STRING, PrimitiveType::VOID } });
+		Add("getTimestamp", { true, FunctionType{ PrimitiveType::VOID, PrimitiveType::INT } });
+		Add("sqrt", { true, FunctionType{ PrimitiveType::INT, PrimitiveType::INT } });
+	}
 
 	std::optional<Symbol> Find(std::string const& name)
 	{

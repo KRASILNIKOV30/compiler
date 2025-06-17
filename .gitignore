@@ -243,3 +243,4 @@ cmake-build-*/
 .idea/
 build
 sandbox/
+**/*.prmbc

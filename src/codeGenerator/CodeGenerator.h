@@ -66,7 +66,8 @@ public:
 		outFile << ".def" << std::endl
 				<< ".argc 0" << std::endl
 				<< ".locals " << m_variables.size() << std::endl
-				<< ".name __EntryPoint__" << std::endl << std::endl;
+				<< ".name __EntryPoint__" << std::endl
+				<< std::endl;
 
 		if (!m_constants.empty())
 		{
@@ -75,7 +76,7 @@ public:
 		for (auto const& [type, value] : m_constants)
 		{
 			// FIXME: Hardcoded. Fix when adding arrow functions
-			const auto outputType = type.back();
+			const auto outputType = get<PrimitiveType>(type.type);
 			const auto constValue = outputType == PrimitiveType::STRING ? std::format("\"{}\"", value) : value;
 			outFile << StringifyPrimitiveType(outputType) << " " << constValue << std::endl;
 		}

@@ -2,12 +2,19 @@
 #include "../expression/Expression.h"
 #include "Statement.h"
 
-struct ExpressionStatement : Statement
+class ExpressionStatement : public Statement
 {
-	void Generate(CodeGenerator& generator) const override
+public:
+	ExpressionStatement(ExpressionPtr&& expression)
+		: m_expression(std::move(expression))
 	{
-		expression.Generate(generator);
 	}
 
-	Expression expression;
+	void Generate(CodeGenerator& generator) const override
+	{
+		m_expression->Generate(generator);
+	}
+
+private:
+	ExpressionPtr m_expression;
 };
