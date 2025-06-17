@@ -10,6 +10,20 @@ inline std::string TypeToString(const Type& type)
 		return StringifyPrimitiveType(std::get<PrimitiveType>(type.type));
 	}
 
+	if (std::holds_alternative<ArrayTypePtr>(type.type))
+	{
+		const auto value = get<ArrayTypePtr>(type.type);
+
+		std::string elementTypeStr = TypeToString(value->elementType);
+
+		if (std::holds_alternative<FunctionType>(value->elementType.type))
+		{
+			return "(" + elementTypeStr + ")[]";
+		}
+
+		return elementTypeStr + "[]";
+	}
+
 	std::stringstream ss;
 	const auto& funcType = std::get<FunctionType>(type.type);
 

@@ -59,8 +59,8 @@ TEST_CASE("slr e2e tests")
 	Check("if (a) {} else if (b) {} else {};");
 	Check("var a = (a: int) -> {};");
 	Check("var a: string -> int -> int -> bool = (a: string) -> (a: int, b = 0) -> a > b;");
-	Check("const B = (b = 0) -> {};");
-	Check("const A: int-> void = (b = 0) -> {};");
+	Check("const B = (b: int = 0) -> {};");
+	Check("const A: int-> void = (b: int = 0) -> {};");
 	Check("1;5;");
 	Check("1;5;\n");
 	Check("1;\n5;");

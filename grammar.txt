@@ -15,7 +15,7 @@
 
 <statement> -> <assignmentStatement> | <blockStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <expressionStatement>
 
-<assignmentStatement> -> id = <expression>
+<assignmentStatement> -> <ident> = <expression>
 
 <blockStatement> -> <openBlock> <blockActions> <closeBlock>
 <openBlock> -> {
@@ -34,7 +34,7 @@
 <elseHead> -> else
 <elseIfHead> -> else if ( <expression> )
 
-<expression> -> <expression> <relOp> <simexp> | <simexp> | <arrowFunctionExpression>
+<expression> -> <expression> <relOp> <simexp> | <simexp> | <arrowFunctionExpression> | <initializerList>
 <expListOpt> -> <expList> | e
 <expList> -> <expList> , <expression> | <expression>
 <simexp> -> <simexp> <lowPriorityOp> <simterm> | <simterm>
@@ -47,5 +47,7 @@
 
 <arrowFunctionExpression> -> ( <paramList> ) -> <arrowFunctionNode>
 <arrowFunctionNode> -> <expression> | <blockStatement>
+
+<initializerList> -> [ <expList> ]
 
 <type> -> id | id -> <type>

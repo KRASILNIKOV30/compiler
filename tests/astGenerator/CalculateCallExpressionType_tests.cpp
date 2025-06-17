@@ -220,3 +220,76 @@ SCENARIO("function without args test")
 		}
 	}
 }
+
+SCENARIO("Type checking involving array types", "[type_checker][array]")
+{
+	GIVEN("A function that takes an array and returns an element: (INT[] -> INT)")
+	{
+		Type intArrayType = std::make_shared<ArrayType>(PrimitiveType::INT);
+		Type funcType({ intArrayType, PrimitiveType::INT });
+
+		WHEN("it is called with an array of the correct type")
+		{
+			std::vector<ExpressionPtr> args;
+			args.push_back(std::make_unique<Expression>(intArrayType));
+
+			Type resultType = CalculateCallExpressionType(funcType, args);
+
+			THEN("the result is the element type INT")
+			{
+				REQUIRE(resultType == Type(PrimitiveType::INT));
+			}
+		}
+
+		WHEN("it is called with an array of the wrong type (STRING[])")
+		{
+			Type stringArrayType = std::make_shared<ArrayType>(PrimitiveType::STRING);
+			std::vector<ExpressionPtr> args;
+			args.push_back(std::make_unique<Expression>(stringArrayType));
+
+			THEN("it throws a type mismatch exception")
+			{
+				REQUIRE_THROWS_WITH(
+					CalculateCallExpressionType(funcType, args),
+					"Type mismatch in function call: Argument 1 has type 'string[]', but function expects 'number[]'.");
+			}
+		}
+	}
+
+	GIVEN("A function that returns an array: () -> BOOL[]")
+	{
+		Type boolArrayType = std::make_shared<ArrayType>(PrimitiveType::BOOL);
+		Type funcType({ PrimitiveType::VOID, boolArrayType });
+
+		WHEN("it is called with no arguments")
+		{
+			std::vector<ExpressionPtr> args;
+			Type resultType = CalculateCallExpressionType(funcType, args);
+
+			THEN("the result is an array of BOOL")
+			{
+				REQUIRE(resultType == boolArrayType);
+			}
+		}
+	}
+
+	GIVEN("A higher-order function with arrays: ((INT[] -> BOOL) -> VOID)")
+	{
+		Type intArrayType = std::make_shared<ArrayType>(PrimitiveType::INT);
+		Type paramFuncType({ intArrayType, PrimitiveType::BOOL });
+		Type hofType({ paramFuncType, PrimitiveType::VOID });
+
+		WHEN("it is called with a function that takes an INT[]")
+		{
+			std::vector<ExpressionPtr> args;
+			args.push_back(std::make_unique<Expression>(paramFuncType));
+
+			Type resultType = CalculateCallExpressionType(hofType, args);
+
+			THEN("the result is VOID")
+			{
+				REQUIRE(resultType == Type(PrimitiveType::VOID));
+			}
+		}
+	}
+}

@@ -2,6 +2,7 @@
 #include "../ast/declaration/VariableDeclaration.h"
 #include "../ast/expression/BinaryExpression.h"
 #include "../ast/expression/CallExpression.h"
+#include "../ast/expression/InitializerListExpression.h"
 #include "../ast/expression/Operators.h"
 #include "../ast/expression/Term.h"
 #include "../ast/Program.h"
@@ -95,6 +96,14 @@ public:
 		{
 			CloseIf();
 		}
+		else if (rule == "<initializerList>")
+		{
+			GenerateInitializerList();
+		}
+		else if (rule == "<type>")
+		{
+			GenerateType(nodes);
+		}
 	}
 
 	Program GetProgram()
@@ -103,6 +112,62 @@ public:
 	}
 
 private:
+	void GenerateType(Nodes const& nodes)
+	{
+		if (nodes.size() == 1)
+		{
+			const auto& token = get<Token>(nodes[0]);
+			PrimitiveType pt = GetPrimitiveType(token.type); // Нужна вспомогательная функция
+			m_typeStack.emplace(pt);
+			return;
+		}
+
+		Type returnType = PopType();
+		const auto& token = get<Token>(nodes[0]);
+		PrimitiveType paramType = GetPrimitiveType(token.type);
+
+		FunctionType funcType;
+		funcType.emplace_back(paramType);
+		funcType.emplace_back(std::move(returnType));
+		m_typeStack.emplace(std::move(funcType));
+	}
+
+	void GenerateInitializerList()
+	{
+		std::vector<ExpressionPtr> exprList;
+		std::optional<Type> arrayElementType;
+		while (!m_exprStack.empty())
+		{
+			auto expr = PopExpression();
+			if (arrayElementType.has_value())
+			{
+				const auto currentType = expr->GetType();
+				if (!(currentType == arrayElementType.value()))
+				{
+					std::string errorMessage = "Inconsistent types in initializer list. "
+											   "All elements must have the same type. "
+											   "Expected type '"
+						+ TypeToString(arrayElementType.value()) + "' (based on the first element), "
+																   "but found type '"
+						+ TypeToString(currentType) + "'.";
+					throw std::runtime_error(errorMessage);
+				}
+			}
+			else
+			{
+				arrayElementType = expr->GetType();
+			}
+			exprList.emplace_back(std::move(expr));
+		}
+		std::ranges::reverse(exprList);
+
+		// TODO: Добавить обработку пустого массива
+
+		auto arrayType = std::make_shared<ArrayType>(arrayElementType.value());
+		auto initializerList = std::make_unique<InitializerListExpression>(arrayType, std::move(exprList));
+		m_exprStack.emplace(std::move(initializerList));
+	}
+
 	void CloseIf()
 	{
 		m_ifStack.pop();
@@ -172,13 +237,24 @@ private:
 
 	void GenerateAssignment(Nodes const& nodes)
 	{
-		const auto left = get<Token>(nodes[0]).value;
-		const auto [isConst, type] = m_table.Get(left);
-		if (isConst)
+		auto right = PopExpression();
+
+		std::optional<ExpressionPtr> index = std::nullopt;
+
+		auto leftExpr = PopExpression();
+		auto leftRawPtr = dynamic_cast<MemberExpression*>(leftExpr.get());
+		std::ignore = leftExpr.release();
+		auto leftMember = std::unique_ptr<MemberExpression>(leftRawPtr);
+		leftMember->MakeLValue();
+		auto memberName = leftMember->GetValue();
+
+		const auto [isConst, type] = m_table.Get(memberName);
+		if (isConst && !std::holds_alternative<ArrayTypePtr>(type.type))
 		{
-			throw std::runtime_error("Attempt to assign value to constant " + left);
+			throw std::runtime_error("Attempt to assign value to constant " + memberName);
 		}
-		Add(std::make_unique<AssignmentStatement>(left, PopExpression()));
+
+		Add(std::make_unique<AssignmentStatement>(std::move(leftMember), std::move(right)));
 	}
 
 	void FoldBinaryOperator(Nodes const& nodes)
@@ -252,8 +328,8 @@ private:
 			const auto& token = get<Token>(node);
 			const auto name = token.value;
 			const auto& symbol = m_table.Get(name);
-			ExpressionPtr term = std::make_unique<Term>(name, symbol.type, true);
-			m_exprStack.emplace(std::move(term));
+			ExpressionPtr member = std::make_unique<MemberExpression>(symbol.type, name, std::nullopt);
+			m_exprStack.emplace(std::move(member));
 			return;
 		}
 
@@ -274,7 +350,12 @@ private:
 		}
 		else
 		{
-			// id[0]
+			auto index = PopExpression();
+			auto idExpr = PopExpression();
+			auto name = idExpr->GetValue();
+			auto type = idExpr->GetType();
+			auto member = std::make_unique<MemberExpression>(type, name, std::move(index));
+			m_exprStack.emplace(std::move(member));
 		}
 	}
 
@@ -314,6 +395,17 @@ private:
 		return binOp;
 	}
 
+	Type PopType()
+	{
+		if (m_typeStack.empty())
+		{
+			throw std::logic_error("Pop type from an empty stack");
+		}
+		Type t = std::move(m_typeStack.top());
+		m_typeStack.pop();
+		return t;
+	}
+
 	void Add(ProgramNode&& node)
 	{
 		m_blockStack.top()->Add(std::move(node));
@@ -326,6 +418,8 @@ private:
 
 	std::stack<BlockStatement*> m_blockStack;
 	std::stack<IfStatement*> m_ifStack;
+	std::stack<Type> m_typeStack;
+
 	Program m_program;
 	bool m_ignoreNextOpenBlock = false;
 };
