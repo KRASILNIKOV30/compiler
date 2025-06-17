@@ -19,9 +19,17 @@ public:
 			argument->Generate(generator);
 		}
 
-		const auto functionPos = generator.GetConstantPosOrAdd(PrimitiveType::STRING, m_callee);
-		generator.AddInstruction("get_global " + std::to_string(functionPos));
-		generator.AddInstruction("call");
+		if (NATIVE_FUNCTIONS_WITH_ARGUMENTS_COUNT.contains(m_callee))
+		{
+			const auto functionPos = generator.GetConstantPosOrAdd({ PrimitiveType::STRING }, m_callee);
+			generator.AddInstruction("get_global " + functionPos);
+			generator.AddInstruction("call");
+			generator.AddInstruction("pop");
+		}
+		else
+		{
+			// TODO: доделать вместе с функциями
+		}
 	};
 
 private:

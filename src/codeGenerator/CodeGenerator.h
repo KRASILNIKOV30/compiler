@@ -8,27 +8,34 @@
 class CodeGenerator
 {
 public:
-	CodeGenerator() = default;
+	CodeGenerator()
+	{
+		m_functions.emplace(MAIN, FunctionContext{MAIN, MAIN});
+	}
 
 	void AddInstruction(std::string const& code, bool isNewRow = false)
 	{
 		m_rowId += isNewRow;
 		m_codeBlock << m_rowId << " " << code << std::endl;
+		GetCurrentContext().code << m_rowId << " " << code << std::endl;
 	}
 
 	void AddComment(std::string const& comment)
 	{
 		m_codeBlock << "//" << comment << std::endl;
+		GetCurrentContext().code << "//" << comment << std::endl;
 	}
 
 	void AddLabel(std::string const& label)
 	{
 		m_codeBlock << label << ":" << std::endl;
+		GetCurrentContext().code << label << ":" << std::endl;
 	}
 
 	void AddConstant(std::string const& type, std::string const& value)
 	{
 		m_codeBlock << type << " " << value << std::endl;
+		GetCurrentContext().code << type << " " << value << std::endl;
 	}
 
 	size_t GetVariablePos(std::string const& variableName)
@@ -61,6 +68,17 @@ public:
 		return GetValuePosOrAdd<std::pair<Type, std::string>>(m_constants, std::make_pair(type, value));
 	}
 
+	void BeginFunction(std::string const& functionName, size_t argc)
+	{
+		m_functions.emplace(functionName, FunctionContext{functionName, m_currentLocation, argc});
+		m_currentLocation = functionName;
+	}
+
+	void EndFunction()
+	{
+		m_currentLocation = GetCurrentContext().parentName;
+	}
+
 	void PrintCode(std::ostream& outFile)
 	{
 		outFile << ".def" << std::endl
@@ -88,6 +106,21 @@ public:
 	}
 
 private:
+	struct FunctionContext
+	{
+		std::string name;
+		std::string parentName;
+		size_t argc = 0;
+
+		std::vector<std::string> variables;
+		std::ostringstream code;
+	};
+
+	FunctionContext& GetCurrentContext()
+	{
+		return m_functions.at(m_currentLocation);
+	}
+
 	template <typename T>
 	static size_t GetValuePosOrAdd(std::vector<T>& arr, T const& value)
 	{
@@ -102,8 +135,15 @@ private:
 		return arr.size() - 1;
 	}
 
+	std::unordered_map<std::string, FunctionContext> m_functions; // functionName -> context
+
 	std::ostringstream m_codeBlock;
+	std::ostringstream m_functionsBlock;
 	std::vector<std::string> m_variables;
 	std::vector<std::pair<Type, std::string>> m_constants;
 	int m_rowId = 1;
+	std::string m_currentLocation = MAIN;
+	std::unordered_map<std::string, std::string> m_functionToParent;
+
+	static inline const std::string MAIN = "main";
 };
