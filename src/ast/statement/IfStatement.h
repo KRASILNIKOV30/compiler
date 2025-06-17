@@ -21,7 +21,7 @@ class IfStatement : public Statement
 		m_condition->Generate(generator);
 
 		std::string jmpLabel = m_alternate.has_value() ? "else" : "endif";
-		generator.AddInstruction("jmp_false" + jmpLabel + std::to_string(ifId));
+		generator.AddInstruction("jmp_false " + jmpLabel + std::to_string(ifId));
 
 		m_body.Generate(generator);
 		generator.AddInstruction("jmp endif" + std::to_string(ifId));
