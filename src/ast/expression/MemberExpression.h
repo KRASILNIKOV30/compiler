@@ -4,11 +4,11 @@
 class MemberExpression : public Expression
 {
 public:
-	explicit MemberExpression(Type type, std::string id, ExpressionPtr index, bool isLValue = true)
+	explicit MemberExpression(Type type, std::string id, ExpressionPtr index, bool isRValue = true)
 		: Expression(std::move(type))
 		, m_id(std::move(id))
 		, m_index(std::move(index))
-		, m_isRValue(isLValue)
+		, m_isRValue(isRValue)
 	{
 	}
 
