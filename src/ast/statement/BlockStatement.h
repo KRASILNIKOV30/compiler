@@ -19,34 +19,7 @@ public:
 
 	void Add(ProgramNode&& node)
 	{
-		if (m_topBlock)
-		{
-			m_topBlock->Add(std::move(node));
-			return;
-		}
 		m_body.emplace_back(std::move(node));
-	}
-
-	void OpenBlock()
-	{
-		if (m_topBlock)
-		{
-			m_topBlock->OpenBlock();
-			return;
-		}
-		auto block = std::make_unique<BlockStatement>();
-		m_topBlock = block.get();
-		m_body.emplace_back(std::move(block));
-	}
-
-	void CloseBlock()
-	{
-		if (m_topBlock)
-		{
-			m_topBlock->CloseBlock();
-			return;
-		}
-		m_topBlock = nullptr;
 	}
 
 private:
@@ -61,6 +34,7 @@ private:
 	}
 
 private:
-	BlockStatement* m_topBlock = nullptr;
 	std::vector<ProgramNode> m_body{};
 };
+
+using BlockStatementPtr = std::unique_ptr<BlockStatement>;

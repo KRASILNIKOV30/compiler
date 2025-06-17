@@ -6,11 +6,31 @@
 
 class IfStatement : public Statement
 {
-	IfStatement(ExpressionPtr&& condition, BlockStatement block, std::optional<std::variant<BlockStatement, IfStatement>> alternative = std::nullopt)
+public:
+	IfStatement(ExpressionPtr&& condition)
 		: m_condition(std::move(condition))
-		, m_body(std::move(block))
-		, m_alternate(std::move(alternative))
 	{
+	}
+
+	BlockStatement* GetThenBlock()
+	{
+		return m_body.get();
+	}
+
+	BlockStatement* CreateElseBlock()
+	{
+		BlockStatementPtr elseBlock = std::make_unique<BlockStatement>();
+		const auto ptr = elseBlock.get();
+		m_alternate.emplace(std::move(elseBlock));
+		return ptr;
+	}
+
+	IfStatement* CreateElseIfBlock(ExpressionPtr&& condition)
+	{
+		auto elseIfBlock = std::make_unique<IfStatement>(std::move(condition));
+		const auto ptr = elseIfBlock.get();
+		m_alternate.emplace(std::move(elseIfBlock));
+		return ptr;
 	}
 
 	void Generate(CodeGenerator& generator) const override
@@ -23,7 +43,7 @@ class IfStatement : public Statement
 		std::string jmpLabel = m_alternate.has_value() ? "else" : "endif";
 		generator.AddInstruction("jmp_false" + jmpLabel + std::to_string(ifId));
 
-		m_body.Generate(generator);
+		m_body->Generate(generator);
 		generator.AddInstruction("jmp endif" + std::to_string(ifId));
 
 		if (m_alternate.has_value())
@@ -38,7 +58,6 @@ class IfStatement : public Statement
 
 private:
 	using IfStatementPtr = std::unique_ptr<IfStatement>;
-	using BlockStatementPtr = std::unique_ptr<BlockStatement>;
 
 	static void Generate(CodeGenerator& generator, IfStatementPtr const& ifStatement)
 	{
@@ -51,6 +70,6 @@ private:
 	}
 
 	ExpressionPtr m_condition;
-	BlockStatement m_body;
+	BlockStatementPtr m_body = std::make_unique<BlockStatement>();
 	std::optional<std::variant<IfStatementPtr, BlockStatementPtr>> m_alternate = std::nullopt;
 };
