@@ -14,7 +14,7 @@ struct IfStatement : Statement
 		condition.Generate(generator);
 
 		std::string jmpLabel = alternate.has_value() ? "else" : "endif";
-		generator.AddInstruction("jmp_false" + jmpLabel + std::to_string(ifId));
+		generator.AddInstruction("jmp_false " + jmpLabel + std::to_string(ifId));
 
 		body.Generate(generator);
 		generator.AddInstruction("jmp endif" + ifId);
