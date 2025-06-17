@@ -355,7 +355,12 @@ private:
 			auto idExpr = PopExpression();
 			auto name = idExpr->GetValue();
 			auto type = idExpr->GetType();
-			auto member = std::make_unique<MemberExpression>(type, name, std::move(index));
+			if (!std::holds_alternative<ArrayTypePtr>(type.type))
+			{
+				throw std::runtime_error("Type '" + TypeToString(type) + "' does not provide a subscript operator.");
+			}
+			const auto arrayItemType = std::get<ArrayTypePtr>(type.type)->elementType;
+			auto member = std::make_unique<MemberExpression>(arrayItemType, name, std::move(index));
 			m_exprStack.emplace(std::move(member));
 		}
 	}
