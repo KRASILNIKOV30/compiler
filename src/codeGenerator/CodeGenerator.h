@@ -1,5 +1,6 @@
 #pragma once
 #include "../ast/Type.h"
+#include "Code.h"
 #include <format>
 #include <sstream>
 #include <string>
@@ -20,22 +21,10 @@ public:
 		GetCurrentContext().code << m_rowId << " " << code << std::endl;
 	}
 
-	void AddComment(std::string const& comment)
-	{
-		m_codeBlock << "//" << comment << std::endl;
-		GetCurrentContext().code << "//" << comment << std::endl;
-	}
-
 	void AddLabel(std::string const& label)
 	{
 		m_codeBlock << label << ":" << std::endl;
 		GetCurrentContext().code << label << ":" << std::endl;
-	}
-
-	void AddConstant(std::string const& type, std::string const& value)
-	{
-		m_codeBlock << type << " " << value << std::endl;
-		GetCurrentContext().code << type << " " << value << std::endl;
 	}
 
 	size_t GetVariablePos(std::string const& variableName)
@@ -106,6 +95,7 @@ public:
 	}
 
 private:
+	using Constant = std::pair<Type, std::string>;
 	struct FunctionContext
 	{
 		std::string name;
@@ -113,7 +103,8 @@ private:
 		size_t argc = 0;
 
 		std::vector<std::string> variables;
-		std::ostringstream code;
+		std::vector<Constant> constants;
+		Code code;
 	};
 
 	FunctionContext& GetCurrentContext()
@@ -140,7 +131,7 @@ private:
 	std::ostringstream m_codeBlock;
 	std::ostringstream m_functionsBlock;
 	std::vector<std::string> m_variables;
-	std::vector<std::pair<Type, std::string>> m_constants;
+	std::vector<Constant> m_constants;
 	int m_rowId = 1;
 	std::string m_currentLocation = MAIN;
 	std::unordered_map<std::string, std::string> m_functionToParent;
