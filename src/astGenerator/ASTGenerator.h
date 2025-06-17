@@ -249,7 +249,7 @@ private:
 		leftMember->MakeLValue();
 		auto memberName = leftMember->GetValue();
 
-		const auto [isConst, type] = m_table.Get(memberName);
+		const auto [isConst, type, _] = m_table.Get(memberName);
 		if (isConst && !std::holds_alternative<ArrayTypePtr>(type.type))
 		{
 			throw std::runtime_error("Attempt to assign value to constant " + memberName);
@@ -346,7 +346,7 @@ private:
 			auto callee = PopExpression()->GetValue();
 			const auto function = m_table.Get(callee);
 			const Type calleeType = CalculateCallExpressionType(function.type, arguments);
-			ExpressionPtr callExpr = std::make_unique<CallExpression>(callee, calleeType, std::move(arguments));
+			ExpressionPtr callExpr = std::make_unique<CallExpression>(callee, calleeType, std::move(arguments), function.isNative);
 			m_exprStack.emplace(std::move(callExpr));
 		}
 		else

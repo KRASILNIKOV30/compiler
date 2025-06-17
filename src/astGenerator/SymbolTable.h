@@ -10,6 +10,7 @@ struct Symbol
 {
 	bool isConst;
 	Type type;
+	bool isNative = false;
 };
 
 class SymbolTable
@@ -56,10 +57,10 @@ private:
 
 	void DefNativeFunctions()
 	{
-		Add("print", { true, FunctionType{ PrimitiveType::STRING, PrimitiveType::VOID } });
-		Add("println", { true, FunctionType{ PrimitiveType::STRING, PrimitiveType::VOID } });
-		Add("getTimestamp", { true, FunctionType{ PrimitiveType::VOID, PrimitiveType::INT } });
-		Add("sqrt", { true, FunctionType{ PrimitiveType::INT, PrimitiveType::INT } });
+		Add("print", { true, FunctionType{ PrimitiveType::INT, PrimitiveType::VOID }, true });
+		Add("println", { true, FunctionType{ PrimitiveType::STRING, PrimitiveType::VOID }, true });
+		Add("getTimestamp", { true, FunctionType{ PrimitiveType::VOID, PrimitiveType::INT }, true });
+		Add("sqrt", { true, FunctionType{ PrimitiveType::INT, PrimitiveType::INT }, true });
 	}
 
 	std::optional<Symbol> Find(std::string const& name)
