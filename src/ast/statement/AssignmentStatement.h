@@ -16,15 +16,15 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
+		m_right->Generate(generator);
+
 		if (m_left->IsPartOfArray())
 		{
 			m_left->Generate(generator);
-			m_right->Generate(generator);
 			generator.AddInstruction("set_el");
 		}
 		else
 		{
-			m_right->Generate(generator);
 			auto pos = generator.GetVariablePos(m_left->GetId());
 			generator.AddInstruction("set_local " + std::to_string(pos));
 		}

@@ -70,7 +70,11 @@ inline std::unordered_map<TokenType, PrimitiveType> TokenTypeToPrimitiveType = {
 	{ TokenType::FLOAT, PrimitiveType::FLOAT },
 	{ TokenType::STRING_LITERAL, PrimitiveType::STRING },
 	{ TokenType::TRUE, PrimitiveType::BOOL },
-	{ TokenType::FALSE, PrimitiveType::BOOL }
+	{ TokenType::FALSE, PrimitiveType::BOOL },
+	{ TokenType::TYPE_INTEGER, PrimitiveType::INT },
+	{ TokenType::TYPE_FLOAT, PrimitiveType::FLOAT },
+	{ TokenType::TYPE_BOOL, PrimitiveType::BOOL },
+	{ TokenType::TYPE_STRING, PrimitiveType::STRING }
 };
 
 inline PrimitiveType GetPrimitiveType(TokenType const& tokenType)

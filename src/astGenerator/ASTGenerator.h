@@ -1,5 +1,6 @@
 #pragma once
 #include "../ast/declaration/VariableDeclaration.h"
+#include "../ast/expression/ArrowFunctionExpression.h"
 #include "../ast/expression/BinaryExpression.h"
 #include "../ast/expression/CallExpression.h"
 #include "../ast/expression/InitializerListExpression.h"
@@ -15,6 +16,7 @@
 #include "CalculateCallExpressionType.h"
 #include "CalculateType.h"
 #include "SymbolTable.h"
+#include <iostream>
 #include <stack>
 
 using Node = std::variant<std::string, Token>;
@@ -30,6 +32,20 @@ public:
 
 	void Generate(std::string const& rule, Nodes const& nodes)
 	{
+		std::cout << rule << " |";
+		for (const auto& node : nodes)
+		{
+			if (holds_alternative<std::string>(node))
+			{
+				std::cout << " " << get<std::string>(node);
+			}
+			else
+			{
+				std::cout << " " << get<Token>(node).value;
+			}
+		}
+		std::cout << std::endl;
+
 		if (rule == "<term>")
 		{
 			GenerateTerm(nodes);
@@ -41,6 +57,10 @@ public:
 		else if (rule == "<constDeclaration>")
 		{
 			DeclareVar(nodes, true);
+		}
+		else if (rule == "<variableDeclaration>")
+		{
+			DeclareVar(nodes, false);
 		}
 		else if (rule == "<lowPriorityOp>" || rule == "<highPriorityOp>" || rule == "<relOp>")
 		{
@@ -90,9 +110,17 @@ public:
 		{
 			GenerateInitializerList();
 		}
-		else if (rule == "<type>")
+		else if (rule == "<primitiveType>")
 		{
-			GenerateType(nodes);
+			SavePrimitiveType(nodes);
+		}
+		else if (rule == "<parameter>")
+		{
+			GenerateParameter(nodes);
+		}
+		else if (rule == "<arrowFunctionWithExpr>")
+		{
+			GenerateArrowFunctionWithExpr();
 		}
 	}
 
@@ -102,24 +130,69 @@ public:
 	}
 
 private:
-	void GenerateType(Nodes const& nodes)
+	void GenerateArrowFunctionWithExpr()
 	{
-		if (nodes.size() == 1)
+		auto ft = GetFunctionParamsType();
+		auto expr = PopExpression();
+		ft.emplace_back(expr->GetType());
+
+		auto arrowFunctionExpr = std::make_unique<ArrowFunctionExpression>(ft, PopParameters(), std::move(expr));
+		m_exprStack.emplace(std::move(arrowFunctionExpr));
+	}
+
+	FunctionType GetFunctionParamsType()
+	{
+		FunctionType ft{};
+		for (const auto& paramType : m_parameters
+				| std::views::transform([&](const auto& p) { return m_table.Get(p).type; }))
 		{
-			const auto& token = get<Token>(nodes[0]);
-			PrimitiveType pt = GetPrimitiveType(token.type); // Нужна вспомогательная функция
-			m_typeStack.emplace(pt);
-			return;
+			ft.emplace_back(paramType);
 		}
+		if (ft.empty())
+		{
+			ft.emplace_back(PrimitiveType::VOID);
+		}
+		return ft;
+	}
 
-		Type returnType = PopType();
-		const auto& token = get<Token>(nodes[0]);
-		PrimitiveType paramType = GetPrimitiveType(token.type);
+	void GenerateParameter(Nodes const& nodes)
+	{
+		const auto name = get<Token>(nodes.front()).value;
+		if (m_parameters.empty())
+		{
+			m_table.CreateScope();
+		}
+		m_parameters.emplace_back(name);
+		m_table.Add(name, { false, m_type.value() });
+		m_type.reset();
+	}
 
-		FunctionType funcType;
-		funcType.emplace_back(paramType);
-		funcType.emplace_back(std::move(returnType));
-		m_typeStack.emplace(std::move(funcType));
+	void SavePrimitiveType(Nodes const& nodes)
+	{
+		auto pt = GetPrimitiveType(get<Token>(nodes[0]).type);
+		if (m_type.has_value())
+		{
+			if (holds_alternative<FunctionType>(m_type->type))
+			{
+				auto ft = get<FunctionType>(m_type->type);
+				ft.emplace_back(pt);
+				m_type.emplace(ft);
+			}
+			else if (holds_alternative<ArrayTypePtr>(m_type->type))
+			{
+				auto at = get<ArrayTypePtr>(m_type->type);
+				m_type.emplace(FunctionType{ at, pt });
+			}
+			else
+			{
+				auto ptCurrent = get<PrimitiveType>(m_type->type);
+				m_type.emplace(FunctionType{ ptCurrent, pt });
+			}
+		}
+		else
+		{
+			m_type.emplace(pt);
+		}
 	}
 
 	void GenerateInitializerList()
@@ -215,6 +288,7 @@ private:
 	void OpenOperatorBlock(BlockStatement* block)
 	{
 		m_blockStack.emplace(block);
+		m_table.CreateScope();
 		m_ignoreNextOpenBlock = true;
 	}
 
@@ -225,8 +299,8 @@ private:
 			auto block = std::make_unique<BlockStatement>();
 			m_blockStack.emplace(block.get());
 			Add(std::move(block));
+			m_table.CreateScope();
 		}
-		m_table.CreateScope();
 		m_ignoreNextOpenBlock = false;
 	}
 
@@ -249,7 +323,7 @@ private:
 		leftMember->MakeLValue();
 		auto memberName = leftMember->GetValue();
 
-		const auto [isConst, type] = m_table.Get(memberName);
+		const auto [isConst, type, _] = m_table.Get(memberName);
 		if (isConst && !std::holds_alternative<ArrayTypePtr>(type.type))
 		{
 			throw std::runtime_error("Attempt to assign value to constant " + memberName);
@@ -346,7 +420,7 @@ private:
 			auto callee = PopExpression()->GetValue();
 			const auto function = m_table.Get(callee);
 			const Type calleeType = CalculateCallExpressionType(function.type, arguments);
-			ExpressionPtr callExpr = std::make_unique<CallExpression>(callee, calleeType, std::move(arguments));
+			ExpressionPtr callExpr = std::make_unique<CallExpression>(callee, calleeType, std::move(arguments), function.isNative);
 			m_exprStack.emplace(std::move(callExpr));
 		}
 		else
@@ -355,7 +429,12 @@ private:
 			auto idExpr = PopExpression();
 			auto name = idExpr->GetValue();
 			auto type = idExpr->GetType();
-			auto member = std::make_unique<MemberExpression>(type, name, std::move(index));
+			if (!std::holds_alternative<ArrayTypePtr>(type.type))
+			{
+				throw std::runtime_error("Type '" + TypeToString(type) + "' does not provide a subscript operator.");
+			}
+			const auto arrayItemType = std::get<ArrayTypePtr>(type.type)->elementType;
+			auto member = std::make_unique<MemberExpression>(arrayItemType, name, std::move(index));
 			m_exprStack.emplace(std::move(member));
 		}
 	}
@@ -396,20 +475,16 @@ private:
 		return binOp;
 	}
 
-	Type PopType()
-	{
-		if (m_typeStack.empty())
-		{
-			throw std::logic_error("Pop type from an empty stack");
-		}
-		Type t = std::move(m_typeStack.top());
-		m_typeStack.pop();
-		return t;
-	}
-
 	void Add(ProgramNode&& node)
 	{
 		m_blockStack.top()->Add(std::move(node));
+	}
+
+	std::vector<std::string> PopParameters()
+	{
+		const auto copy = m_parameters;
+		m_parameters.clear();
+		return copy;
 	}
 
 private:
@@ -419,7 +494,8 @@ private:
 
 	std::stack<BlockStatement*> m_blockStack;
 	std::stack<IfStatement*> m_ifStack;
-	std::stack<Type> m_typeStack;
+	std::optional<Type> m_type = std::nullopt;
+	std::vector<std::string> m_parameters;
 
 	Program m_program;
 	bool m_ignoreNextOpenBlock = false;

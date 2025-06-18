@@ -14,16 +14,16 @@ public:
 	void Generate(CodeGenerator& generator) const override
 	{
 		static int whileId = 0;
-		++whileId;
 
-		generator.AddLabel("while" + std::to_string(whileId));
+		const int currentWhileId = ++whileId;
+		generator.AddLabel("while" + std::to_string(currentWhileId));
 		m_condition->Generate(generator);
-		generator.AddInstruction("jmp_false endwhile" + std::to_string(whileId));
+		generator.AddInstruction("jmp_false endwhile" + std::to_string(currentWhileId));
 
 		m_body->Generate(generator);
-		generator.AddInstruction("jmp while" + std::to_string(whileId));
+		generator.AddInstruction("jmp while" + std::to_string(currentWhileId));
 
-		generator.AddLabel("endwhile" + std::to_string(whileId));
+		generator.AddLabel("endwhile" + std::to_string(currentWhileId));
 	}
 
 	BlockStatement* GetBlock()

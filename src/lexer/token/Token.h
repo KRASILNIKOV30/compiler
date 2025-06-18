@@ -46,6 +46,10 @@ enum class TokenType
 	WHILE, // while
 	RETURN, // return
 	ARROW, // ->
+	TYPE_INTEGER,
+	TYPE_FLOAT,
+	TYPE_BOOL,
+	TYPE_STRING,
 };
 
 struct Token

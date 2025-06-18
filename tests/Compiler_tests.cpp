@@ -131,7 +131,7 @@ std::vector<TestData> LoadTestCases()
 				"const b = 1;",
 				"if (a > b)",
 				"{",
-					"const c = 2;",
+				"const c = 2;",
 				"};" },
 			{
 				".def",
@@ -165,7 +165,7 @@ std::vector<TestData> LoadTestCases()
 				"const b = 1;",
 				"if (a > b)",
 				"{",
-					"const c = 2;",
+				"const c = 2;",
 				"}",
 				"else",
 				"{",
@@ -208,7 +208,7 @@ std::vector<TestData> LoadTestCases()
 				"const b = 1;",
 				"if (a > b)",
 				"{",
-					"const c = a - b;",
+				"const c = a - b;",
 				"}",
 				"else if (a < b)",
 				"{",
@@ -257,8 +257,8 @@ std::vector<TestData> LoadTestCases()
 				"1 set_local 4",
 				"1 jmp endif4",
 				"endif4:",
-				"1 jmp endif4",
-				"endif4:",
+				"1 jmp endif3",
+				"endif3:",
 				"1 return",
 			} },
 
@@ -266,7 +266,7 @@ std::vector<TestData> LoadTestCases()
 			{ "const a = 0;",
 				"while (a < 0)",
 				"{",
-					"const b = 1;",
+				"const b = 1;",
 				"};" },
 			{
 				".def",
@@ -295,7 +295,7 @@ std::vector<TestData> LoadTestCases()
 
 		{ "get array element",
 			{ "const a = [123, 123];",
-					"a[0] = 321;"
+				"a[0] = 321;"
 				"const b = a[0];" },
 			{
 				".def",
@@ -305,23 +305,44 @@ std::vector<TestData> LoadTestCases()
 				"",
 				".constants",
 				"number 123",
-				"number 0",
 				"number 321",
+				"number 0",
 				"",
 				".code",
 				"1 const 0",
 				"1 const 0",
+				"1 create_arr 2",
 				"1 set_local 0",
-				"1 get_local 0",
 				"1 const 1",
+				"1 get_local 0",
 				"1 const 2",
 				"1 set_el",
 				"1 get_local 0",
-				"1 const 1",
+				"1 const 2",
 				"1 get_el",
 				"1 set_local 1",
 				"1 return",
 			} },
+
+		{ "change variable value",
+			{ "var a = 5;", "a = 10;" },
+			{
+				".def",
+				".argc 0",
+				".locals 1",
+				".name __EntryPoint__",
+				"",
+				".constants",
+				"number 5",
+				"number 10",
+				"",
+				".code",
+				"1 const 0",
+				"1 set_local 0",
+				"1 const 1",
+				"1 set_local 0",
+				"1 return",
+			} }
 	};
 }
 
