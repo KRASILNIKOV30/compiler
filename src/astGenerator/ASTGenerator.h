@@ -594,7 +594,7 @@ private:
 	std::stack<IfStatement*> m_ifStack;
 	std::optional<Type> m_type = std::nullopt;
 	std::vector<std::string> m_parameters;
-	ArrowFunctionExpression* m_openedFunctionPtr;
+	ArrowFunctionExpression* m_openedFunctionPtr = nullptr;
 
 	Program m_program;
 	bool m_ignoreNextOpenBlock = false;
