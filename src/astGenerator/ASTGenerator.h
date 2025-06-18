@@ -1,5 +1,6 @@
 #pragma once
 #include "../ast/declaration/VariableDeclaration.h"
+#include "../ast/expression/ArrowFunctionExpression.h"
 #include "../ast/expression/BinaryExpression.h"
 #include "../ast/expression/CallExpression.h"
 #include "../ast/expression/InitializerListExpression.h"
@@ -113,6 +114,10 @@ public:
 		{
 			GenerateParameter(nodes);
 		}
+		else if (rule == "<arrowFunctionWithExpr>")
+		{
+			GenerateArrowFunctionWithExpr();
+		}
 	}
 
 	Program GetProgram()
@@ -121,6 +126,31 @@ public:
 	}
 
 private:
+	void GenerateArrowFunctionWithExpr()
+	{
+		auto ft = GetFunctionParamsType();
+		auto expr = PopExpression();
+		ft.emplace_back(expr->GetType());
+
+		auto arrowFunctionExpr = std::make_unique<ArrowFunctionExpression>(ft, PopParameters(), std::move(expr));
+		m_exprStack.emplace(std::move(arrowFunctionExpr));
+	}
+
+	FunctionType GetFunctionParamsType()
+	{
+		FunctionType ft{};
+		for (const auto& paramType : m_parameters
+				| std::views::transform([&](const auto& p) { return m_table.Get(p).type; }))
+		{
+			ft.emplace_back(paramType);
+		}
+		if (ft.empty())
+		{
+			ft.emplace_back(PrimitiveType::VOID);
+		}
+		return ft;
+	}
+
 	void GenerateParameter(Nodes const& nodes)
 	{
 		const auto name = get<Token>(nodes.front()).value;
@@ -128,6 +158,7 @@ private:
 		{
 			m_table.CreateScope();
 		}
+		m_parameters.emplace_back(name);
 		m_table.Add(name, { false, m_type.value() });
 		m_type.reset();
 	}
@@ -253,6 +284,7 @@ private:
 	void OpenOperatorBlock(BlockStatement* block)
 	{
 		m_blockStack.emplace(block);
+		m_table.CreateScope();
 		m_ignoreNextOpenBlock = true;
 	}
 
@@ -263,8 +295,8 @@ private:
 			auto block = std::make_unique<BlockStatement>();
 			m_blockStack.emplace(block.get());
 			Add(std::move(block));
+			m_table.CreateScope();
 		}
-		m_table.CreateScope();
 		m_ignoreNextOpenBlock = false;
 	}
 
@@ -442,6 +474,13 @@ private:
 	void Add(ProgramNode&& node)
 	{
 		m_blockStack.top()->Add(std::move(node));
+	}
+
+	std::vector<std::string> PopParameters()
+	{
+		const auto copy = m_parameters;
+		m_parameters.clear();
+		return copy;
 	}
 
 private:
