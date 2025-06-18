@@ -323,6 +323,26 @@ std::vector<TestData> LoadTestCases()
 				"1 set_local 1",
 				"1 return",
 			} },
+
+		{ "change variable value",
+			{ "var a = 5;", "a = 10;" },
+			{
+				".def",
+				".argc 0",
+				".locals 1",
+				".name __EntryPoint__",
+				"",
+				".constants",
+				"number 5",
+				"number 10",
+				"",
+				".code",
+				"1 const 0",
+				"1 set_local 0",
+				"1 const 1",
+				"1 set_local 0",
+				"1 return",
+			} }
 	};
 }
 

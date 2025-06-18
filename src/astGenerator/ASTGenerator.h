@@ -58,6 +58,10 @@ public:
 		{
 			DeclareVar(nodes, true);
 		}
+		else if (rule == "<variableDeclaration>")
+		{
+			DeclareVar(nodes, false);
+		}
 		else if (rule == "<lowPriorityOp>" || rule == "<highPriorityOp>" || rule == "<relOp>")
 		{
 			SaveBinaryOperator(nodes);
