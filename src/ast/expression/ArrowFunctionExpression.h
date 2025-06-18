@@ -30,7 +30,38 @@ public:
 		return get<BlockStatementPtr>(m_body).get();
 	}
 
+	void Generate(CodeGenerator &generator) const override
+	{
+		static auto arrowFunctionId = 0;
+		const auto currentArrowFunctionId = ++arrowFunctionId;
+
+		generator.AddInstruction("load_fn " + std::to_string(currentArrowFunctionId));
+		generator.AddInstruction("closure");
+
+		std::string arrowFunctionName = "arrowFunction" + std::to_string(currentArrowFunctionId);
+		generator.BeginFunction(arrowFunctionName, m_params.size());
+
+		for (auto const& param: m_params)
+		{
+			generator.GetVariablePosOrAdd(param);
+		}
+
+		std::visit([&](const auto& body) { Generate(generator, body); }, m_body);
+
+		generator.EndFunction();
+	}
+
 private:
+	static void Generate(CodeGenerator& generator, ExpressionPtr const& expression)
+	{
+		expression->Generate(generator);
+	}
+
+	static void Generate(CodeGenerator& generator, BlockStatementPtr const& block)
+	{
+		block->Generate(generator);
+	}
+
 	std::vector<std::string> m_params;
 	std::variant<ExpressionPtr, BlockStatementPtr> m_body;
 };

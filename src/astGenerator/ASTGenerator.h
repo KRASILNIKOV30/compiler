@@ -32,20 +32,6 @@ public:
 
 	void Generate(std::string const& rule, Nodes const& nodes)
 	{
-		std::cout << rule << " |";
-		for (const auto& node : nodes)
-		{
-			if (holds_alternative<std::string>(node))
-			{
-				std::cout << " " << get<std::string>(node);
-			}
-			else
-			{
-				std::cout << " " << get<Token>(node).value;
-			}
-		}
-		std::cout << std::endl;
-
 		if (rule == "<term>")
 		{
 			GenerateTerm(nodes);

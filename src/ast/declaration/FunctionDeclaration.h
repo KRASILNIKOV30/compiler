@@ -15,10 +15,10 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
-		static int functionId = 0;
+		static auto functionId = 0;
 
 		generator.AddInstruction(".function" + std::to_string(++functionId));
-		body.Generate(generator);
+		m_body.Generate(generator);
 		generator.AddInstruction("return");
 	}
 

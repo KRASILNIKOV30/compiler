@@ -13,9 +13,9 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
-		static int whileId = 0;
+		static auto whileId = 0;
 
-		const int currentWhileId = ++whileId;
+		const auto currentWhileId = ++whileId;
 		generator.AddLabel("while" + std::to_string(currentWhileId));
 		m_condition->Generate(generator);
 		generator.AddInstruction("jmp_false endwhile" + std::to_string(currentWhileId));

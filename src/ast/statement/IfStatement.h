@@ -35,7 +35,7 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
-		static int ifId = 0;
+		static auto ifId = 0;
 
 		const auto currentIfId = ++ifId;
 		m_condition->Generate(generator);

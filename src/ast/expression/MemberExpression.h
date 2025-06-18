@@ -14,7 +14,16 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
-		generator.AddInstruction("get_local " + std::to_string(generator.GetVariablePos(m_id)));
+		const auto varContext = generator.GetVariableContextPos(m_id);
+		if (varContext.isVariableFromParent)
+		{
+			generator.AddInstruction("get_upvalue " + std::to_string(varContext.pos));
+		}
+		else
+		{
+			generator.AddInstruction("get_local " + std::to_string(varContext.pos));
+		}
+
 		if (m_index.has_value())
 		{
 			m_index.value()->Generate(generator);

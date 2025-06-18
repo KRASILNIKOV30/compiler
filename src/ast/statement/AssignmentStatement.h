@@ -25,8 +25,15 @@ public:
 		}
 		else
 		{
-			auto pos = generator.GetVariablePos(m_left->GetId());
-			generator.AddInstruction("set_local " + std::to_string(pos));
+			const auto varContext = generator.GetVariableContextPos(m_left->GetId());
+			if (varContext.isVariableFromParent)
+			{
+				generator.AddInstruction("set_upvalue " + std::to_string(varContext.pos));
+			}
+			else
+			{
+				generator.AddInstruction("set_local " + std::to_string(varContext.pos));
+			}
 		}
 	}
 
