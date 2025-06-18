@@ -10,6 +10,7 @@
 #include "../ast/statement/AssignmentStatement.h"
 #include "../ast/statement/ExpressionStatement.h"
 #include "../ast/statement/IfStatement.h"
+#include "../ast/statement/ReturnStatement.h"
 #include "../ast/statement/WhileStatement.h"
 #include "../lexer/token/Token.h"
 #include "Calculate.h"
@@ -108,6 +109,18 @@ public:
 		{
 			GenerateArrowFunctionWithExpr();
 		}
+		else if (rule == "<arrowFunctionWithBlockHead>")
+		{
+			GenerateArrowFunctionWithBlock();
+		}
+		else if (rule == "<arrowFunctionWithBlock>")
+		{
+			CloseFunctionBlock();
+		}
+		else if (rule == "<returnStatement>")
+		{
+			GenerateReturn();
+		}
 	}
 
 	Program GetProgram()
@@ -116,6 +129,51 @@ public:
 	}
 
 private:
+	void GenerateReturn()
+	{
+		if (!m_openedFunctionPtr)
+		{
+			throw std::runtime_error("Return can be called in function only.");
+		}
+		auto ft = get<FunctionType>(m_openedFunctionPtr->GetType().type);
+		ExpressionPtr expr;
+		if (m_exprStack.empty())
+		{
+			expr = nullptr;
+			ft.emplace_back(PrimitiveType::VOID);
+		}
+		else
+		{
+			expr = PopExpression();
+			ft.emplace_back(expr->GetType());
+		}
+		m_openedFunctionPtr->SetType(ft);
+		m_openedFunctionPtr = nullptr;
+		Add(std::make_unique<ReturnStatement>(std::move(expr)));
+	}
+
+	void GenerateArrowFunctionWithBlock()
+	{
+		auto ft = GetFunctionParamsType();
+		auto arrowFunction = std::make_unique<ArrowFunctionExpression>(ft, PopParameters());
+		auto block = arrowFunction->GetBlock();
+		m_openedFunctionPtr = arrowFunction.get();
+		m_exprStack.emplace(std::move(arrowFunction));
+		m_blockStack.emplace(block);
+		m_ignoreNextOpenBlock = true;
+	}
+
+	void CloseFunctionBlock()
+	{
+		if (m_openedFunctionPtr)
+		{
+			auto ft = get<FunctionType>(m_openedFunctionPtr->GetType().type);
+			ft.emplace_back(PrimitiveType::VOID);
+			m_openedFunctionPtr->SetType(ft);
+		}
+		m_openedFunctionPtr = nullptr;
+	}
+
 	void GenerateArrowFunctionWithExpr()
 	{
 		auto ft = GetFunctionParamsType();
@@ -482,6 +540,7 @@ private:
 	std::stack<IfStatement*> m_ifStack;
 	std::optional<Type> m_type = std::nullopt;
 	std::vector<std::string> m_parameters;
+	ArrowFunctionExpression* m_openedFunctionPtr;
 
 	Program m_program;
 	bool m_ignoreNextOpenBlock = false;

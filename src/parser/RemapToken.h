@@ -49,7 +49,7 @@ inline std::unordered_map<TokenType, std::string> TokenTypeToString = {
 	{ TokenType::TYPE_INTEGER, "int" },
 	{ TokenType::TYPE_FLOAT, "float" },
 	{ TokenType::TYPE_BOOL, "bool" },
-	{ TokenType::TYPE_STRING, "string" }
+	{ TokenType::TYPE_STRING, "string" },
 };
 
 inline std::string RemapTokenTypeToString(const TokenType type)
