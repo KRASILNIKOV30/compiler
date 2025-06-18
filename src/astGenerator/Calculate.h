@@ -24,25 +24,25 @@ inline std::string FormatFloat(double val)
 
 inline std::string Calculate(const std::string& left, const std::string& right,
 	PrimitiveType leftType, PrimitiveType rightType,
-	BinaryOperators op)
+	BinaryOperator op)
 {
 	if (leftType == PrimitiveType::STRING)
 	{
 		switch (op)
 		{
-		case BinaryOperators::PLUS:
+		case BinaryOperator::PLUS:
 			return left + right;
-		case BinaryOperators::EQUAL:
+		case BinaryOperator::EQUAL:
 			return (left == right) ? "true" : "false";
-		case BinaryOperators::NOT_EQUAL:
+		case BinaryOperator::NOT_EQUAL:
 			return (left != right) ? "true" : "false";
-		case BinaryOperators::LESS:
+		case BinaryOperator::LESS:
 			return (left < right) ? "true" : "false";
-		case BinaryOperators::GREATER:
+		case BinaryOperator::GREATER:
 			return (left > right) ? "true" : "false";
-		case BinaryOperators::LESS_OR_EQUAL:
+		case BinaryOperator::LESS_OR_EQUAL:
 			return (left <= right) ? "true" : "false";
-		case BinaryOperators::GREATER_OR_EQUAL:
+		case BinaryOperator::GREATER_OR_EQUAL:
 			return (left >= right) ? "true" : "false";
 		default:
 			break;
@@ -55,13 +55,13 @@ inline std::string Calculate(const std::string& left, const std::string& right,
 		bool rightBool = (right == "true");
 		switch (op)
 		{
-		case BinaryOperators::AND:
+		case BinaryOperator::AND:
 			return (leftBool && rightBool) ? "true" : "false";
-		case BinaryOperators::OR:
+		case BinaryOperator::OR:
 			return (leftBool || rightBool) ? "true" : "false";
-		case BinaryOperators::EQUAL:
+		case BinaryOperator::EQUAL:
 			return (leftBool == rightBool) ? "true" : "false";
-		case BinaryOperators::NOT_EQUAL:
+		case BinaryOperator::NOT_EQUAL:
 			return (leftBool != rightBool) ? "true" : "false";
 		default:
 			break;
@@ -75,28 +75,28 @@ inline std::string Calculate(const std::string& left, const std::string& right,
 
 		switch (op)
 		{
-		case BinaryOperators::PLUS:
+		case BinaryOperator::PLUS:
 			return FormatFloat(leftNum + rightNum);
-		case BinaryOperators::MINUS:
+		case BinaryOperator::MINUS:
 			return FormatFloat(leftNum - rightNum);
-		case BinaryOperators::MUL:
+		case BinaryOperator::MUL:
 			return FormatFloat(leftNum * rightNum);
-		case BinaryOperators::DIVISION:
+		case BinaryOperator::DIVISION:
 			if (rightNum == 0.0)
 				throw std::runtime_error("Division by zero");
 			return FormatFloat(leftNum / rightNum);
 
-		case BinaryOperators::EQUAL:
+		case BinaryOperator::EQUAL:
 			return (leftNum == rightNum) ? "true" : "false";
-		case BinaryOperators::NOT_EQUAL:
+		case BinaryOperator::NOT_EQUAL:
 			return (leftNum != rightNum) ? "true" : "false";
-		case BinaryOperators::LESS:
+		case BinaryOperator::LESS:
 			return (leftNum < rightNum) ? "true" : "false";
-		case BinaryOperators::GREATER:
+		case BinaryOperator::GREATER:
 			return (leftNum > rightNum) ? "true" : "false";
-		case BinaryOperators::LESS_OR_EQUAL:
+		case BinaryOperator::LESS_OR_EQUAL:
 			return (leftNum <= rightNum) ? "true" : "false";
-		case BinaryOperators::GREATER_OR_EQUAL:
+		case BinaryOperator::GREATER_OR_EQUAL:
 			return (leftNum >= rightNum) ? "true" : "false";
 		default:
 			break;
@@ -110,36 +110,36 @@ inline std::string Calculate(const std::string& left, const std::string& right,
 
 		switch (op)
 		{
-		case BinaryOperators::PLUS:
+		case BinaryOperator::PLUS:
 			return std::to_string(leftNum + rightNum);
-		case BinaryOperators::MINUS:
+		case BinaryOperator::MINUS:
 			return std::to_string(leftNum - rightNum);
-		case BinaryOperators::MUL:
+		case BinaryOperator::MUL:
 			return std::to_string(leftNum * rightNum);
-		case BinaryOperators::DIV:
+		case BinaryOperator::DIV:
 			if (rightNum == 0)
 			{
 				throw std::runtime_error("Division by zero");
 			}
 			return std::to_string(leftNum / rightNum);
-		case BinaryOperators::MOD:
+		case BinaryOperator::MOD:
 			if (rightNum == 0)
 			{
 				throw std::runtime_error("Division by zero");
 			}
 			return std::to_string(leftNum % rightNum);
 
-		case BinaryOperators::EQUAL:
+		case BinaryOperator::EQUAL:
 			return (leftNum == rightNum) ? "true" : "false";
-		case BinaryOperators::NOT_EQUAL:
+		case BinaryOperator::NOT_EQUAL:
 			return (leftNum != rightNum) ? "true" : "false";
-		case BinaryOperators::LESS:
+		case BinaryOperator::LESS:
 			return (leftNum < rightNum) ? "true" : "false";
-		case BinaryOperators::GREATER:
+		case BinaryOperator::GREATER:
 			return (leftNum > rightNum) ? "true" : "false";
-		case BinaryOperators::LESS_OR_EQUAL:
+		case BinaryOperator::LESS_OR_EQUAL:
 			return (leftNum <= rightNum) ? "true" : "false";
-		case BinaryOperators::GREATER_OR_EQUAL:
+		case BinaryOperator::GREATER_OR_EQUAL:
 			return (leftNum >= rightNum) ? "true" : "false";
 
 		default:

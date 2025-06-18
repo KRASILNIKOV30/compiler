@@ -512,7 +512,7 @@ private:
 		return expr;
 	}
 
-	BinaryOperators PopBinaryOperator()
+	BinaryOperator PopBinaryOperator()
 	{
 		auto binOp = m_binOps.top();
 		m_binOps.pop();
@@ -534,7 +534,7 @@ private:
 private:
 	SymbolTable m_table;
 	std::stack<ExpressionPtr> m_exprStack;
-	std::stack<BinaryOperators> m_binOps;
+	std::stack<BinaryOperator> m_binOps;
 
 	std::stack<BlockStatement*> m_blockStack;
 	std::stack<IfStatement*> m_ifStack;

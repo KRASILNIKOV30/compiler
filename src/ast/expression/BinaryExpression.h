@@ -6,7 +6,7 @@
 class BinaryExpression : public Expression
 {
 public:
-	BinaryExpression(ExpressionPtr&& left, ExpressionPtr&& right, BinaryOperators oper, Type type)
+	BinaryExpression(ExpressionPtr&& left, ExpressionPtr&& right, BinaryOperator oper, Type type)
 		: Expression(std::move(type))
 		, m_left(std::move(left))
 		, m_right(std::move(right))
@@ -27,5 +27,5 @@ public:
 
 private:
 	ExpressionPtr m_left, m_right;
-	BinaryOperators m_oper;
+	BinaryOperator m_oper;
 };
