@@ -21,18 +21,24 @@ public:
 			argument->Generate(generator);
 		}
 
-		size_t functionPos;
 		if (m_isNativeCallee)
 		{
-			functionPos = generator.GetConstantPosOrAdd(PrimitiveType::STRING, m_callee);
+			generator.AddInstruction("get_global " + std::to_string(generator.GetConstantPosOrAdd(PrimitiveType::STRING, m_callee)));
 		}
 		else
 		{
-			functionPos = generator.GetFunctionPos(m_callee);
+			const auto calleeContext = generator.GetVariableContextPos(m_callee);
+			if (calleeContext.isVariableFromParent)
+			{
+				generator.AddInstruction("get_upvalue " + std::to_string(calleeContext.pos));
+			}
+			else
+			{
+				generator.AddInstruction("get_local " + std::to_string(calleeContext.pos));
+			}
 		}
 
-		generator.AddInstruction("get_global " + std::to_string(functionPos));
-		generator.AddInstruction("call");
+		generator.AddInstruction("call " + std::to_string(m_arguments.size()));
 
 		if (m_isNativeCallee)
 		{

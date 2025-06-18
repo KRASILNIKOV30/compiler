@@ -1,5 +1,6 @@
 #pragma once
 #include "../ast/Type.h"
+#include "../utils/FoldLeft.h"
 #include "Code.h"
 #include <format>
 #include <ranges>
@@ -19,7 +20,7 @@ public:
 	CodeGenerator()
 	{
 		m_functionNames.emplace_back(MAIN);
-		m_functions.emplace(std::piecewise_construct, std::forward_as_tuple(MAIN), std::forward_as_tuple(MAIN, MAIN ));
+		m_functions.emplace(std::piecewise_construct, std::forward_as_tuple(MAIN), std::forward_as_tuple(MAIN, MAIN));
 	}
 
 	void AddInstruction(std::string const& code, bool isNewRow = false)
@@ -67,14 +68,9 @@ public:
 		m_currentLocation = GetCurrentContext().parentName;
 	}
 
-	size_t GetFunctionPos(std::string const& functionName) const
-	{
-		return std::ranges::find(m_functionNames, functionName) - m_functionNames.begin() + 1;
-	}
-
 	void PrintCode(std::ostream& outFile)
 	{
-		for (auto const& functionName: m_functionNames)
+		for (auto const& functionName : m_functionNames)
 		{
 			const auto functionContext = m_functions.at(functionName);
 			outFile << ".def" << std::endl
@@ -91,6 +87,24 @@ public:
 					outFile << StringifyPrimitiveType(outputType) << " " << value << std::endl;
 				}
 			}
+			if (!functionContext.parentLocals.empty())
+			{
+				outFile << ".parent_local"
+						<< FoldLeft(
+							   functionContext.parentLocals | std::views::transform([&](const auto& p) { return std::to_string(p.second); }),
+							   [&](const auto& acc, const auto& curr) {
+								   return acc + " " += curr;
+							   }) << std::endl;
+			}
+			if (!functionContext.parentUpvalues.empty())
+			{
+				outFile << ".parent_upvalue"
+						<< FoldLeft(
+							   functionContext.parentUpvalues | std::views::transform([&](const auto& p) { return std::to_string(p.second); }),
+							   [&](const auto& acc, const auto& curr) {
+								   return acc + " " += curr;
+							   }) << std::endl;
+			}
 
 			outFile << ".code" << std::endl
 					<< functionContext.code.Get()
@@ -102,6 +116,8 @@ public:
 
 private:
 	using Constant = std::pair<Type, std::string>;
+	using Variable = std::pair<std::string, size_t>;
+
 	struct FunctionContext
 	{
 		std::string name;
@@ -109,8 +125,8 @@ private:
 		size_t argc = 0;
 
 		std::vector<std::string> variables;
-		std::vector<std::string> parentLocals;
-		std::vector<std::string> parentUpvalues;
+		std::vector<Variable> parentLocals;
+		std::vector<Variable> parentUpvalues;
 		std::vector<Constant> constants;
 		Code code;
 	};
@@ -140,13 +156,17 @@ private:
 			return { pos, ParentContextVariableType::LOCAL };
 		}
 
-		pos = std::ranges::find(context.parentLocals, variableName) - context.parentLocals.begin();
+		pos = std::ranges::find_if(context.parentLocals, [&](auto const& val) {
+			return val.first == variableName;
+		}) - context.parentLocals.begin();
 		if (pos < context.parentLocals.size())
 		{
 			return { pos, ParentContextVariableType::UPVALUE };
 		}
 
-		pos = std::ranges::find(context.parentUpvalues, variableName) - context.parentUpvalues.begin();
+		pos = std::ranges::find_if(context.parentUpvalues, [&](auto const& val) {
+			return val.first == variableName;
+		}) - context.parentUpvalues.begin();
 		if (pos < context.parentUpvalues.size())
 		{
 			return { context.parentLocals.size() + pos, ParentContextVariableType::UPVALUE };
@@ -164,11 +184,11 @@ private:
 		}
 		if (result.second == ParentContextVariableType::UPVALUE)
 		{
-			context.parentUpvalues.push_back(variableName);
+			context.parentUpvalues.emplace_back(variableName, result.first);
 			return { context.parentLocals.size() + context.parentUpvalues.size() - 1, ParentContextVariableType::UPVALUE };
 		}
 
-		context.parentLocals.push_back(variableName);
+		context.parentLocals.emplace_back(variableName, result.first);
 		return { context.parentLocals.size() - 1, ParentContextVariableType::UPVALUE };
 	}
 
