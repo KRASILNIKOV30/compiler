@@ -27,7 +27,7 @@
 <whileStatement> -> <whileHead> <blockStatement>
 <whileHead> -> while ( <expression> )
 
-<returnStatement> -> return <expression>
+<returnStatement> -> return <expression> | return
 
 <ifStatement> -> <ifHead> <blockStatement> <else>
 <ifHead> -> if ( <expression> )
@@ -48,8 +48,9 @@
 
 <arrowFunctionHead> -> ( <paramList> )
 <arrowFunctionWithExpr> -> <arrowFunctionHead> -> <expression>
-<arrowFunctionWithBlock> -> <arrowFunctionHead> ->
-<arrowFunctionExpression> -> <arrowFunctionWithExpr> | <arrowFunctionWithBlock> <blockStatement>
+<arrowFunctionWithBlockHead> -> <arrowFunctionHead> ->
+<arrowFunctionWithBlock> -> <arrowFunctionWithBlockHead> <blockStatement>
+<arrowFunctionExpression> -> <arrowFunctionWithExpr> | <arrowFunctionWithBlock>
 
 <initializerList> -> [ <expList> ]
 
