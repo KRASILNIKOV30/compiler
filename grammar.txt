@@ -41,7 +41,12 @@
 <simexp> -> <simexp> <lowPriorityOp> <simterm> | <simterm>
 <simterm> -> <simterm> <highPriorityOp> <term> | <term>
 <term> -> ( <expression> ) | + <term> | - <term> | not <term> | ! <term> | <ident> | int | float | true | false | string
-<ident> -> <ident> [ <expression> ] | <ident> ( <expListOpt> ) | id
+
+<ident> -> <ident> [ <expression> ] | <ident> ( <argListOpt> ) | id
+<argListOpt> -> <argList> | e
+<argList> -> <argList> , <arg> | <arg>
+<arg> -> <expression>
+
 <relOp> -> < | > | <= | >= | == | !=
 <lowPriorityOp> -> + | - | or
 <highPriorityOp> -> * | / | mod | div | and
@@ -52,7 +57,9 @@
 <arrowFunctionWithBlock> -> <arrowFunctionWithBlockHead> <blockStatement>
 <arrowFunctionExpression> -> <arrowFunctionWithExpr> | <arrowFunctionWithBlock>
 
-<initializerList> -> [ <expList> ]
+<initializerList> -> [ <arrayItemList> ]
+<arrayItemList> -> <arrayItemList> , <arrayItem> | <arrayItem>
+<arrayItem> -> <expression>
 
 <type> -> <primitiveType> | <primitiveType> -> <type>
 <primitiveType> -> int | float | string | bool

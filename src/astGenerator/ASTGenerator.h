@@ -121,6 +121,18 @@ public:
 		{
 			GenerateReturn();
 		}
+		else if (rule == "<arrayItem>")
+		{
+			SaveArrayItem();
+		}
+		else if (rule == "<arg>")
+		{
+			SaveFunctionArgument();
+		}
+		else if (rule == "<arrowFunctionHead>")
+		{
+			GenerateArrowFunctionHead();
+		}
 	}
 
 	Program GetProgram()
@@ -129,6 +141,24 @@ public:
 	}
 
 private:
+	void GenerateArrowFunctionHead()
+	{
+		if (m_parameters.empty())
+		{
+			m_table.CreateScope();
+		}
+	}
+
+	void SaveFunctionArgument()
+	{
+		m_functionArgumentsStack.emplace(PopExpression());
+	}
+
+	void SaveArrayItem()
+	{
+		m_arrayItemStack.emplace(PopExpression());
+	}
+
 	void GenerateReturn()
 	{
 		if (!m_openedFunctionPtr)
@@ -243,9 +273,9 @@ private:
 	{
 		std::vector<ExpressionPtr> exprList;
 		std::optional<Type> arrayElementType;
-		while (!m_exprStack.empty())
+		while (!m_arrayItemStack.empty())
 		{
-			auto expr = PopExpression();
+			auto expr = PopArrayItem();
 			if (arrayElementType.has_value())
 			{
 				const auto currentType = expr->GetType();
@@ -456,9 +486,9 @@ private:
 		if (brace == "(")
 		{
 			std::vector<ExpressionPtr> arguments;
-			while (m_exprStack.size() > 1)
+			while (!m_functionArgumentsStack.empty())
 			{
-				arguments.emplace_back(PopExpression());
+				arguments.emplace_back(PopFunctionArgument());
 			}
 			std::ranges::reverse(arguments);
 			auto callee = PopExpression()->GetValue();
@@ -512,6 +542,28 @@ private:
 		return expr;
 	}
 
+	ExpressionPtr PopArrayItem()
+	{
+		if (m_arrayItemStack.empty())
+		{
+			throw std::logic_error("Pop array item from an empty stack\n");
+		}
+		auto item = std::move(m_arrayItemStack.top());
+		m_arrayItemStack.pop();
+		return item;
+	}
+
+	ExpressionPtr PopFunctionArgument()
+	{
+		if (m_functionArgumentsStack.empty())
+		{
+			throw std::logic_error("Pop function argument from an empty stack\n");
+		}
+		auto arg = std::move(m_functionArgumentsStack.top());
+		m_functionArgumentsStack.pop();
+		return arg;
+	}
+
 	BinaryOperators PopBinaryOperator()
 	{
 		auto binOp = m_binOps.top();
@@ -534,6 +586,8 @@ private:
 private:
 	SymbolTable m_table;
 	std::stack<ExpressionPtr> m_exprStack;
+	std::stack<ExpressionPtr> m_arrayItemStack;
+	std::stack<ExpressionPtr> m_functionArgumentsStack;
 	std::stack<BinaryOperators> m_binOps;
 
 	std::stack<BlockStatement*> m_blockStack;
