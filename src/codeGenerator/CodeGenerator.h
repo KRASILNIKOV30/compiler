@@ -67,6 +67,11 @@ public:
 		m_currentLocation = GetCurrentContext().parentName;
 	}
 
+	size_t GetFunctionPos(std::string const& functionName) const
+	{
+		return std::ranges::find(m_functionNames, functionName) - m_functionNames.begin() + 1;
+	}
+
 	void PrintCode(std::ostream& outFile)
 	{
 		for (auto const& functionName: m_functionNames)

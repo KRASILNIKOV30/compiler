@@ -1,7 +1,7 @@
 #pragma once
 #include "Expression.h"
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 class CallExpression : public Expression
 {
@@ -21,7 +21,16 @@ public:
 			argument->Generate(generator);
 		}
 
-		const auto functionPos = generator.GetConstantPosOrAdd(PrimitiveType::STRING, m_callee);
+		size_t functionPos;
+		if (m_isNativeCallee)
+		{
+			functionPos = generator.GetConstantPosOrAdd(PrimitiveType::STRING, m_callee);
+		}
+		else
+		{
+			functionPos = generator.GetFunctionPos(m_callee);
+		}
+
 		generator.AddInstruction("get_global " + std::to_string(functionPos));
 		generator.AddInstruction("call");
 
