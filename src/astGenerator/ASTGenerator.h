@@ -15,6 +15,7 @@
 #include "CalculateCallExpressionType.h"
 #include "CalculateType.h"
 #include "SymbolTable.h"
+#include <iostream>
 #include <stack>
 
 using Node = std::variant<std::string, Token>;
@@ -30,6 +31,20 @@ public:
 
 	void Generate(std::string const& rule, Nodes const& nodes)
 	{
+		std::cout << rule << " |";
+		for (const auto& node : nodes)
+		{
+			if (holds_alternative<std::string>(node))
+			{
+				std::cout << " " << get<std::string>(node);
+			}
+			else
+			{
+				std::cout << " " << get<Token>(node).value;
+			}
+		}
+		std::cout << std::endl;
+
 		if (rule == "<term>")
 		{
 			GenerateTerm(nodes);
@@ -90,9 +105,13 @@ public:
 		{
 			GenerateInitializerList();
 		}
-		else if (rule == "<type>")
+		else if (rule == "<primitiveType>")
 		{
-			GenerateType(nodes);
+			SavePrimitiveType(nodes);
+		}
+		else if (rule == "<parameter>")
+		{
+			GenerateParameter(nodes);
 		}
 	}
 
@@ -102,24 +121,43 @@ public:
 	}
 
 private:
-	void GenerateType(Nodes const& nodes)
+	void GenerateParameter(Nodes const& nodes)
 	{
-		if (nodes.size() == 1)
+		const auto name = get<Token>(nodes.front()).value;
+		if (m_parameters.empty())
 		{
-			const auto& token = get<Token>(nodes[0]);
-			PrimitiveType pt = GetPrimitiveType(token.type); // Нужна вспомогательная функция
-			m_typeStack.emplace(pt);
-			return;
+			m_table.CreateScope();
 		}
+		m_table.Add(name, { false, m_type.value() });
+		m_type.reset();
+	}
 
-		Type returnType = PopType();
-		const auto& token = get<Token>(nodes[0]);
-		PrimitiveType paramType = GetPrimitiveType(token.type);
-
-		FunctionType funcType;
-		funcType.emplace_back(paramType);
-		funcType.emplace_back(std::move(returnType));
-		m_typeStack.emplace(std::move(funcType));
+	void SavePrimitiveType(Nodes const& nodes)
+	{
+		auto pt = GetPrimitiveType(get<Token>(nodes[0]).type);
+		if (m_type.has_value())
+		{
+			if (holds_alternative<FunctionType>(m_type->type))
+			{
+				auto ft = get<FunctionType>(m_type->type);
+				ft.emplace_back(pt);
+				m_type.emplace(ft);
+			}
+			else if (holds_alternative<ArrayTypePtr>(m_type->type))
+			{
+				auto at = get<ArrayTypePtr>(m_type->type);
+				m_type.emplace(FunctionType{ at, pt });
+			}
+			else
+			{
+				auto ptCurrent = get<PrimitiveType>(m_type->type);
+				m_type.emplace(FunctionType{ ptCurrent, pt });
+			}
+		}
+		else
+		{
+			m_type.emplace(pt);
+		}
 	}
 
 	void GenerateInitializerList()
@@ -401,17 +439,6 @@ private:
 		return binOp;
 	}
 
-	Type PopType()
-	{
-		if (m_typeStack.empty())
-		{
-			throw std::logic_error("Pop type from an empty stack");
-		}
-		Type t = std::move(m_typeStack.top());
-		m_typeStack.pop();
-		return t;
-	}
-
 	void Add(ProgramNode&& node)
 	{
 		m_blockStack.top()->Add(std::move(node));
@@ -424,7 +451,8 @@ private:
 
 	std::stack<BlockStatement*> m_blockStack;
 	std::stack<IfStatement*> m_ifStack;
-	std::stack<Type> m_typeStack;
+	std::optional<Type> m_type = std::nullopt;
+	std::vector<std::string> m_parameters;
 
 	Program m_program;
 	bool m_ignoreNextOpenBlock = false;

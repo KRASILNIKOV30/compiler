@@ -1,12 +1,36 @@
 #pragma once
-#include "Expression.h"
 #include "../statement/BlockStatement.h"
-#include <vector>
+#include "Expression.h"
 #include <variant>
+#include <vector>
 
-struct ArrowFunctionExpression : Expression
+class ArrowFunctionExpression : public Expression
 {
-	std::vector<std::string> params;
-	std::variant<Expression, BlockStatement> body;
-};
+public:
+	ArrowFunctionExpression(Type type, std::vector<std::string> params, ExpressionPtr expression = nullptr)
+		: Expression(std::move(type))
+		, m_params(std::move(params))
+	{
+		if (expression)
+		{
+			m_body = std::move(expression);
+		}
+		else
+		{
+			m_body = std::make_unique<BlockStatement>();
+		}
+	}
 
+	BlockStatement* GetBlock()
+	{
+		if (!holds_alternative<BlockStatementPtr>(m_body))
+		{
+			throw std::logic_error("Attempt to get block from arrow function with expression body");
+		}
+		return get<BlockStatementPtr>(m_body).get();
+	}
+
+private:
+	std::vector<std::string> m_params;
+	std::variant<ExpressionPtr, BlockStatementPtr> m_body;
+};

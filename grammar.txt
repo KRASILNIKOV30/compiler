@@ -46,9 +46,12 @@
 <lowPriorityOp> -> + | - | or
 <highPriorityOp> -> * | / | mod | div | and
 
-<arrowFunctionExpression> -> ( <paramList> ) -> <arrowFunctionNode>
-<arrowFunctionNode> -> <expression> | <blockStatement>
+<arrowFunctionHead> -> ( <paramList> )
+<arrowFunctionWithExpr> -> <arrowFunctionHead> -> <expression>
+<arrowFunctionWithBlock> -> <arrowFunctionHead> ->
+<arrowFunctionExpression> -> <arrowFunctionWithExpr> | <arrowFunctionWithBlock> <blockStatement>
 
 <initializerList> -> [ <expList> ]
 
-<type> -> id | id -> <type>
+<type> -> <primitiveType> | <primitiveType> -> <type>
+<primitiveType> -> int | float | string | bool

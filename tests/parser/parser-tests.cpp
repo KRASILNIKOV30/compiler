@@ -1,5 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include "../../src/guidesBuilder/GuidesBuilder.h"
+#include "../../src/parser/error/StringifyError.h"
 #include "../../src/parser/Parser.h"
 #include "catch.hpp"
 
@@ -19,7 +20,7 @@ TEST_CASE("slr e2e tests")
 		const auto result = parser.Parse(expr);
 		if (!result)
 		{
-			throw std::runtime_error("Error: " + expr);
+			throw std::runtime_error("Error: " + expr + ". " + StringifyError(parser.GetError()));
 		}
 		CHECK(result);
 	};
@@ -46,21 +47,21 @@ TEST_CASE("slr e2e tests")
 	Check("+not-not-+not-(-not-a);");
 	Check("var bcd = 1;");
 	Check("var bcd : int = 1;");
-	Check("var bcd : Set;");
+	Check("var bcd : string;");
 	Check("const MAX = 0.5E-20;");
 	Check("const MIN : int= 0.5E-20;");
 	Check("while (a < b) {};");
 	Check("{};");
 	Check("function fn(a = 3): string { return \'temp\'; };");
 	Check("function fn(a: int): int -> int { };");
-	Check("function fn(): void { };");
+	Check("function fn(): int { };");
 	Check("if (a) {};");
 	Check("if (a) {} else {};");
 	Check("if (a) {} else if (b) {} else {};");
-	Check("var a = (a: int) -> {};");
-	Check("var a: string -> int -> int -> bool = (a: string) -> (a: int, b = 0) -> a > b;");
+	Check("const a = (a: int) -> {};");
+	Check("var a: string -> int -> int -> bool = (a: string) -> (a: int, b: int) -> a > b;");
 	Check("const B = (b: int = 0) -> {};");
-	Check("const A: int-> void = (b: int = 0) -> {};");
+	Check("const A: int -> string = (b: int = 0) -> {};");
 	Check("1;5;");
 	Check("1;5;\n");
 	Check("1;\n5;");

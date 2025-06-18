@@ -20,6 +20,10 @@ const std::unordered_map<std::string, TokenType> RESERVED_WORDS = {
 	{ "function", TokenType::FUNCTION },
 	{ "while", TokenType::WHILE },
 	{ "return", TokenType::RETURN },
+	{ "int", TokenType::TYPE_INTEGER },
+	{ "float", TokenType::TYPE_FLOAT },
+	{ "string", TokenType::TYPE_STRING },
+	{ "bool", TokenType::TYPE_BOOL }
 };
 
 inline std::string ToLower(std::string s)
