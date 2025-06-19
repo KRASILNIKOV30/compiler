@@ -1,5 +1,5 @@
 #pragma once
-#include "../ast/declaration/VariableDeclaration.h"
+#include "../ast/declaration/Declaration.h"
 #include "../ast/expression/ArrowFunctionExpression.h"
 #include "../ast/expression/BinaryExpression.h"
 #include "../ast/expression/CallExpression.h"
@@ -570,7 +570,7 @@ private:
 		const auto value = isConst ? GetSymbolValue(expr) : "";
 		m_table.Add(id, { isConst, type, false, value });
 
-		DeclarationPtr decl = std::make_unique<VariableDeclaration>(id, type, std::move(expr));
+		DeclarationPtr decl = std::make_unique<Declaration>(id, type, std::move(expr));
 		Add(std::move(decl));
 	}
 

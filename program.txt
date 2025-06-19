@@ -1,3 +1,14 @@
-const sum = (a: int, b: int, c: int) -> a + b + c;
-const sumWith5 = sum(2, 3);
-println(sumWith5(4));
+const max = (a: int, b: int) -> {
+   if (a > b)
+   {
+     return a;
+   }
+   else
+   {
+     return b;
+   };
+};
+
+const writeMax = (max: int -> int -> int, a: int, b: int) -> println(max(a, b));
+
+writeMax(max, 10, 20);
