@@ -19,6 +19,7 @@ number 10
 .name arrowFunction1
 .constants
 number 2
+.parent_local 0 1
 .code
 1 get_local 0
 1 const 0

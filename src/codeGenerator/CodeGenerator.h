@@ -42,9 +42,20 @@ public:
 		return GetValuePosOrAdd<std::string>(GetCurrentContext().variables, variableName);
 	}
 
-	size_t AddParentLocal(std::string const& variableName)
+	size_t AddParentLocal(std::string const& variableName, size_t pos = 0)
 	{
-		return GetValuePosOrAdd<Variable>(GetCurrentContext().parentLocals, std::make_pair(variableName, 0));
+		return GetValuePosOrAdd<Variable>(GetCurrentContext().parentLocals, std::make_pair(variableName, pos));
+	}
+
+	void AddParentLocalsToCurrentContext()
+	{
+		auto& currentContext = GetCurrentContext();
+		auto parentLocals = GetContext(currentContext.parentName).variables;
+
+		for (auto const& parentLocal : GetContext(currentContext.parentName).variables)
+		{
+			AddParentLocal(parentLocal, GetCurrentContext().parentLocals.size());
+		}
 	}
 
 	VariableContext GetVariableContextPos(std::string const& variableName)
