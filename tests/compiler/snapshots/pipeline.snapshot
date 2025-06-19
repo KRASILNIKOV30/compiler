@@ -171,6 +171,7 @@ endwhile2:
 .constants
 number 2
 number 0
+.parent_local 0 1
 .code
 1 get_local 0
 1 const 0
@@ -184,6 +185,7 @@ number 0
 .argc 1
 .locals 0
 .name arrowFunction2
+.parent_local 0 1 2
 .code
 1 get_local 0
 1 get_local 0
@@ -195,9 +197,9 @@ number 0
 .argc 1
 .locals 0
 .name arrowFunction3
-.parent_local 3
+.parent_local 0 1 2 3 4 5 6 7 8
 .code
-1 get_upvalue 0
+1 get_upvalue 3
 1 get_local 0
 1 get_el
 1 return
@@ -207,6 +209,7 @@ number 0
 .argc 1
 .locals 0
 .name arrowFunction4
+.parent_local 0 1 2 3 4 5 6 7 8 9 10 11 12 13
 .code
 1 get_local 0
 1 get_local 0
@@ -220,6 +223,7 @@ number 0
 .argc 1
 .locals 0
 .name arrowFunction5
+.parent_local 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14
 .code
 1 get_local 0
 1 get_local 0
@@ -231,6 +235,7 @@ number 0
 .argc 1
 .locals 0
 .name arrowFunction6
+.parent_local 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14
 .code
 1 get_local 0
 1 get_local 0
@@ -244,9 +249,9 @@ number 0
 .argc 1
 .locals 0
 .name arrowFunction7
-.parent_local 3
+.parent_local 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
 .code
-1 get_upvalue 0
+1 get_upvalue 3
 1 get_local 0
 1 get_el
 1 return

@@ -177,8 +177,6 @@ private:
 			throw std::runtime_error("Array expected in iter, but " + TypeToString(arrayExprType) + " provided.");
 		}
 		const auto arrayElementType = get<ArrayTypePtr>(arrayExprType.type)->elementType;
-		OpenBlock();
-		m_ignoreNextOpenBlock = true;
 
 		// Generate iter actions before while
 
@@ -445,15 +443,21 @@ private:
 		if (m_exprStack.empty())
 		{
 			expr = nullptr;
-			ft.emplace_back(PrimitiveType::VOID);
+			if (!m_wasReturn)
+			{
+				ft.emplace_back(PrimitiveType::VOID);
+			}
 		}
 		else
 		{
 			expr = PopExpression();
-			ft.emplace_back(expr->GetType());
+			if (!m_wasReturn)
+			{
+				ft.emplace_back(expr->GetType());
+			}
 		}
+		m_wasReturn = true;
 		m_openedFunctionPtr->SetType(ft);
-		m_openedFunctionPtr = nullptr;
 		Add(std::make_unique<ReturnStatement>(std::move(expr)));
 	}
 
@@ -470,13 +474,14 @@ private:
 
 	void CloseFunctionBlock()
 	{
-		if (m_openedFunctionPtr)
+		if (m_openedFunctionPtr && !m_wasReturn)
 		{
 			auto ft = get<FunctionType>(m_openedFunctionPtr->GetType().type);
 			ft.emplace_back(PrimitiveType::VOID);
 			m_openedFunctionPtr->SetType(ft);
 		}
 		m_openedFunctionPtr = nullptr;
+		m_wasReturn = false;
 	}
 
 	void GenerateArrowFunctionWithExpr()
@@ -910,6 +915,7 @@ private:
 	std::optional<Type> m_type = std::nullopt;
 	std::vector<std::string> m_parameters;
 	ArrowFunctionExpression* m_openedFunctionPtr = nullptr;
+	bool m_wasReturn = false;
 
 	std::vector<Adapter> m_adapters;
 	int m_iterOpenBlocks = 0;

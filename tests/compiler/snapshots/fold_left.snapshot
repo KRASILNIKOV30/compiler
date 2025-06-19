@@ -1,0 +1,205 @@
+.def
+.argc 0
+.locals 4
+.name __EntryPoint__
+.constants
+number 0
+number 1
+number 2
+number 3
+number 4
+string println
+.code
+1 load_fn 1
+1 closure
+1 set_local 0
+1 const 0
+1 load_fn 5
+1 closure
+1 get_local 0
+1 call 1
+1 call 1
+1 set_local 1
+1 const 1
+1 load_fn 7
+1 closure
+1 get_local 0
+1 call 1
+1 call 1
+1 set_local 2
+1 const 1
+1 const 2
+1 const 3
+1 const 4
+1 create_arr 4
+1 set_local 3
+1 get_local 3
+1 get_local 1
+1 call 1
+1 get_global 5
+1 call 1
+1 pop
+1 get_local 3
+1 get_local 2
+1 call 1
+1 get_global 5
+1 call 1
+1 pop
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction1
+.parent_local 0
+.code
+1 load_fn 2
+1 closure
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction2
+.parent_local 0
+.code
+1 load_fn 3
+1 closure
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 8
+.name arrowFunction3
+.constants
+string arrayLength
+number 0
+number 1
+.parent_local 0
+.parent_upvalue 0
+.code
+1 get_local 0
+1 get_global 0
+1 call 1
+1 const 1
+1 ceq
+1 jmp_false endif1
+1 get_upvalue 0
+1 jmp endif1
+endif1:
+1 get_local 0
+1 const 1
+1 get_el
+1 get_upvalue 0
+1 get_upvalue 1
+1 call 1
+1 call 1
+1 set_local 1
+1 get_local 0
+1 set_local 2
+1 const 1
+1 set_local 3
+1 get_local 2
+1 get_global 0
+1 call 1
+1 set_local 4
+1 const 2
+1 set_local 5
+1 get_local 3
+1 get_local 5
+1 const 2
+1 mul
+1 add
+1 set_local 3
+1 load_fn 4
+1 closure
+1 set_local 6
+1 get_local 3
+1 set_local 7
+while1:
+1 get_local 7
+1 get_local 4
+1 ceq
+1 not
+1 jmp_false endwhile1
+1 get_local 7
+1 get_local 6
+1 call 1
+1 set_local 8
+1 get_local 7
+1 get_local 5
+1 add
+1 set_local 7
+1 get_local 1
+1 get_local 8
+1 get_upvalue 1
+1 call 1
+1 call 1
+1 set_local 1
+1 jmp while1
+endwhile1:
+1 get_local 1
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction4
+.parent_local 0 1 2 3 4 5 6
+.code
+1 get_upvalue 2
+1 get_local 0
+1 get_el
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction5
+.parent_local 0 1
+.code
+1 load_fn 6
+1 closure
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction6
+.parent_local 0
+.code
+1 get_upvalue 0
+1 get_local 0
+1 add
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction7
+.parent_local 0 1 2
+.code
+1 load_fn 8
+1 closure
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction8
+.parent_local 0
+.code
+1 get_upvalue 0
+1 get_local 0
+1 mul
+1 return
+.end_def
+

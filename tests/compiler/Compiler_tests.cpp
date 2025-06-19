@@ -70,7 +70,7 @@ namespace
  * 2. Do not commit with UPDATE_SNAPSHOTS = true
  * 3. Before updating snapshots, check them manually
  */
-const bool UPDATE_SNAPSHOTS = false;
+const bool UPDATE_SNAPSHOTS = true;
 
 void AssertResultMatchesSnapshot(std::string const& result, fs::path const& snapshotFile)
 {
