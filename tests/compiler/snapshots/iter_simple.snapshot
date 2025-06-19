@@ -54,7 +54,7 @@ endwhile1:
 .argc 1
 .locals 0
 .name arrowFunction1
-.parent_local 0
+.parent_local 0 1 2 3 4
 .code
 1 get_upvalue 0
 1 get_local 0
