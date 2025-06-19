@@ -1,0 +1,8 @@
+.def
+.argc 0
+.locals 0
+.name __EntryPoint__
+.code
+1 return
+.end_def
+

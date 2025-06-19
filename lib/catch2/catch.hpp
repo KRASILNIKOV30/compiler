@@ -1,6 +1,6 @@
 /*
  *  Catch v2.13.8
- *  Generated: 2022-01-03 21:20:09.589503
+ *  Generated: 2022-compile_const_declaration-03 21:20:09.589503
  *  ----------------------------------------------------------
  *  This file has been merged from multiple headers. Please don't edit it directly
  *  Copyright (c) 2022 Two Blue Cubes Ltd. All rights reserved.
@@ -2154,7 +2154,7 @@ struct ratio_string<std::milli> {
             std::tm* timeInfo = std::gmtime(&converted);
 #endif
 
-            auto const timeStampSize = sizeof("2017-01-16T17:06:45Z");
+            auto const timeStampSize = sizeof("2017-compile_const_declaration-16T17:06:45Z");
             char timeStamp[timeStampSize];
             const char * const fmt = "%Y-%m-%dT%H:%M:%SZ";
 
@@ -16810,7 +16810,7 @@ namespace Catch {
             // Also, UTC only, again because of backward compatibility (%z is C++11)
             time_t rawtime;
             std::time(&rawtime);
-            auto const timeStampSize = sizeof("2017-01-16T17:06:45Z");
+            auto const timeStampSize = sizeof("2017-compile_const_declaration-16T17:06:45Z");
 
 #ifdef _MSC_VER
             std::tm timeInfo = {};

@@ -1,0 +1,36 @@
+.def
+.argc 0
+.locals 5
+.name __EntryPoint__
+.constants
+number 0
+number 1
+bool false
+number -1
+bool true
+.code
+1 const 0
+1 set_local 0
+1 const 1
+1 set_local 1
+1 const 2
+1 jmp_false else2
+1 const 3
+1 set_local 2
+1 jmp endif2
+else2:
+1 const 4
+1 jmp_false else3
+1 const 1
+1 set_local 3
+1 jmp endif3
+else3:
+1 get_local 0
+1 set_local 4
+1 jmp endif3
+endif3:
+1 jmp endif2
+endif2:
+1 return
+.end_def
+

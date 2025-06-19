@@ -1,0 +1,28 @@
+.def
+.argc 0
+.locals 2
+.name __EntryPoint__
+.constants
+number 10
+.code
+1 const 0
+1 set_local 0
+1 load_fn 1
+1 closure
+1 set_local 1
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction1
+.constants
+number 2
+.code
+1 get_local 0
+1 const 0
+1 mul
+1 return
+.end_def
+

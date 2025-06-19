@@ -103,8 +103,12 @@ add_executable(tests
         ${AST_GENERATOR_SOURCES}
         ${AST_GENERATOR_TESTS}
         src/utils/FoldLeft.h
-        tests/Compiler_tests.cpp
+        tests/compiler/Compiler_tests.cpp
         tests/CombineStringLines.h
+)
+
+target_compile_definitions(tests PRIVATE
+        "SNAPSHOT_TESTS_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/tests/compiler\""
 )
 
 add_custom_command(
