@@ -154,7 +154,6 @@ SCENARIO("Compiler snapshot tests (Negative cases)")
 				{
 					AssertResultMatchesSnapshot(Trim(e.what()), snapshotFile);
 				}
-				continue;
 			}
 		}
 	}
