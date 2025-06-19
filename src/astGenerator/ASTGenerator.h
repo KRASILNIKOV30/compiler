@@ -373,7 +373,7 @@ private:
 			}
 			else // FILTER
 			{
-				std::string tempFuncName = "_f" + std::to_string(adapterIndex);
+				std::string tempFuncName = "_f" + std::to_string(adapterIndex++);
 
 				// 1. Объявляем временную константу для filter-функции (предиката)
 				auto predicateExpr = std::move(adapter.expr);
