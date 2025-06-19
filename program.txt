@@ -1,12 +1,14 @@
 const max = (a: int, b: int) -> {
+   var result: int = 0;
    if (a > b)
    {
-     return a;
+     result = a;
    }
    else
    {
-     return b;
+     result = b;
    };
+   return result;
 };
 
 const writeMax = (max: int -> int -> int, a: int, b: int) -> println(max(a, b));
