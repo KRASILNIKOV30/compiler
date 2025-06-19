@@ -421,7 +421,7 @@ private:
 		leftMember->MakeLValue();
 		auto memberName = leftMember->GetValue();
 
-		const auto [isConst, type, _] = m_table.Get(memberName);
+		const auto [isConst, type, native, val] = m_table.Get(memberName);
 		if (isConst && !std::holds_alternative<ArrayTypePtr>(type.type))
 		{
 			throw std::runtime_error("Attempt to assign value to constant " + memberName);
@@ -445,11 +445,14 @@ private:
 		const auto rightType = get<PrimitiveType>(right->GetType().type);
 		const auto type = CalculateType(leftType, rightType, binOp);
 
-		if (left->HasValue() && right->HasValue())
+		const auto leftValue = GetSymbolValue(left);
+		const auto rightValue = GetSymbolValue(right);
+
+		if (!leftValue.empty() && !rightValue.empty())
 		{
 			const auto result = Calculate(
-				left->GetValue(),
-				right->GetValue(),
+				leftValue,
+				rightValue,
 				leftType,
 				rightType,
 				binOp);
@@ -465,6 +468,21 @@ private:
 				type);
 			m_exprStack.emplace(std::move(expr));
 		}
+	}
+
+	std::string GetSymbolValue(ExpressionPtr& expr)
+	{
+		const auto value = expr->GetValue();
+		if (expr->HasValue())
+		{
+			return expr->GetValue();
+		}
+		const auto symbol = m_table.Find(value);
+		if (symbol.has_value())
+		{
+			return symbol->value;
+		}
+		return "";
 	}
 
 	void SaveBinaryOperator(Nodes const& nodes)
@@ -549,7 +567,8 @@ private:
 		auto expr = PopExpression();
 		const auto type = expr->GetType();
 		const auto id = token.value;
-		m_table.Add(id, { isConst, type });
+		const auto value = isConst ? GetSymbolValue(expr) : "";
+		m_table.Add(id, { isConst, type, false, value });
 
 		DeclarationPtr decl = std::make_unique<VariableDeclaration>(id, type, std::move(expr));
 		Add(std::move(decl));

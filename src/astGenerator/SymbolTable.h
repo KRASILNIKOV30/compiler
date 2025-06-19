@@ -11,6 +11,7 @@ struct Symbol
 	bool isConst;
 	Type type;
 	bool isNative = false;
+	std::string value;
 };
 
 class SymbolTable
@@ -43,6 +44,19 @@ public:
 		return symbol.value();
 	}
 
+	std::optional<Symbol> Find(std::string const& name)
+	{
+		for (const auto& scope : m_scopes | std::views::reverse)
+		{
+			const auto symbol = FindInScope(name, scope);
+			if (symbol.has_value())
+			{
+				return symbol;
+			}
+		}
+		return std::nullopt;
+	}
+
 	void Add(std::string const& name, Symbol const& symbol)
 	{
 		if (FindInCurrentScope(name).has_value())
@@ -65,19 +79,6 @@ private:
 		Add("toString", { true, FunctionType{ PrimitiveType::ANY, PrimitiveType::STRING }, true });
 		Add("toInt", { true, FunctionType{ PrimitiveType::ANY, PrimitiveType::INT }, true });
 		Add("toFloat", { true, FunctionType{ PrimitiveType::ANY, PrimitiveType::FLOAT }, true });
-	}
-
-	std::optional<Symbol> Find(std::string const& name)
-	{
-		for (const auto& scope : m_scopes | std::views::reverse)
-		{
-			const auto symbol = FindInScope(name, scope);
-			if (symbol.has_value())
-			{
-				return symbol;
-			}
-		}
-		return std::nullopt;
 	}
 
 	std::optional<Symbol> FindInCurrentScope(std::string const& name)
