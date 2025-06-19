@@ -68,6 +68,10 @@ struct ArrayType
 
 inline bool operator==(ArrayTypePtr const& lhs, ArrayTypePtr const& rhs)
 {
+	if (lhs->elementType == PrimitiveType::ANY || rhs->elementType == PrimitiveType::ANY)
+	{
+		return true;
+	}
 	return lhs->elementType == rhs->elementType;
 }
 

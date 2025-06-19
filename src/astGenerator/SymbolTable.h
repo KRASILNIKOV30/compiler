@@ -61,6 +61,10 @@ private:
 		Add("println", { true, FunctionType{ PrimitiveType::ANY, PrimitiveType::VOID }, true });
 		Add("getTimestamp", { true, FunctionType{ PrimitiveType::VOID, PrimitiveType::INT }, true });
 		Add("sqrt", { true, FunctionType{ PrimitiveType::INT, PrimitiveType::INT }, true });
+		Add("arrayLength", { true, FunctionType{ std::make_shared<ArrayType>(PrimitiveType::ANY), PrimitiveType::INT }, true });
+		Add("toString", { true, FunctionType{ PrimitiveType::ANY, PrimitiveType::STRING }, true });
+		Add("toInt", { true, FunctionType{ PrimitiveType::ANY, PrimitiveType::INT }, true });
+		Add("toFloat", { true, FunctionType{ PrimitiveType::ANY, PrimitiveType::FLOAT }, true });
 	}
 
 	std::optional<Symbol> Find(std::string const& name)
