@@ -6,12 +6,11 @@
 class CallExpression : public Expression
 {
 public:
-	explicit CallExpression(std::string callee, Type type, std::vector<ExpressionPtr>&& arguments, bool isNativeCallee = false, bool emptyReturn = true)
+	explicit CallExpression(std::string callee, Type type, std::vector<ExpressionPtr>&& arguments, bool isNativeCallee = false)
 		: Expression(std::move(type))
 		, m_callee(std::move(callee))
 		, m_arguments(std::move(arguments))
 		, m_isNativeCallee(isNativeCallee)
-		, m_emptyReturn(emptyReturn)
 	{
 	}
 
@@ -36,7 +35,7 @@ private:
 		}
 		generator.AddInstruction("get_global " + std::to_string(generator.GetConstantPosOrAdd(PrimitiveType::STRING, m_callee)));
 		generator.AddInstruction("call " + std::to_string(m_arguments.size()));
-		if (m_emptyReturn)
+		if (GetType() == PrimitiveType::VOID)
 		{
 			generator.AddInstruction("pop");
 		}
@@ -67,5 +66,4 @@ private:
 	std::string m_callee;
 	std::vector<ExpressionPtr> m_arguments;
 	bool m_isNativeCallee = false;
-	bool m_emptyReturn = false;
 };

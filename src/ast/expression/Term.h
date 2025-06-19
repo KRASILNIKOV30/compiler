@@ -17,21 +17,14 @@ public:
 	{
 		if (m_isReference)
 		{
-			try
+			const auto varContext = generator.GetVariableContextPos(m_value);
+			if (varContext.isVariableFromParent)
 			{
-				const auto varContext = generator.GetVariableContextPos(m_value);
-				if (varContext.isVariableFromParent)
-				{
-					generator.AddInstruction("get_upvalue " + std::to_string(varContext.pos));
-				}
-				else
-				{
-					generator.AddInstruction("get_local " + std::to_string(varContext.pos));
-				}
+				generator.AddInstruction("get_upvalue " + std::to_string(varContext.pos));
 			}
-			catch (std::invalid_argument const& e)
+			else
 			{
-				throw std::runtime_error(std::format("Failed to generate Term. {}", e.what()));
+				generator.AddInstruction("get_local " + std::to_string(varContext.pos));
 			}
 		}
 		else

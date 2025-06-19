@@ -36,22 +36,22 @@ public:
 		{
 			GenerateFunctionBeginning(generator, 0);
 		}
-		for (auto const& param: m_params)
+
+		for (size_t i = 0; i < m_params.size(); ++i)
 		{
 			GenerateFunctionBeginning(generator, 1);
-			generator.GetVariablePosOrAdd(param);
+			generator.GetVariablePosOrAdd(m_params[i]);
+
+			if (i > 0)
+			{
+				generator.AddParentLocal(m_params[i - 1]);
+			}
 		}
 
 		std::visit([&](const auto& body) { Generate(generator, body); }, m_body);
 
 		for (auto const& param: m_params)
 		{
-			if (param != m_params.back())
-			{
-				const auto pos = generator.GetVariablePosOrAdd("_returnFunction");
-				generator.AddInstruction("set_local " + std::to_string(pos));
-				generator.AddInstruction("get_local " + std::to_string(pos));
-			}
 			GenerateFunctionEnding(generator);
 		}
 	}

@@ -39,6 +39,11 @@ public:
 		return GetValuePosOrAdd<std::string>(GetCurrentContext().variables, variableName);
 	}
 
+	size_t AddParentLocal(std::string const& variableName)
+	{
+		return GetValuePosOrAdd<Variable>(GetCurrentContext().parentLocals, std::make_pair(variableName, 0));
+	}
+
 	VariableContext GetVariableContextPos(std::string const& variableName)
 	{
 		auto& currentContext = GetCurrentContext();
@@ -94,7 +99,8 @@ public:
 							   functionContext.parentLocals | std::views::transform([&](const auto& p) { return std::to_string(p.second); }),
 							   [&](const auto& acc, const auto& curr) {
 								   return acc + " " += curr;
-							   }) << std::endl;
+							   })
+						<< std::endl;
 			}
 			if (!functionContext.parentUpvalues.empty())
 			{
@@ -103,7 +109,8 @@ public:
 							   functionContext.parentUpvalues | std::views::transform([&](const auto& p) { return std::to_string(p.second); }),
 							   [&](const auto& acc, const auto& curr) {
 								   return acc + " " += curr;
-							   }) << std::endl;
+							   })
+						<< std::endl;
 			}
 
 			outFile << ".code" << std::endl
