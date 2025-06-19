@@ -32,11 +32,11 @@ std::string StringifyError(ErrorReason const& error)
 {
 	const auto [expected, received] = error;
 	std::ostringstream stream;
-	stream << "Error at position " << received.pos << ": ";
+	stream << "Error at " << received.line + 1 << ":" << received.pos << ": ";
 	if (received.error == Error::NONE)
 	{
 		const auto tokenType = RemapTokenTypeToString(received.type);
-		stream << "{ " << expected << " } expected, but " << tokenType;
+		stream << "{" << expected << " } expected, but " << tokenType;
 		if (const auto value = received.value; value != tokenType)
 		{
 			stream << " (" << received.value << ")";

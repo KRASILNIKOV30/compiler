@@ -15,13 +15,19 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
-		size_t pos;
 		if (m_isReference)
 		{
 			try
 			{
-				pos = generator.GetVariablePos(m_value);
-				generator.AddInstruction("get_local" + std::to_string(pos));
+				const auto varContext = generator.GetVariableContextPos(m_value);
+				if (varContext.isVariableFromParent)
+				{
+					generator.AddInstruction("get_upvalue " + std::to_string(varContext.pos));
+				}
+				else
+				{
+					generator.AddInstruction("get_local " + std::to_string(varContext.pos));
+				}
 			}
 			catch (std::invalid_argument const& e)
 			{
@@ -30,7 +36,7 @@ public:
 		}
 		else
 		{
-			pos = generator.GetConstantPosOrAdd(m_type, m_value);
+			const auto pos = generator.GetConstantPosOrAdd(m_type, m_value);
 			generator.AddInstruction("const " + std::to_string(pos));
 		}
 	}
@@ -49,3 +55,5 @@ private:
 	std::string m_value;
 	bool m_isReference = false;
 };
+
+using TermPtr = std::unique_ptr<Term>;

@@ -20,57 +20,57 @@ inline std::string TypeToString(const PrimitiveType& type)
 	return "UNKNOWN_TYPE";
 }
 
-inline std::string OperatorToString(const BinaryOperators& op)
+inline std::string OperatorToString(const BinaryOperator& op)
 {
 	switch (op)
 	{
-	case BinaryOperators::PLUS:
+	case BinaryOperator::PLUS:
 		return "+";
-	case BinaryOperators::MINUS:
+	case BinaryOperator::MINUS:
 		return "-";
-	case BinaryOperators::MUL:
+	case BinaryOperator::MUL:
 		return "*";
-	case BinaryOperators::MOD:
+	case BinaryOperator::MOD:
 		return "mod";
-	case BinaryOperators::DIV:
+	case BinaryOperator::DIV:
 		return "div";
-	case BinaryOperators::DIVISION:
+	case BinaryOperator::DIVISION:
 		return "/";
-	case BinaryOperators::ASSIGNMENT:
+	case BinaryOperator::ASSIGNMENT:
 		return "=";
-	case BinaryOperators::EQUAL:
+	case BinaryOperator::EQUAL:
 		return "==";
-	case BinaryOperators::NOT_EQUAL:
+	case BinaryOperator::NOT_EQUAL:
 		return "!=";
-	case BinaryOperators::LESS:
+	case BinaryOperator::LESS:
 		return "<";
-	case BinaryOperators::GREATER:
+	case BinaryOperator::GREATER:
 		return ">";
-	case BinaryOperators::LESS_OR_EQUAL:
+	case BinaryOperator::LESS_OR_EQUAL:
 		return "<=";
-	case BinaryOperators::GREATER_OR_EQUAL:
+	case BinaryOperator::GREATER_OR_EQUAL:
 		return ">=";
-	case BinaryOperators::AND:
+	case BinaryOperator::AND:
 		return "and";
-	case BinaryOperators::OR:
+	case BinaryOperator::OR:
 		return "or";
 	}
 	return "UNKNOWN_OPERATOR";
 }
 } // namespace
 
-inline PrimitiveType CalculateType(const PrimitiveType& left, const PrimitiveType& right, BinaryOperators op)
+inline PrimitiveType CalculateType(const PrimitiveType& left, const PrimitiveType& right, BinaryOperator op)
 {
 	switch (op)
 	{
-	case BinaryOperators::PLUS:
+	case BinaryOperator::PLUS:
 		if (left == PrimitiveType::STRING && right == PrimitiveType::STRING)
 		{
 			return PrimitiveType::STRING;
 		}
 		[[fallthrough]];
-	case BinaryOperators::MINUS:
-	case BinaryOperators::MUL:
+	case BinaryOperator::MINUS:
+	case BinaryOperator::MUL:
 		if (left == PrimitiveType::INT && right == PrimitiveType::INT)
 		{
 			return PrimitiveType::INT;
@@ -81,35 +81,35 @@ inline PrimitiveType CalculateType(const PrimitiveType& left, const PrimitiveTyp
 		}
 		break;
 
-	case BinaryOperators::DIVISION:
+	case BinaryOperator::DIVISION:
 		if ((left == PrimitiveType::INT || left == PrimitiveType::FLOAT) && (right == PrimitiveType::INT || right == PrimitiveType::FLOAT))
 		{
 			return PrimitiveType::FLOAT;
 		}
 		break;
 
-	case BinaryOperators::DIV:
-	case BinaryOperators::MOD:
+	case BinaryOperator::DIV:
+	case BinaryOperator::MOD:
 		if (left == PrimitiveType::INT && right == PrimitiveType::INT)
 		{
 			return PrimitiveType::INT;
 		}
 		break;
 
-	case BinaryOperators::AND:
-	case BinaryOperators::OR:
+	case BinaryOperator::AND:
+	case BinaryOperator::OR:
 		if (left == PrimitiveType::BOOL && right == PrimitiveType::BOOL)
 		{
 			return PrimitiveType::BOOL;
 		}
 		break;
 
-	case BinaryOperators::EQUAL:
-	case BinaryOperators::NOT_EQUAL:
-	case BinaryOperators::LESS:
-	case BinaryOperators::GREATER:
-	case BinaryOperators::LESS_OR_EQUAL:
-	case BinaryOperators::GREATER_OR_EQUAL:
+	case BinaryOperator::EQUAL:
+	case BinaryOperator::NOT_EQUAL:
+	case BinaryOperator::LESS:
+	case BinaryOperator::GREATER:
+	case BinaryOperator::LESS_OR_EQUAL:
+	case BinaryOperator::GREATER_OR_EQUAL:
 		if ((left == PrimitiveType::INT || left == PrimitiveType::FLOAT) && (right == PrimitiveType::INT || right == PrimitiveType::FLOAT))
 		{
 			return PrimitiveType::BOOL;
@@ -120,7 +120,7 @@ inline PrimitiveType CalculateType(const PrimitiveType& left, const PrimitiveTyp
 		}
 		break;
 
-	case BinaryOperators::ASSIGNMENT:
+	case BinaryOperator::ASSIGNMENT:
 		if (left == right)
 		{
 			return left;

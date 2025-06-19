@@ -4,21 +4,53 @@
 class MemberExpression : public Expression
 {
 public:
-	explicit MemberExpression(Type type, std::string id, ExpressionPtr index)
+	explicit MemberExpression(Type type, std::string id, std::optional<ExpressionPtr> index, bool isRValue = true)
 		: Expression(std::move(type))
 		, m_id(std::move(id))
 		, m_index(std::move(index))
+		, m_isRValue(isRValue)
 	{
 	}
 
-	void Generate(CodeGenerator &generator) const override
+	void Generate(CodeGenerator& generator) const override
 	{
-		generator.AddInstruction("get_local " + std::to_string(generator.GetVariablePos(m_id)));
-		m_index->Generate(generator);
-		generator.AddInstruction("get_el");
+		const auto varContext = generator.GetVariableContextPos(m_id);
+		if (varContext.isVariableFromParent)
+		{
+			generator.AddInstruction("get_upvalue " + std::to_string(varContext.pos));
+		}
+		else
+		{
+			generator.AddInstruction("get_local " + std::to_string(varContext.pos));
+		}
+
+		if (m_index.has_value())
+		{
+			m_index.value()->Generate(generator);
+			if (m_isRValue)
+			{
+				generator.AddInstruction("get_el");
+			}
+		}
 	}
+
+	[[nodiscard]] std::string GetValue() const override
+	{
+		return m_id;
+	}
+
+	void MakeLValue()
+	{
+		m_isRValue = false;
+	}
+
+	[[nodiscard]] std::string GetId() const { return m_id; }
+	[[nodiscard]] bool IsPartOfArray() const { return m_index.has_value(); }
 
 private:
 	std::string m_id;
-	ExpressionPtr m_index;
+	std::optional<ExpressionPtr> m_index;
+	bool m_isRValue = true;
 };
+
+using MemberExpressionPtr = std::unique_ptr<MemberExpression>;

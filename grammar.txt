@@ -4,7 +4,7 @@
 
 <declaration> -> <variableDeclaration> | <constDeclaration> | <functionDeclaration>
 
-<variableDeclaration> -> var <parameter>
+<variableDeclaration> -> var id <typeGuideOpt> = <expression> | var id <typeGuide>
 <constDeclaration> -> const id <typeGuideOpt> = <expression>
 <functionDeclaration> -> function id ( <paramList> ) <typeGuide> <blockStatement>
 <paramList> -> <parameter> <paramListRem> | e
@@ -15,7 +15,7 @@
 
 <statement> -> <assignmentStatement> | <blockStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <expressionStatement>
 
-<assignmentStatement> -> id = <expression>
+<assignmentStatement> -> <ident> = <expression>
 
 <blockStatement> -> <openBlock> <blockActions> <closeBlock>
 <openBlock> -> {
@@ -24,9 +24,10 @@
 
 <expressionStatement> -> <expression>
 
-<whileStatement> -> while ( <expression> ) <blockStatement>
+<whileStatement> -> <whileHead> <blockStatement>
+<whileHead> -> while ( <expression> )
 
-<returnStatement> -> return <expression>
+<returnStatement> -> return <expression> | return
 
 <ifStatement> -> <ifHead> <blockStatement> <else>
 <ifHead> -> if ( <expression> )
@@ -34,18 +35,31 @@
 <elseHead> -> else
 <elseIfHead> -> else if ( <expression> )
 
-<expression> -> <expression> <relOp> <simexp> | <simexp> | <arrowFunctionExpression>
+<expression> -> <expression> <relOp> <simexp> | <simexp> | <arrowFunctionExpression> | <initializerList>
 <expListOpt> -> <expList> | e
 <expList> -> <expList> , <expression> | <expression>
 <simexp> -> <simexp> <lowPriorityOp> <simterm> | <simterm>
 <simterm> -> <simterm> <highPriorityOp> <term> | <term>
 <term> -> ( <expression> ) | + <term> | - <term> | not <term> | ! <term> | <ident> | int | float | true | false | string
-<ident> -> <ident> [ <expression> ] | <ident> ( <expListOpt> ) | id
+
+<ident> -> <ident> [ <expression> ] | <ident> ( <argListOpt> ) | id
+<argListOpt> -> <argList> | e
+<argList> -> <argList> , <arg> | <arg>
+<arg> -> <expression>
+
 <relOp> -> < | > | <= | >= | == | !=
 <lowPriorityOp> -> + | - | or
 <highPriorityOp> -> * | / | mod | div | and
 
-<arrowFunctionExpression> -> ( <paramList> ) -> <arrowFunctionNode>
-<arrowFunctionNode> -> <expression> | <blockStatement>
+<arrowFunctionHead> -> ( <paramList> )
+<arrowFunctionWithExpr> -> <arrowFunctionHead> -> <expression>
+<arrowFunctionWithBlockHead> -> <arrowFunctionHead> ->
+<arrowFunctionWithBlock> -> <arrowFunctionWithBlockHead> <blockStatement>
+<arrowFunctionExpression> -> <arrowFunctionWithExpr> | <arrowFunctionWithBlock>
 
-<type> -> id | id -> <type>
+<initializerList> -> [ <arrayItemList> ]
+<arrayItemList> -> <arrayItemList> , <arrayItem> | <arrayItem>
+<arrayItem> -> <expression>
+
+<type> -> <primitiveType> | <primitiveType> -> <type>
+<primitiveType> -> int | float | string | bool

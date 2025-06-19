@@ -1,6 +1,8 @@
 #pragma once
 #include "../parser/RemapToken.h"
+#include <memory>
 #include <stdexcept>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -15,9 +17,12 @@ enum class PrimitiveType
 
 struct Type;
 using FunctionType = std::vector<Type>;
+struct ArrayType;
+using ArrayTypePtr = std::shared_ptr<ArrayType>;
+
 struct Type
 {
-	std::variant<PrimitiveType, FunctionType> type;
+	std::variant<PrimitiveType, FunctionType, ArrayTypePtr> type;
 
 	Type(PrimitiveType pt)
 		: type(pt)
@@ -26,6 +31,11 @@ struct Type
 
 	Type(FunctionType ft)
 		: type(ft)
+	{
+	}
+
+	Type(ArrayTypePtr at)
+		: type(std::move(at))
 	{
 	}
 
@@ -45,12 +55,26 @@ struct Type
 	bool operator==(const Type& rhs) const = default;
 };
 
+struct ArrayType
+{
+	ArrayType(Type type)
+		: elementType(std::move(type))
+	{
+	}
+
+	Type elementType;
+};
+
 inline std::unordered_map<TokenType, PrimitiveType> TokenTypeToPrimitiveType = {
 	{ TokenType::INTEGER, PrimitiveType::INT },
 	{ TokenType::FLOAT, PrimitiveType::FLOAT },
 	{ TokenType::STRING_LITERAL, PrimitiveType::STRING },
 	{ TokenType::TRUE, PrimitiveType::BOOL },
-	{ TokenType::FALSE, PrimitiveType::BOOL }
+	{ TokenType::FALSE, PrimitiveType::BOOL },
+	{ TokenType::TYPE_INTEGER, PrimitiveType::INT },
+	{ TokenType::TYPE_FLOAT, PrimitiveType::FLOAT },
+	{ TokenType::TYPE_BOOL, PrimitiveType::BOOL },
+	{ TokenType::TYPE_STRING, PrimitiveType::STRING }
 };
 
 inline PrimitiveType GetPrimitiveType(TokenType const& tokenType)
@@ -74,6 +98,8 @@ inline std::string StringifyPrimitiveType(PrimitiveType const& type)
 		return "string";
 	case PrimitiveType::BOOL:
 		return "bool";
+	case PrimitiveType::VOID:
+		return "void";
 	}
 
 	throw std::runtime_error("Unknown primitive type");

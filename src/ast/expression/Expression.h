@@ -23,6 +23,11 @@ public:
 		return m_type;
 	}
 
+	void SetType(Type const& type)
+	{
+		m_type = type;
+	}
+
 	[[nodiscard]] virtual bool HasValue() const
 	{
 		return false;

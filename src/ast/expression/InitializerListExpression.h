@@ -17,6 +17,7 @@ public:
 		{
 			element->Generate(generator);
 		}
+		generator.AddInstruction("create_arr " + std::to_string(m_elements.size()));
 	}
 
 private:
