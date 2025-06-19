@@ -31,7 +31,8 @@ string println
 while1:
 1 get_local 5
 1 get_local 2
-1 clt
+1 ceq
+1 not
 1 jmp_false endwhile1
 1 get_local 5
 1 get_local 4

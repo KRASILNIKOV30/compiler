@@ -190,7 +190,7 @@ private:
 		auto arrTerm = std::make_unique<Term>("_arr", arrayExprType, true);
 		std::vector<ExpressionPtr> argument;
 		argument.emplace_back(std::move(arrTerm));
-		
+
 		auto callExpr = std::make_unique<CallExpression>("arrayLength", PrimitiveType::INT, std::move(argument), true);
 		Add(std::make_unique<Declaration>("_end", PrimitiveType::INT, std::move(callExpr)));
 
@@ -205,11 +205,17 @@ private:
 			{
 				auto beginMember = std::make_unique<MemberExpression>(PrimitiveType::INT, "_begin", std::nullopt, false);
 				auto beginTerm = std::make_unique<Term>("_begin", PrimitiveType::INT, true);
-				auto beginPlusStep = std::make_unique<BinaryExpression>(
-					std::move(beginTerm),
+				auto stepMult = std::make_unique<BinaryExpression>(
+					std::make_unique<Term>("_step", PrimitiveType::INT, true),
 					std::move(adapter.expr),
-					BinaryOperator::PLUS,
+					BinaryOperator::MUL,
 					PrimitiveType::INT);
+				auto beginPlusStep
+					= std::make_unique<BinaryExpression>(
+						std::move(beginTerm),
+						std::move(stepMult),
+						BinaryOperator::PLUS,
+						PrimitiveType::INT);
 				Add(std::make_unique<AssignmentStatement>(std::move(beginMember), std::move(beginPlusStep)));
 			}
 			else if (adapter.type == AdapterType::TAKE)
@@ -236,11 +242,21 @@ private:
 
 				auto beginMember = std::make_unique<MemberExpression>(PrimitiveType::INT, "_begin", std::nullopt, false);
 				auto endTerm = std::make_unique<Term>("_end", PrimitiveType::INT, true);
-				Add(std::make_unique<AssignmentStatement>(std::move(beginMember), std::move(endTerm)));
+				Add(std::make_unique<AssignmentStatement>(std::move(beginMember),
+					std::make_unique<BinaryExpression>(
+						std::move(endTerm),
+						std::make_unique<Term>("_step", PrimitiveType::INT, true),
+						BinaryOperator::MINUS,
+						PrimitiveType::INT)));
 
 				auto endMember = std::make_unique<MemberExpression>(PrimitiveType::INT, "_end", std::nullopt, false);
 				auto tempTerm = std::make_unique<Term>(tempName, PrimitiveType::INT, true);
-				Add(std::make_unique<AssignmentStatement>(std::move(endMember), std::move(tempTerm)));
+				Add(std::make_unique<AssignmentStatement>(std::move(endMember),
+					std::make_unique<BinaryExpression>(
+						std::move(tempTerm),
+						std::make_unique<Term>("_step", PrimitiveType::INT, true),
+						BinaryOperator::MINUS,
+						PrimitiveType::INT)));
 
 				auto stepMult = std::make_unique<BinaryExpression>(
 					std::make_unique<Term>("_step", PrimitiveType::INT, true),
@@ -288,7 +304,7 @@ private:
 		auto currLessThanEnd = std::make_unique<BinaryExpression>(
 			std::make_unique<Term>("_curr", PrimitiveType::INT, true),
 			std::make_unique<Term>("_end", PrimitiveType::INT, true),
-			BinaryOperator::LESS,
+			BinaryOperator::NOT_EQUAL,
 			PrimitiveType::BOOL);
 
 		// 3. Создаем узел WhileStatement с этим условием

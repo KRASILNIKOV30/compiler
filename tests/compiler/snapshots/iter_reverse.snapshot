@@ -1,6 +1,6 @@
 .def
 .argc 0
-.locals 7
+.locals 8
 .name __EntryPoint__
 .constants
 number 1
@@ -10,6 +10,7 @@ number 4
 number 5
 number 0
 string arrayLength
+number -1
 string println
 .code
 1 const 0
@@ -28,38 +29,46 @@ string println
 1 const 0
 1 set_local 3
 1 get_local 1
+1 set_local 4
+1 get_local 2
 1 get_local 3
-1 const 0
+1 sub
+1 set_local 1
+1 get_local 4
+1 get_local 3
+1 sub
+1 set_local 2
+1 get_local 3
+1 const 7
+1 mul
+1 set_local 3
+1 get_local 1
+1 get_local 3
+1 const 1
 1 mul
 1 add
 1 set_local 1
-1 get_local 1
-1 get_local 3
-1 const 2
-1 mul
-1 add
-1 set_local 2
 1 load_fn 1
 1 closure
-1 set_local 4
-1 get_local 1
 1 set_local 5
+1 get_local 1
+1 set_local 6
 while1:
-1 get_local 5
+1 get_local 6
 1 get_local 2
 1 ceq
 1 not
 1 jmp_false endwhile1
+1 get_local 6
 1 get_local 5
-1 get_local 4
 1 call 1
-1 set_local 6
-1 get_local 5
+1 set_local 7
+1 get_local 6
 1 get_local 3
 1 add
-1 set_local 5
-1 get_local 6
-1 get_global 7
+1 set_local 6
+1 get_local 7
+1 get_global 8
 1 call 1
 1 pop
 1 jmp while1

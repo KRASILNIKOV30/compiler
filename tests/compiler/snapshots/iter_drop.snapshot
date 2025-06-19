@@ -28,11 +28,15 @@ string println
 1 const 0
 1 set_local 3
 1 get_local 1
+1 get_local 3
 1 const 0
+1 mul
 1 add
 1 set_local 1
 1 get_local 1
+1 get_local 3
 1 const 1
+1 mul
 1 add
 1 set_local 1
 1 load_fn 1
@@ -43,7 +47,8 @@ string println
 while1:
 1 get_local 5
 1 get_local 2
-1 clt
+1 ceq
+1 not
 1 jmp_false endwhile1
 1 get_local 5
 1 get_local 4
