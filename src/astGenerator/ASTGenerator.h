@@ -190,6 +190,7 @@ private:
 		auto arrTerm = std::make_unique<Term>("_arr", arrayExprType, true);
 		std::vector<ExpressionPtr> argument;
 		argument.emplace_back(std::move(arrTerm));
+		
 		auto callExpr = std::make_unique<CallExpression>("arrayLength", PrimitiveType::INT, std::move(argument), true);
 		Add(std::make_unique<Declaration>("_end", PrimitiveType::INT, std::move(callExpr)));
 
@@ -203,7 +204,13 @@ private:
 			if (adapter.type == AdapterType::DROP)
 			{
 				auto beginMember = std::make_unique<MemberExpression>(PrimitiveType::INT, "_begin", std::nullopt, false);
-				Add(std::make_unique<AssignmentStatement>(std::move(beginMember), std::move(adapter.expr)));
+				auto beginTerm = std::make_unique<Term>("_begin", PrimitiveType::INT, true);
+				auto beginPlusStep = std::make_unique<BinaryExpression>(
+					std::move(beginTerm),
+					std::move(adapter.expr),
+					BinaryOperator::PLUS,
+					PrimitiveType::INT);
+				Add(std::make_unique<AssignmentStatement>(std::move(beginMember), std::move(beginPlusStep)));
 			}
 			else if (adapter.type == AdapterType::TAKE)
 			{

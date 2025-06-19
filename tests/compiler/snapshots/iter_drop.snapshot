@@ -1,0 +1,76 @@
+.def
+.argc 0
+.locals 7
+.name __EntryPoint__
+.constants
+number 1
+number 2
+number 3
+number 4
+number 5
+number 0
+string arrayLength
+string println
+.code
+1 const 0
+1 const 1
+1 const 2
+1 const 3
+1 const 4
+1 create_arr 5
+1 set_local 0
+1 const 5
+1 set_local 1
+1 get_local 0
+1 get_global 6
+1 call 1
+1 set_local 2
+1 const 0
+1 set_local 3
+1 get_local 1
+1 const 0
+1 add
+1 set_local 1
+1 get_local 1
+1 const 1
+1 add
+1 set_local 1
+1 load_fn 1
+1 closure
+1 set_local 4
+1 get_local 1
+1 set_local 5
+while1:
+1 get_local 5
+1 get_local 2
+1 clt
+1 jmp_false endwhile1
+1 get_local 5
+1 get_local 4
+1 call 1
+1 set_local 6
+1 get_local 5
+1 get_local 3
+1 add
+1 set_local 5
+1 get_local 6
+1 get_global 7
+1 call 1
+1 pop
+1 jmp while1
+endwhile1:
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction1
+.parent_local 0
+.code
+1 get_upvalue 0
+1 get_local 0
+1 get_el
+1 return
+.end_def
+

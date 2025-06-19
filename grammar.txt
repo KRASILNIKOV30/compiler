@@ -28,9 +28,8 @@
 <whileHead> -> while ( <expression> )
 
 <iterStatement> -> <iterHead> <blockStatement>
-<iterHead> -> iter ( id of <expression> <adapterListOpt> )
-<adapterListOpt> -> <adapterList> | e
-<adapterList> -> <adapterList> < <adapter> | <adapter>
+<iterHead> -> iter ( id of <expression> ) | iter ( id of <expression> < <adapterList> )
+<adapterList> -> <adapter> < <adapterList> | <adapter>
 <adapter> -> drop ( <expression> ) | take ( <expression> ) | reverse | filter ( <expression> ) | transform ( <expression> )
 
 <returnStatement> -> return <expression> | return
