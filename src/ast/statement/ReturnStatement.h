@@ -13,6 +13,7 @@ public:
 	void Generate(CodeGenerator& generator) const override
 	{
 		m_argument->Generate(generator);
+		generator.AddInstruction("return");
 	}
 
 private:
