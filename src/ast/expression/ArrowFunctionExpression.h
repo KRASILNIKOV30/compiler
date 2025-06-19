@@ -46,6 +46,12 @@ public:
 
 		for (auto const& param: m_params)
 		{
+			if (param != m_params.back())
+			{
+				const auto pos = generator.GetVariablePosOrAdd("_returnFunction");
+				generator.AddInstruction("set_local " + std::to_string(pos));
+				generator.AddInstruction("get_local " + std::to_string(pos));
+			}
 			GenerateFunctionEnding(generator);
 		}
 	}

@@ -6,48 +6,66 @@
 class CallExpression : public Expression
 {
 public:
-	explicit CallExpression(std::string callee, Type type, std::vector<ExpressionPtr>&& arguments, bool isNativeCallee = false)
+	explicit CallExpression(std::string callee, Type type, std::vector<ExpressionPtr>&& arguments, bool isNativeCallee = false, bool emptyReturn = true)
 		: Expression(std::move(type))
 		, m_callee(std::move(callee))
 		, m_arguments(std::move(arguments))
 		, m_isNativeCallee(isNativeCallee)
+		, m_emptyReturn(emptyReturn)
 	{
 	}
 
 	void Generate(CodeGenerator& generator) const override
 	{
-		for (auto const& argument : m_arguments)
-		{
-			argument->Generate(generator);
-		}
-
 		if (m_isNativeCallee)
 		{
-			generator.AddInstruction("get_global " + std::to_string(generator.GetConstantPosOrAdd(PrimitiveType::STRING, m_callee)));
+			GenerateNativeFunctionCall(generator);
 		}
 		else
 		{
-			const auto calleeContext = generator.GetVariableContextPos(m_callee);
-			if (calleeContext.isVariableFromParent)
-			{
-				generator.AddInstruction("get_upvalue " + std::to_string(calleeContext.pos));
-			}
-			else
-			{
-				generator.AddInstruction("get_local " + std::to_string(calleeContext.pos));
-			}
-		}
-
-		generator.AddInstruction("call " + std::to_string(m_arguments.size()));
-
-		if (m_isNativeCallee)
-		{
-			generator.AddInstruction("pop");
+			GenerateCustomFunctionCall(generator);
 		}
 	};
 
 private:
+	void GenerateNativeFunctionCall(CodeGenerator& generator) const
+	{
+		for (auto const& argument : m_arguments)
+		{
+			argument->Generate(generator);
+		}
+		generator.AddInstruction("get_global " + std::to_string(generator.GetConstantPosOrAdd(PrimitiveType::STRING, m_callee)));
+		generator.AddInstruction("call " + std::to_string(m_arguments.size()));
+		if (m_emptyReturn)
+		{
+			generator.AddInstruction("pop");
+		}
+	}
+
+	void GenerateCustomFunctionCall(CodeGenerator& generator) const
+	{
+		for (auto const& argument : m_arguments | std::views::reverse)
+		{
+			argument->Generate(generator);
+		}
+
+		const auto calleeContext = generator.GetVariableContextPos(m_callee);
+		if (calleeContext.isVariableFromParent)
+		{
+			generator.AddInstruction("get_upvalue " + std::to_string(calleeContext.pos));
+		}
+		else
+		{
+			generator.AddInstruction("get_local " + std::to_string(calleeContext.pos));
+		}
+		for (auto const& argument : m_arguments)
+		{
+			generator.AddInstruction("call " + std::to_string(1));
+		}
+	}
+
 	std::string m_callee;
 	std::vector<ExpressionPtr> m_arguments;
 	bool m_isNativeCallee = false;
+	bool m_emptyReturn = false;
 };
