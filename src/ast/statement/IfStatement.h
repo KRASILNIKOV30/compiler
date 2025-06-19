@@ -43,17 +43,18 @@ public:
 		std::string jmpLabel = m_alternate.has_value() ? labelGenerator.GetElseLabel() : labelGenerator.GetEndIfLabel();
 		generator.AddInstruction("jmp_false " + jmpLabel);
 
+		const auto endIfLabel = labelGenerator.GetEndIfLabel();
 		m_body->Generate(generator);
-		generator.AddInstruction("jmp " + labelGenerator.GetEndIfLabel());
+		generator.AddInstruction("jmp " + endIfLabel);
 
 		if (m_alternate.has_value())
 		{
 			generator.AddLabel(labelGenerator.GetElseLabel());
 			std::visit([&](const auto& alternative) { Generate(generator, alternative); }, m_alternate.value());
-			generator.AddInstruction("jmp " + labelGenerator.GetEndIfLabel());
+			generator.AddInstruction("jmp " + endIfLabel);
 		}
 
-		generator.AddLabel(labelGenerator.GetEndIfLabel());
+		generator.AddLabel(endIfLabel);
 	}
 
 private:
