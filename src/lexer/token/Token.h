@@ -50,6 +50,13 @@ enum class TokenType
 	TYPE_FLOAT,
 	TYPE_BOOL,
 	TYPE_STRING,
+	DROP,
+	TAKE,
+	REVERSE,
+	FILTER,
+	TRANSFORM,
+	ITER,
+	OF,
 };
 
 struct Token

@@ -13,6 +13,7 @@
 #include "../ast/statement/ReturnStatement.h"
 #include "../ast/statement/WhileStatement.h"
 #include "../lexer/token/Token.h"
+#include "Adapter.h"
 #include "Calculate.h"
 #include "CalculateCallExpressionType.h"
 #include "CalculateType.h"
@@ -137,6 +138,18 @@ public:
 		{
 			GenerateArrowFunctionHead();
 		}
+		else if (rule == "<adapter>")
+		{
+			SaveAdapter(nodes);
+		}
+		else if (rule == "<iterHead>")
+		{
+			GenerateIterHead(nodes);
+		}
+		else if (rule == "<iterStatement>")
+		{
+			CloseIter();
+		}
 	}
 
 	Program GetProgram()
@@ -145,6 +158,241 @@ public:
 	}
 
 private:
+	void CloseIter()
+	{
+		for (int i = 0; i < m_iterOpenBlocks; ++i)
+		{
+			m_blockStack.pop();
+		}
+		m_iterOpenBlocks = 0;
+	}
+
+	void GenerateIterHead(Nodes const& nodes)
+	{
+		const auto arrItemName = get<Token>(nodes[2]).value;
+		auto arrayExpr = PopExpression();
+		const auto arrayExprType = arrayExpr->GetType();
+		if (!holds_alternative<ArrayTypePtr>(arrayExprType.type))
+		{
+			throw std::runtime_error("Array expected in iter, but " + TypeToString(arrayExprType) + " provided.");
+		}
+		const auto arrayElementType = get<ArrayTypePtr>(arrayExprType.type)->elementType;
+		OpenBlock();
+		m_ignoreNextOpenBlock = true;
+
+		// Generate iter actions before while
+
+		Add(std::make_unique<Declaration>("_arr", arrayExprType, std::move(arrayExpr)));
+
+		auto beginInit = std::make_unique<Term>("0", PrimitiveType::INT, false);
+		Add(std::make_unique<Declaration>("_begin", PrimitiveType::INT, std::move(beginInit)));
+
+		auto arrTerm = std::make_unique<Term>("_arr", arrayExprType, true);
+		std::vector<ExpressionPtr> argument;
+		argument.emplace_back(std::move(arrTerm));
+		auto callExpr = std::make_unique<CallExpression>("arrayLength", PrimitiveType::INT, std::move(argument), true);
+		Add(std::make_unique<Declaration>("_end", PrimitiveType::INT, std::move(callExpr)));
+
+		auto stepInit = std::make_unique<Term>("1", PrimitiveType::INT, false);
+		Add(std::make_unique<Declaration>("_step", PrimitiveType::INT, std::move(stepInit)));
+
+		int temp = 0;
+		for (auto& adapter : m_adapters
+				| std::views::filter([](const auto& a) { return a.type == AdapterType::DROP || a.type == AdapterType::TAKE || a.type == AdapterType::REVERSE; }))
+		{
+			if (adapter.type == AdapterType::DROP)
+			{
+				auto beginMember = std::make_unique<MemberExpression>(PrimitiveType::INT, "_begin", std::nullopt, false);
+				Add(std::make_unique<AssignmentStatement>(std::move(beginMember), std::move(adapter.expr)));
+			}
+			else if (adapter.type == AdapterType::TAKE)
+			{
+				auto stepMult = std::make_unique<BinaryExpression>(
+					std::make_unique<Term>("_step", PrimitiveType::INT, true),
+					std::move(adapter.expr),
+					BinaryOperator::MUL,
+					PrimitiveType::INT);
+				auto endValue = std::make_unique<BinaryExpression>(
+					std::make_unique<Term>("_begin", PrimitiveType::INT, true),
+					std::move(stepMult),
+					BinaryOperator::PLUS,
+					PrimitiveType::INT);
+				auto endMember = std::make_unique<MemberExpression>(PrimitiveType::INT, "_end", std::nullopt, false);
+				Add(std::make_unique<AssignmentStatement>(std::move(endMember), std::move(endValue)));
+			}
+			else // REVERSE
+			{
+				const auto tempName = "_temp" + std::to_string(temp++);
+
+				auto beginTerm = std::make_unique<Term>("_begin", PrimitiveType::INT, true);
+				Add(std::make_unique<Declaration>(tempName, PrimitiveType::INT, std::move(beginTerm)));
+
+				auto beginMember = std::make_unique<MemberExpression>(PrimitiveType::INT, "_begin", std::nullopt, false);
+				auto endTerm = std::make_unique<Term>("_end", PrimitiveType::INT, true);
+				Add(std::make_unique<AssignmentStatement>(std::move(beginMember), std::move(endTerm)));
+
+				auto endMember = std::make_unique<MemberExpression>(PrimitiveType::INT, "_end", std::nullopt, false);
+				auto tempTerm = std::make_unique<Term>(tempName, PrimitiveType::INT, true);
+				Add(std::make_unique<AssignmentStatement>(std::move(endMember), std::move(tempTerm)));
+
+				auto stepMult = std::make_unique<BinaryExpression>(
+					std::make_unique<Term>("_step", PrimitiveType::INT, true),
+					std::make_unique<Term>("-1", PrimitiveType::INT, false),
+					BinaryOperator::MUL,
+					PrimitiveType::INT);
+				auto stepMember = std::make_unique<MemberExpression>(PrimitiveType::INT, "_step", std::nullopt, false);
+				Add(std::make_unique<AssignmentStatement>(std::move(stepMember), std::move(stepMult)));
+			}
+		}
+		// Generate arrow function
+		// const _arrayFun = (index: int) -> arr[index];
+		auto arrIdentifier = std::make_unique<MemberExpression>(arrayExprType, "_arr", std::nullopt);
+		auto indexIdentifier = std::make_unique<Term>("index", PrimitiveType::INT, true);
+		auto accessExpr = std::make_unique<MemberExpression>(arrayElementType, "_arr", std::move(indexIdentifier));
+
+		std::vector<std::string> params = { "index" };
+
+		FunctionType funcType;
+		funcType.emplace_back(PrimitiveType::INT);
+		funcType.emplace_back(arrayElementType);
+
+		auto arrowFunc = std::make_unique<ArrowFunctionExpression>(
+			std::move(funcType),
+			params,
+			std::move(accessExpr));
+
+		Type arrowFuncType = arrowFunc->GetType();
+		DeclarationPtr decl = std::make_unique<Declaration>("_arrayFun", arrowFuncType, std::move(arrowFunc));
+		Add(std::move(decl));
+
+		// Generate while
+		// var _curr = _begin;
+		// while (_curr < _end and curr < arrayLength(_arr))
+		// {
+		//		var item = _arrayFun(curr);
+		// 1. Инициализация итератора: var _curr = _begin;
+		{
+			auto beginValue = std::make_unique<Term>("_begin", PrimitiveType::INT, true);
+			auto currDecl = std::make_unique<Declaration>("_curr", PrimitiveType::INT, std::move(beginValue));
+			Add(std::move(currDecl));
+		}
+
+		// 2. Создание условия для while: _curr < _end
+		auto currLessThanEnd = std::make_unique<BinaryExpression>(
+			std::make_unique<Term>("_curr", PrimitiveType::INT, true),
+			std::make_unique<Term>("_end", PrimitiveType::INT, true),
+			BinaryOperator::LESS,
+			PrimitiveType::BOOL);
+
+		// 3. Создаем узел WhileStatement с этим условием
+		auto whileStatement = std::make_unique<WhileStatement>(std::move(currLessThanEnd));
+		WhileStatement* whilePtr = whileStatement.get(); // Невладеющий указатель для работы
+
+		// 4. Добавляем узел while в текущий блок (блок iter-а)
+		Add(std::move(whileStatement));
+
+		// 5. Делаем тело while-цикла новым активным блоком
+		BlockStatement* whileBody = whilePtr->GetBlock();
+		m_blockStack.push(whileBody);
+		m_table.CreateScope();
+		m_iterOpenBlocks = 1;
+
+		// 6. Создаем вызов: _arrayFun(_curr)
+		// 6.1. Аргумент вызова - _curr
+		std::vector<ExpressionPtr> args;
+		args.push_back(std::make_unique<Term>("_curr", PrimitiveType::INT, true));
+
+		// 6.4. Создаем узел вызова
+		auto callArrayFn = std::make_unique<CallExpression>("_arrayFun", arrayElementType, std::move(args), false);
+
+		// 7. Создаем объявление переменной item: var item = _arrayFun(_curr);
+		{
+			Type itemType = callArrayFn->GetType();
+			auto itemDecl = std::make_unique<Declaration>(arrItemName, itemType, std::move(callArrayFn));
+			Add(std::move(itemDecl));
+			m_table.Add(arrItemName, { false, itemType });
+		}
+
+		// 7. Генерируем инкремент: _curr = _curr + _step;
+		//    !!! Мы делаем это ЗДЕСЬ, до обработки адаптеров !!!
+		{
+			auto currLValue = std::make_unique<MemberExpression>(Type(PrimitiveType::INT), "_curr", std::nullopt, false);
+			auto currRValue = std::make_unique<Term>("_curr", PrimitiveType::INT, true);
+			auto stepValue = std::make_unique<Term>("_step", PrimitiveType::INT, true);
+			auto incrementExpr = std::make_unique<BinaryExpression>(std::move(currRValue), std::move(stepValue), BinaryOperator::PLUS, PrimitiveType::INT);
+
+			// Добавляем инкремент в тело while
+			Add(std::make_unique<AssignmentStatement>(std::move(currLValue), std::move(incrementExpr)));
+		}
+
+		// Generate filter and transform
+		int adapterIndex = 0;
+		for (auto& adapter : m_adapters
+				| std::views::filter([](const auto& a) { return a.type == AdapterType::FILTER || a.type == AdapterType::TRANSFORM; }))
+		{
+			if (adapter.type == AdapterType::TRANSFORM)
+			{
+				std::string tempFuncName = "_t" + std::to_string(adapterIndex++);
+
+				// 1. Объявляем временную константу для transform-функции
+				auto transformFuncExpr = std::move(adapter.expr);
+				Type funcType = transformFuncExpr->GetType();
+				Add(std::make_unique<Declaration>(tempFuncName, funcType, std::move(transformFuncExpr)));
+
+				// 2. Создаем вызов этой функции: _t0(item)
+				std::vector<ExpressionPtr> args;
+				args.emplace_back(std::make_unique<Term>(arrItemName, arrayElementType, true));
+				auto callExpr = std::make_unique<CallExpression>(tempFuncName, arrayElementType, std::move(args));
+
+				// 3. Создаем присваивание: item = ...
+				auto itemLValue = std::make_unique<MemberExpression>(arrayElementType, arrItemName, std::nullopt, false);
+				Add(std::make_unique<AssignmentStatement>(std::move(itemLValue), std::move(callExpr)));
+			}
+			else // FILTER
+			{
+				std::string tempFuncName = "_f" + std::to_string(adapterIndex);
+
+				// 1. Объявляем временную константу для filter-функции (предиката)
+				auto predicateExpr = std::move(adapter.expr);
+				Type funcType = predicateExpr->GetType();
+				m_table.Add(tempFuncName, { true, funcType });
+				Add(std::make_unique<Declaration>(tempFuncName, funcType, std::move(predicateExpr)));
+
+				// 2. Создаем вызов предиката: _f0(item)
+				std::vector<ExpressionPtr> args;
+				args.emplace_back(std::make_unique<Term>(arrItemName, arrayElementType, true));
+
+				Type resultType = CalculateCallExpressionType(funcType, args);
+				// Проверяем, что предикат возвращает bool
+				if (resultType != Type{ PrimitiveType::BOOL })
+				{
+					throw std::runtime_error("Filter predicate must return a boolean, but it returns '" + TypeToString(resultType) + "'.");
+				}
+				auto callExpr = std::make_unique<CallExpression>(tempFuncName, resultType, std::move(args));
+
+				// 3. Создаем IfStatement с этим вызовом в качестве условия
+				auto ifStatement = std::make_unique<IfStatement>(std::move(callExpr));
+				BlockStatement* thenBlock = ifStatement->GetThenBlock();
+
+				Add(std::move(ifStatement));
+				m_blockStack.push(thenBlock);
+				m_iterOpenBlocks++;
+			}
+		}
+
+		m_adapters.clear();
+	}
+
+	void SaveAdapter(Nodes const& nodes)
+	{
+		const auto tokenType = get<Token>(nodes[0]).type;
+		const auto adapterType = GetAdapterType(tokenType);
+		ExpressionPtr expr = adapterType == AdapterType::REVERSE
+			? nullptr
+			: PopExpression();
+		m_adapters.emplace_back(adapterType, std::move(expr));
+	}
+
 	void GenerateArrowFunctionHead()
 	{
 		if (m_parameters.empty())
@@ -395,8 +643,9 @@ private:
 		if (!m_ignoreNextOpenBlock)
 		{
 			auto block = std::make_unique<BlockStatement>();
-			m_blockStack.emplace(block.get());
+			auto blockPtr = block.get();
 			Add(std::move(block));
+			m_blockStack.emplace(blockPtr);
 			m_table.CreateScope();
 		}
 		m_ignoreNextOpenBlock = false;
@@ -638,6 +887,9 @@ private:
 	std::optional<Type> m_type = std::nullopt;
 	std::vector<std::string> m_parameters;
 	ArrowFunctionExpression* m_openedFunctionPtr = nullptr;
+
+	std::vector<Adapter> m_adapters;
+	int m_iterOpenBlocks = 0;
 
 	Program m_program;
 	bool m_ignoreNextOpenBlock = false;

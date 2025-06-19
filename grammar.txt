@@ -13,7 +13,7 @@
 <typeGuideOpt> -> <typeGuide> | e
 <typeGuide> -> : <type>
 
-<statement> -> <assignmentStatement> | <blockStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <expressionStatement>
+<statement> -> <assignmentStatement> | <blockStatement> | <whileStatement> | <returnStatement> | <ifStatement> | <expressionStatement> | <iterStatement>
 
 <assignmentStatement> -> <ident> = <expression>
 
@@ -26,6 +26,12 @@
 
 <whileStatement> -> <whileHead> <blockStatement>
 <whileHead> -> while ( <expression> )
+
+<iterStatement> -> <iterHead> <blockStatement>
+<iterHead> -> iter ( id of <expression> <adapterListOpt> )
+<adapterListOpt> -> <adapterList> | e
+<adapterList> -> <adapterList> < <adapter> | <adapter>
+<adapter> -> drop ( <expression> ) | take ( <expression> ) | reverse | filter ( <expression> ) | transform ( <expression> )
 
 <returnStatement> -> return <expression> | return
 
