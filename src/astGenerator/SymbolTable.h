@@ -57,8 +57,8 @@ private:
 
 	void DefNativeFunctions()
 	{
-		Add("print", { true, FunctionType{ PrimitiveType::INT, PrimitiveType::VOID }, true });
-		Add("println", { true, FunctionType{ PrimitiveType::STRING, PrimitiveType::VOID }, true });
+		Add("print", { true, FunctionType{ PrimitiveType::ANY, PrimitiveType::VOID }, true });
+		Add("println", { true, FunctionType{ PrimitiveType::ANY, PrimitiveType::VOID }, true });
 		Add("getTimestamp", { true, FunctionType{ PrimitiveType::VOID, PrimitiveType::INT }, true });
 		Add("sqrt", { true, FunctionType{ PrimitiveType::INT, PrimitiveType::INT }, true });
 	}

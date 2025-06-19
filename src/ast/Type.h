@@ -13,6 +13,7 @@ enum class PrimitiveType
 	STRING,
 	BOOL,
 	VOID,
+	ANY,
 };
 
 struct Type;
