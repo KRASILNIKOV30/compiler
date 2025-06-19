@@ -61,5 +61,7 @@
 <arrayItemList> -> <arrayItemList> , <arrayItem> | <arrayItem>
 <arrayItem> -> <expression>
 
-<type> -> <primitiveType> | <primitiveType> -> <type>
+<type> -> <typeItem> | <typeItem> -> <type>
+<typeItem> -> <primitiveType> | <arrayType>
+<arrayType> -> <primitiveType> [ ]
 <primitiveType> -> int | float | string | bool

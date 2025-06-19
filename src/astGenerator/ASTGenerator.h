@@ -101,6 +101,10 @@ public:
 		{
 			SavePrimitiveType(nodes);
 		}
+		else if (rule == "<arrayType>")
+		{
+			MakeLastTypeArray();
+		}
 		else if (rule == "<parameter>")
 		{
 			GenerateParameter(nodes);
@@ -266,6 +270,26 @@ private:
 		else
 		{
 			m_type.emplace(pt);
+		}
+	}
+
+	void MakeLastTypeArray()
+	{
+		if (holds_alternative<FunctionType>(m_type->type))
+		{
+			auto ft = get<FunctionType>(m_type->type);
+			ft.back() = std::make_shared<ArrayType>(ft.back());
+			m_type.emplace(ft);
+		}
+		else if (holds_alternative<ArrayTypePtr>(m_type->type))
+		{
+			auto at = get<ArrayTypePtr>(m_type->type);
+			m_type.emplace(std::make_shared<ArrayType>(at));
+		}
+		else
+		{
+			auto pt = get<PrimitiveType>(m_type->type);
+			m_type.emplace(std::make_shared<ArrayType>(pt));
 		}
 	}
 

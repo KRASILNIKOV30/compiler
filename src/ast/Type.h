@@ -66,6 +66,11 @@ struct ArrayType
 	Type elementType;
 };
 
+inline bool operator==(ArrayTypePtr const& lhs, ArrayTypePtr const& rhs)
+{
+	return lhs->elementType == rhs->elementType;
+}
+
 inline std::unordered_map<TokenType, PrimitiveType> TokenTypeToPrimitiveType = {
 	{ TokenType::INTEGER, PrimitiveType::INT },
 	{ TokenType::FLOAT, PrimitiveType::FLOAT },
