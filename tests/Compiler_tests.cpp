@@ -338,7 +338,7 @@ std::vector<TestData> LoadTestCases()
 				".code",
 				"1 const 0",
 				"1 get_global 1",
-				"1 call",
+				"1 call 1",
 				"1 pop",
 				"1 return",
 				".end_def",

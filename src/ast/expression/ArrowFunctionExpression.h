@@ -32,26 +32,42 @@ public:
 
 	void Generate(CodeGenerator &generator) const override
 	{
+		if (m_params.empty())
+		{
+			GenerateFunctionBeginning(generator, 0);
+		}
+		for (auto const& param: m_params)
+		{
+			GenerateFunctionBeginning(generator, 1);
+			generator.GetVariablePosOrAdd(param);
+		}
+
+		std::visit([&](const auto& body) { Generate(generator, body); }, m_body);
+
+		for (auto const& param: m_params)
+		{
+			GenerateFunctionEnding(generator);
+		}
+	}
+
+private:
+	static void GenerateFunctionBeginning(CodeGenerator& generator, int argc)
+	{
 		static auto arrowFunctionId = 0;
 		const auto currentArrowFunctionId = ++arrowFunctionId;
 
 		generator.AddInstruction("load_fn " + std::to_string(currentArrowFunctionId));
 		generator.AddInstruction("closure");
 
-		std::string arrowFunctionName = "arrowFunction" + std::to_string(currentArrowFunctionId);
-		generator.BeginFunction(arrowFunctionName, m_params.size());
+		const std::string arrowFunctionName = "arrowFunction" + std::to_string(currentArrowFunctionId);
+		generator.BeginFunction(arrowFunctionName, argc);
+	}
 
-		for (auto const& param: m_params)
-		{
-			generator.GetVariablePosOrAdd(param);
-		}
-
-		std::visit([&](const auto& body) { Generate(generator, body); }, m_body);
-
+	static void GenerateFunctionEnding(CodeGenerator& generator)
+	{
 		generator.EndFunction();
 	}
 
-private:
 	static void Generate(CodeGenerator& generator, ExpressionPtr const& expression)
 	{
 		expression->Generate(generator);

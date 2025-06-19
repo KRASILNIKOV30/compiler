@@ -11,7 +11,7 @@ enum class UnaryOperators
 	NOT
 };
 
-enum class BinaryOperators
+enum class BinaryOperator
 {
 	PLUS, // +
 	MINUS, // -
@@ -30,43 +30,43 @@ enum class BinaryOperators
 	OR, // or
 };
 
-inline std::unordered_map<BinaryOperators, std::vector<std::string>> BinaryOperatorsToString = {
-	{ BinaryOperators::PLUS, { "add" } },
-	{ BinaryOperators::MINUS, { "sub" } },
-	{ BinaryOperators::MUL, { "mul" } },
-	{ BinaryOperators::MOD, { "mod" } },
-	{ BinaryOperators::DIV, { "div" } },
-	{ BinaryOperators::DIVISION, { "div" } },
-	{ BinaryOperators::ASSIGNMENT, { "not found" } },
-	{ BinaryOperators::EQUAL, { "ceq" } },
-	{ BinaryOperators::NOT_EQUAL, { "ceq", "not" } },
-	{ BinaryOperators::LESS, { "clt" } },
-	{ BinaryOperators::GREATER, { "cgt" } },
-	{ BinaryOperators::LESS_OR_EQUAL, { "cgt", "not" } },
-	{ BinaryOperators::GREATER_OR_EQUAL, { "clt", "not" } },
-	{ BinaryOperators::AND, { "and" } },
-	{ BinaryOperators::OR, { "or" } },
+inline std::unordered_map<BinaryOperator, std::vector<std::string>> BinaryOperatorsToString = {
+	{ BinaryOperator::PLUS, { "add" } },
+	{ BinaryOperator::MINUS, { "sub" } },
+	{ BinaryOperator::MUL, { "mul" } },
+	{ BinaryOperator::MOD, { "mod" } },
+	{ BinaryOperator::DIV, { "div" } },
+	{ BinaryOperator::DIVISION, { "div" } },
+	{ BinaryOperator::ASSIGNMENT, { "not found" } },
+	{ BinaryOperator::EQUAL, { "ceq" } },
+	{ BinaryOperator::NOT_EQUAL, { "ceq", "not" } },
+	{ BinaryOperator::LESS, { "clt" } },
+	{ BinaryOperator::GREATER, { "cgt" } },
+	{ BinaryOperator::LESS_OR_EQUAL, { "cgt", "not" } },
+	{ BinaryOperator::GREATER_OR_EQUAL, { "clt", "not" } },
+	{ BinaryOperator::AND, { "and" } },
+	{ BinaryOperator::OR, { "or" } },
 };
 
-inline std::unordered_map<std::string, BinaryOperators> StringToBinaryOperatorMap = {
-	{ "+", BinaryOperators::PLUS },
-	{ "-", BinaryOperators::MINUS },
-	{ "*", BinaryOperators::MUL },
-	{ "mod", BinaryOperators::MOD },
-	{ "div", BinaryOperators::DIV },
-	{ "/", BinaryOperators::DIVISION },
-	{ "=", BinaryOperators::ASSIGNMENT },
-	{ "==", BinaryOperators::EQUAL },
-	{ "!=", BinaryOperators::NOT_EQUAL },
-	{ "<", BinaryOperators::LESS },
-	{ ">", BinaryOperators::GREATER },
-	{ "<=", BinaryOperators::LESS_OR_EQUAL },
-	{ ">=", BinaryOperators::GREATER_OR_EQUAL },
-	{ "and", BinaryOperators::AND },
-	{ "or", BinaryOperators::OR },
+inline std::unordered_map<std::string, BinaryOperator> StringToBinaryOperatorMap = {
+	{ "+", BinaryOperator::PLUS },
+	{ "-", BinaryOperator::MINUS },
+	{ "*", BinaryOperator::MUL },
+	{ "mod", BinaryOperator::MOD },
+	{ "div", BinaryOperator::DIV },
+	{ "/", BinaryOperator::DIVISION },
+	{ "=", BinaryOperator::ASSIGNMENT },
+	{ "==", BinaryOperator::EQUAL },
+	{ "!=", BinaryOperator::NOT_EQUAL },
+	{ "<", BinaryOperator::LESS },
+	{ ">", BinaryOperator::GREATER },
+	{ "<=", BinaryOperator::LESS_OR_EQUAL },
+	{ ">=", BinaryOperator::GREATER_OR_EQUAL },
+	{ "and", BinaryOperator::AND },
+	{ "or", BinaryOperator::OR },
 };
 
-inline BinaryOperators StringToBinaryOperator(std::string const& str)
+inline BinaryOperator StringToBinaryOperator(std::string const& str)
 {
 	const auto it = StringToBinaryOperatorMap.find(str);
 	if (it != StringToBinaryOperatorMap.end())
