@@ -57,6 +57,8 @@ enum class TokenType
 	TRANSFORM,
 	ITER,
 	OF,
+	DOUBLE_DOT,
+	DOT,
 };
 
 struct Token

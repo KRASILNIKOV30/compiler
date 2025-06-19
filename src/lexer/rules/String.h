@@ -3,7 +3,7 @@
 
 inline bool IsQuot(char c)
 {
-	return c == '\'';
+	return c == '\'' || c == '"';
 }
 
 inline bool StringRule(Reader& reader)

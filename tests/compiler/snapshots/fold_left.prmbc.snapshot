@@ -88,6 +88,7 @@ number 1
 1 ceq
 1 jmp_false endif1
 1 get_upvalue 0
+1 return
 1 jmp endif1
 endif1:
 1 get_local 0
@@ -142,6 +143,7 @@ while1:
 1 jmp while1
 endwhile1:
 1 get_local 1
+1 return
 1 return
 .end_def
 

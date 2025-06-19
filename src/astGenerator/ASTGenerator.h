@@ -150,6 +150,10 @@ public:
 		{
 			CloseIter();
 		}
+		else if (rule == "<range>")
+		{
+			GenerateRange();
+		}
 	}
 
 	Program GetProgram()
@@ -158,6 +162,20 @@ public:
 	}
 
 private:
+	void GenerateRange()
+	{
+		auto last = PopExpression();
+		auto first = PopExpression();
+
+		auto firstVal = std::stoi(GetSymbolValue(first));
+		auto lastVal = std::stoi(GetSymbolValue(last));
+
+		for (auto i = firstVal; i <= lastVal; ++i)
+		{
+			m_arrayItemStack.emplace(std::make_unique<Term>(std::to_string(i), PrimitiveType::INT, false));
+		}
+	}
+
 	void CloseIter()
 	{
 		for (int i = 0; i < m_iterOpenBlocks; ++i)

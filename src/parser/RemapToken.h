@@ -57,6 +57,8 @@ inline std::unordered_map<TokenType, std::string> TokenTypeToString = {
 	{ TokenType::TRANSFORM, "transform" },
 	{ TokenType::ITER, "iter" },
 	{ TokenType::OF, "of" },
+	{ TokenType::DOUBLE_DOT, ".." },
+	{ TokenType::DOT, "." },
 };
 
 inline std::string RemapTokenTypeToString(const TokenType type)

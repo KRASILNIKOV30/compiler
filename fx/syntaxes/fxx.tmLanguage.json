@@ -1,0 +1,104 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "FXX",
+  "scopeName": "source.fxx",
+  "fileTypes": [".fxx"],
+  "patterns": [
+    {
+      "name": "comment.line.fxx",
+      "match": "//.*$"
+    },
+
+    {
+      "name": "keyword.declaration.fxx",
+      "match": "\\b(var|const|function|return|if|else|while|true|false)\\b"
+    },
+
+    {
+      "name": "storage.type.fxx",
+      "match": "\\b(int|float|string|bool)\\b"
+    },
+
+    {
+      "name": "keyword.operator.fxx",
+      "match": "\\b(and|or|not|mod|div)\\b"
+    },
+    {
+      "name": "keyword.operator.fxx",
+      "match": "(->|<=|>=|==|!=|[\\+\\-\\*/=<>!:])"
+    },
+
+    {
+      "name": "punctuation.separator.fxx",
+      "match": "[;,.:]"
+    },
+    {
+      "name": "punctuation.bracket.fxx",
+      "match": "[\\[\\]{}()]"
+    },
+
+    {
+      "name": "constant.numeric.fxx",
+      "match": "\\b\\d+(\\.\\d+)?\\b"
+    },
+
+    {
+      "name": "string.quoted.double.fxx",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.fxx",
+          "match": "\\\\."
+        }
+      ]
+    },
+
+    {
+      "name": "variable.fxx",
+      "match": "\\b[a-zA-Z_]\\w*\\b"
+    },
+    {
+      "name": "entity.name.function.fxx",
+      "match": "(?<=function\\s+)\\b[a-zA-Z_]\\w*\\b"
+    },
+
+    {
+      "name": "meta.block.fxx",
+      "begin": "\\{",
+      "end": "\\}",
+      "patterns": [
+        { "include": "$self" }
+      ]
+    },
+
+    {
+      "name": "variable.parameter.fxx",
+      "match": "(?<=\\()\\s*\\b[a-zA-Z_]\\w*\\b(?=\\s*[:=])"
+    },
+
+    {
+      "name": "meta.function.arrow.fxx",
+      "begin": "(\\()(.*?)(\\))\\s*(->)",
+      "end": "(?=\\}|;|$)",
+      "beginCaptures": {
+        "1": { "name": "punctuation.bracket.fxx" },
+        "2": { "patterns": [{ "include": "$self" }] },
+        "3": { "name": "punctuation.bracket.fxx" },
+        "4": { "name": "keyword.operator.fxx" }
+      },
+      "patterns": [
+        { "include": "$self" }
+      ]
+    },
+
+    {
+      "name": "meta.initializer-list.fxx",
+      "begin": "\\[",
+      "end": "\\]",
+      "patterns": [
+        { "include": "$self" }
+      ]
+    }
+  ]
+}

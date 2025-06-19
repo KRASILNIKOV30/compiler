@@ -57,6 +57,7 @@ else1:
 endif1:
 1 get_local 1
 1 return
+1 return
 .end_def
 
 .def
