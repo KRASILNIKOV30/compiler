@@ -63,7 +63,7 @@ private:
 		}
 		for (auto const& argument : m_arguments)
 		{
-			generator.AddInstruction("call " + std::to_string(1));
+			generator.AddInstruction("call 1");
 		}
 	}
 
