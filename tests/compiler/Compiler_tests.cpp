@@ -94,7 +94,7 @@ SCENARIO("Compiler snapshot tests (Positive cases)")
 {
 	GIVEN("A compiler and a set of positive test cases")
 	{
-		Compiler compiler("grammar.txt");
+		Compiler compiler("grammar.gfx");
 
 		const fs::path snapshotTestDir = SNAPSHOT_TESTS_DIR;
 		const fs::path codesDir = "codes";
@@ -108,7 +108,7 @@ SCENARIO("Compiler snapshot tests (Positive cases)")
 			WHEN("compiling '" + codeFile.filename().string() + "'")
 			{
 				auto snapshotFile = snapshotTestDir / snapshotsDir / codeFile.filename();
-				snapshotFile.replace_extension(".snapshot");
+				snapshotFile.replace_extension(".prmbc.snapshot");
 
 				const std::string sourceCode = ReadFile(codeFile);
 
@@ -126,7 +126,7 @@ SCENARIO("Compiler snapshot tests (Negative cases)")
 {
 	GIVEN("A compiler and a set of negative test cases")
 	{
-		Compiler compiler("grammar.txt");
+		Compiler compiler("grammar.gfx");
 
 		const fs::path snapshotTestDir = SNAPSHOT_TESTS_DIR;
 		const fs::path codesDir = "codes/negative";
@@ -139,7 +139,7 @@ SCENARIO("Compiler snapshot tests (Negative cases)")
 			WHEN("compiling '" + codeFile.filename().string() + "' which should fail")
 			{
 				auto snapshotFile = snapshotTestDir / snapshotsDir / codeFile.filename();
-				snapshotFile.replace_extension(".snapshot");
+				snapshotFile.replace_extension(".prmbc.snapshot");
 
 				const std::string sourceCode = ReadFile(codeFile);
 
