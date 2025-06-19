@@ -2,6 +2,7 @@
 #include "../ast/Type.h"
 #include "../utils/FoldLeft.h"
 #include "Code.h"
+#include "CodeLabelGenerator.h"
 #include <format>
 #include <ranges>
 #include <sstream>
@@ -22,6 +23,8 @@ public:
 		m_functionNames.emplace_back(MAIN);
 		m_functions.emplace(std::piecewise_construct, std::forward_as_tuple(MAIN), std::forward_as_tuple(MAIN, MAIN));
 	}
+
+	CodeLabelGenerator& GetLabelGenerator() { return m_labelGenerator; }
 
 	void AddInstruction(std::string const& code, bool isNewRow = false)
 	{
@@ -218,6 +221,8 @@ private:
 	std::vector<std::string> m_functionNames;
 	std::unordered_map<std::string, std::string> m_functionToParent;
 	std::unordered_map<std::string, FunctionContext> m_functions; // functionName -> context
+
+	CodeLabelGenerator m_labelGenerator{};
 
 	static inline const std::string MAIN = "__EntryPoint__";
 };

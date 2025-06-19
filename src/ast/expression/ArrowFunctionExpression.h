@@ -59,14 +59,13 @@ public:
 private:
 	static void GenerateFunctionBeginning(CodeGenerator& generator, int argc)
 	{
-		static auto arrowFunctionId = 0;
-		const auto currentArrowFunctionId = ++arrowFunctionId;
+		auto& labelGenerator = generator.GetLabelGenerator();
+		labelGenerator.NewArrowFunctionLabel();
 
-		generator.AddInstruction("load_fn " + std::to_string(currentArrowFunctionId));
+		generator.AddInstruction("load_fn " + std::to_string(labelGenerator.GetArrowFunctionLabelId()));
 		generator.AddInstruction("closure");
 
-		const std::string arrowFunctionName = "arrowFunction" + std::to_string(currentArrowFunctionId);
-		generator.BeginFunction(arrowFunctionName, argc);
+		generator.BeginFunction(labelGenerator.GetArrowFunctionLabel(), argc);
 	}
 
 	static void GenerateFunctionEnding(CodeGenerator& generator)
