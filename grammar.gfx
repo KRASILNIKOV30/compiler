@@ -62,7 +62,8 @@
 <arrowFunctionWithBlock> -> <arrowFunctionWithBlockHead> <blockStatement>
 <arrowFunctionExpression> -> <arrowFunctionWithExpr> | <arrowFunctionWithBlock>
 
-<initializerList> -> [ <arrayItemList> ]
+<initializerList> -> [ <arrayItemList> ] | <range>
+<range> -> [ <expression> .. <expression> ]
 <arrayItemList> -> <arrayItemList> , <arrayItem> | <arrayItem>
 <arrayItem> -> <expression>
 

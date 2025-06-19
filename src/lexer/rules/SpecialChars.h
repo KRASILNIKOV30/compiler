@@ -21,6 +21,7 @@ const std::unordered_map<char, TokenType> SPECIAL_CHARS = {
 	{ '>', TokenType::OP_GREATER },
 	{ ';', TokenType::SEMICOLON },
 	{ ':', TokenType::COLON },
+	{ '.', TokenType::DOT },
 };
 
 const std::unordered_map<char, std::pair<char, TokenType>> DOUBLED_SPECIAL_CHARS = {
@@ -29,6 +30,7 @@ const std::unordered_map<char, std::pair<char, TokenType>> DOUBLED_SPECIAL_CHARS
 	{ '<', { '=', TokenType::OP_LESS_OR_EQUAL } },
 	{ '>', { '=', TokenType::OP_GREATER_OR_EQUAL } },
 	{ '-', { '>', TokenType::ARROW } },
+	{ '.', { '.', TokenType::DOUBLE_DOT } },
 };
 
 inline bool IsSpecialChar(const char c)
