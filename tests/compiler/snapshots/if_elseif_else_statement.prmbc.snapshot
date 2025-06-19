@@ -29,8 +29,8 @@ else2:
 1 set_local 4
 1 jmp endif2
 endif2:
-1 jmp endif2
-endif2:
+1 jmp endif1
+endif1:
 1 return
 .end_def
 
