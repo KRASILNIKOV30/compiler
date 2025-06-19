@@ -57,6 +57,10 @@ private:
 		{
 			generator.AddInstruction("get_local " + std::to_string(calleeContext.pos));
 		}
+		if (m_arguments.empty())
+		{
+			generator.AddInstruction("call 0");
+		}
 		for (auto const& argument : m_arguments)
 		{
 			generator.AddInstruction("call " + std::to_string(1));
