@@ -23,7 +23,14 @@ const std::unordered_map<std::string, TokenType> RESERVED_WORDS = {
 	{ "int", TokenType::TYPE_INTEGER },
 	{ "float", TokenType::TYPE_FLOAT },
 	{ "string", TokenType::TYPE_STRING },
-	{ "bool", TokenType::TYPE_BOOL }
+	{ "bool", TokenType::TYPE_BOOL },
+	{ "drop", TokenType::DROP },
+	{ "take", TokenType::TAKE },
+	{ "reverse", TokenType::REVERSE },
+	{ "filter", TokenType::FILTER },
+	{ "transform", TokenType::TRANSFORM },
+	{ "iter", TokenType::ITER },
+	{ "of", TokenType::OF },
 };
 
 inline std::string ToLower(std::string s)

@@ -83,6 +83,7 @@ set(AST_GENERATOR_TESTS
         src/astGenerator/ASTGenerator.cpp
         src/astGenerator/ASTGenerator.h
         tests/astGenerator/CalculateCallExpressionType_tests.cpp
+        src/astGenerator/Adapter.h
 )
 
 add_executable(compiler
