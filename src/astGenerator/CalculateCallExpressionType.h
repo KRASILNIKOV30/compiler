@@ -94,6 +94,12 @@ inline Type CalculateCallExpressionType(const Type& calleeType, const std::vecto
 			"Type error: Attempt to call a non-function type '" + TypeToString(currentType) + "'.");
 	}
 
+	const auto ft = get<FunctionType>(currentType.type);
+	if (ft.front() == PrimitiveType::ANY)
+	{
+		return ft.back();
+	}
+
 	if (arguments.empty())
 	{
 		return CalculateFunctionWithoutArgs(currentType);

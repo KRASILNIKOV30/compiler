@@ -50,6 +50,13 @@ inline std::unordered_map<TokenType, std::string> TokenTypeToString = {
 	{ TokenType::TYPE_FLOAT, "float" },
 	{ TokenType::TYPE_BOOL, "bool" },
 	{ TokenType::TYPE_STRING, "string" },
+	{ TokenType::DROP, "drop" },
+	{ TokenType::TAKE, "take" },
+	{ TokenType::REVERSE, "reverse" },
+	{ TokenType::FILTER, "filter" },
+	{ TokenType::TRANSFORM, "transform" },
+	{ TokenType::ITER, "iter" },
+	{ TokenType::OF, "of" },
 };
 
 inline std::string RemapTokenTypeToString(const TokenType type)

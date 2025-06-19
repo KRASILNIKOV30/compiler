@@ -1,31 +1,30 @@
 #pragma once
-#include "../Entity.h"
-#include <string>
-#include <vector>
+#include "../expression/Expression.h"
 
 class Declaration : public Entity
 {
 public:
-	Declaration(std::string id, Type type)
+	explicit Declaration(std::string id, Type type, std::optional<ExpressionPtr>&& init)
 		: m_id(std::move(id))
 		, m_type(std::move(type))
+		, m_init(std::move(init))
 	{
 	}
 
-protected:
-	[[nodiscard]] std::string GetId() const
+	void Generate(CodeGenerator& generator) const override
 	{
-		return m_id;
+		const auto pos = generator.GetVariablePosOrAdd(m_id);
+		if (m_init.has_value())
+		{
+			m_init.value()->Generate(generator);
+		}
+		generator.AddInstruction("set_local " + std::to_string(pos));
 	}
-
-	[[nodiscard]] Type GetType() const
-	{
-		return m_type;
-	};
 
 private:
 	std::string m_id;
 	Type m_type;
+	std::optional<ExpressionPtr> m_init;
 };
 
 using DeclarationPtr = std::unique_ptr<Declaration>;

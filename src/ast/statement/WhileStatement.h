@@ -13,17 +13,17 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
-		static auto whileId = 0;
+		auto& labelGenerator = generator.GetLabelGenerator();
+		labelGenerator.NewWhileLabel();
 
-		const auto currentWhileId = ++whileId;
-		generator.AddLabel("while" + std::to_string(currentWhileId));
+		generator.AddLabel(labelGenerator.GetWhileLabel());
 		m_condition->Generate(generator);
-		generator.AddInstruction("jmp_false endwhile" + std::to_string(currentWhileId));
+		generator.AddInstruction("jmp_false " + labelGenerator.GetEndWhileLabel());
 
 		m_body->Generate(generator);
-		generator.AddInstruction("jmp while" + std::to_string(currentWhileId));
+		generator.AddInstruction("jmp " + labelGenerator.GetWhileLabel());
 
-		generator.AddLabel("endwhile" + std::to_string(currentWhileId));
+		generator.AddLabel(labelGenerator.GetEndWhileLabel());
 	}
 
 	BlockStatement* GetBlock()

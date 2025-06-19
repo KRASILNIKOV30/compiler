@@ -1,0 +1,1 @@
+Error at line 1: Binary operator '+' is not applicable to types 'BOOL' and 'INT'.

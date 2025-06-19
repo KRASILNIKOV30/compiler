@@ -1,0 +1,77 @@
+.def
+.argc 0
+.locals 2
+.name __EntryPoint__
+.constants
+number 2
+.code
+1 load_fn 1
+1 closure
+1 set_local 0
+1 const 0
+1 get_local 0
+1 call 1
+1 set_local 1
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction1
+.parent_local 0
+.code
+1 load_fn 2
+1 closure
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction2
+.parent_local 0
+.code
+1 load_fn 3
+1 closure
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction3
+.parent_local 0
+.parent_upvalue 0
+.code
+1 load_fn 4
+1 closure
+1 return
+.end_def
+
+.def
+.argc 1
+.locals 0
+.name arrowFunction4
+.constants
+string println
+.parent_local 0
+.parent_upvalue 1 0
+.code
+1 get_upvalue 1
+1 get_upvalue 2
+1 sub
+1 get_global 0
+1 call 1
+1 pop
+1 get_upvalue 0
+1 get_global 0
+1 call 1
+1 pop
+1 get_local 0
+1 get_global 0
+1 call 1
+1 pop
+1 return
+.end_def
+

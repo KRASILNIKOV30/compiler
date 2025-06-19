@@ -4,7 +4,7 @@
 #include "../../src/parser/Parser.h"
 #include "catch.hpp"
 
-const std::string INPUT_FILE = "grammar.txt";
+const std::string INPUT_FILE = "grammar.gfx";
 
 TEST_CASE("slr e2e tests")
 {

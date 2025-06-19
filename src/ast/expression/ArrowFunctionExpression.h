@@ -35,15 +35,33 @@ public:
 		if (m_params.empty())
 		{
 			GenerateFunctionBeginning(generator, 0);
+			generator.AddParentLocalsToCurrentContext();
 		}
-		for (auto const& param: m_params)
+
+		for (auto const& param : m_params)
 		{
 			GenerateFunctionBeginning(generator, 1);
 			generator.GetVariablePosOrAdd(param);
+			generator.AddParentLocalsToCurrentContext();
 		}
+//		for (size_t i = 0; i < m_params.size(); ++i)
+//		{
+//			GenerateFunctionBeginning(generator, 1);
+//			generator.GetVariablePosOrAdd(m_params[i]);
+//			generator.AddParentLocalsToCurrentContext();
+//
+//			if (i > 0)
+//			{
+//				generator.AddParentLocal(m_params[i - 1]);
+//			}
+//		}
 
 		std::visit([&](const auto& body) { Generate(generator, body); }, m_body);
 
+		if (m_params.empty())
+		{
+			GenerateFunctionEnding(generator);
+		}
 		for (auto const& param: m_params)
 		{
 			GenerateFunctionEnding(generator);
@@ -53,14 +71,13 @@ public:
 private:
 	static void GenerateFunctionBeginning(CodeGenerator& generator, int argc)
 	{
-		static auto arrowFunctionId = 0;
-		const auto currentArrowFunctionId = ++arrowFunctionId;
+		auto& labelGenerator = generator.GetLabelGenerator();
+		labelGenerator.NewArrowFunctionLabel();
 
-		generator.AddInstruction("load_fn " + std::to_string(currentArrowFunctionId));
+		generator.AddInstruction("load_fn " + std::to_string(labelGenerator.GetArrowFunctionLabelId()));
 		generator.AddInstruction("closure");
 
-		const std::string arrowFunctionName = "arrowFunction" + std::to_string(currentArrowFunctionId);
-		generator.BeginFunction(arrowFunctionName, argc);
+		generator.BeginFunction(labelGenerator.GetArrowFunctionLabel(), argc);
 	}
 
 	static void GenerateFunctionEnding(CodeGenerator& generator)

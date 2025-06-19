@@ -83,6 +83,7 @@ set(AST_GENERATOR_TESTS
         src/astGenerator/ASTGenerator.cpp
         src/astGenerator/ASTGenerator.h
         tests/astGenerator/CalculateCallExpressionType_tests.cpp
+        src/astGenerator/Adapter.h
 )
 
 add_executable(compiler
@@ -103,25 +104,29 @@ add_executable(tests
         ${AST_GENERATOR_SOURCES}
         ${AST_GENERATOR_TESTS}
         src/utils/FoldLeft.h
-        tests/Compiler_tests.cpp
+        tests/compiler/Compiler_tests.cpp
         tests/CombineStringLines.h
+)
+
+target_compile_definitions(tests PRIVATE
+        "SNAPSHOT_TESTS_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/tests/compiler\""
 )
 
 add_custom_command(
         TARGET tests PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
+        COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/grammar.gfx"
         COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_CURRENT_SOURCE_DIR}/grammar.txt"
-        "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
+        "${CMAKE_CURRENT_SOURCE_DIR}/grammar.gfx"
+        "${CMAKE_CURRENT_BINARY_DIR}/grammar.gfx"
         COMMENT "Copying grammar.txt to binary dir"
 )
 
 add_custom_command(
         TARGET compiler PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
+        COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/grammar.gfx"
         COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_CURRENT_SOURCE_DIR}/grammar.txt"
-        "${CMAKE_CURRENT_BINARY_DIR}/grammar.txt"
+        "${CMAKE_CURRENT_SOURCE_DIR}/grammar.gfx"
+        "${CMAKE_CURRENT_BINARY_DIR}/grammar.gfx"
         COMMENT "Copying grammar.txt to binary dir"
 )
 

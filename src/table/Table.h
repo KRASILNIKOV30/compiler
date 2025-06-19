@@ -10,7 +10,6 @@ const std::string END_SYMBOL = "#";
 const std::string EMPTY = "e";
 constexpr char NON_TERM_FIRST_CHAR = '<';
 constexpr int NON_TERM_MIN_SIZE = 3;
-const std::string FIRST_RULE = "<Z>";
 
 using Guides = std::unordered_set<std::string>;
 

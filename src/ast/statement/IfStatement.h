@@ -35,25 +35,25 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
-		static auto ifId = 0;
-
-		const auto currentIfId = ++ifId;
 		m_condition->Generate(generator);
 
-		std::string jmpLabel = m_alternate.has_value() ? "else" : "endif";
-		generator.AddInstruction("jmp_false " + jmpLabel + std::to_string(currentIfId));
+		auto& labelGenerator = generator.GetLabelGenerator();
+		labelGenerator.NewIfLabel();
+
+		std::string jmpLabel = m_alternate.has_value() ? labelGenerator.GetElseLabel() : labelGenerator.GetEndIfLabel();
+		generator.AddInstruction("jmp_false " + jmpLabel);
 
 		m_body->Generate(generator);
-		generator.AddInstruction("jmp endif" + std::to_string(currentIfId));
+		generator.AddInstruction("jmp " + labelGenerator.GetEndIfLabel());
 
 		if (m_alternate.has_value())
 		{
-			generator.AddLabel("else" + std::to_string(currentIfId));
+			generator.AddLabel(labelGenerator.GetElseLabel());
 			std::visit([&](const auto& alternative) { Generate(generator, alternative); }, m_alternate.value());
-			generator.AddInstruction("jmp endif" + std::to_string(currentIfId));
+			generator.AddInstruction("jmp " + labelGenerator.GetEndIfLabel());
 		}
 
-		generator.AddLabel("endif" + std::to_string(currentIfId));
+		generator.AddLabel(labelGenerator.GetEndIfLabel());
 	}
 
 private:

@@ -2,6 +2,7 @@
 #include "../ast/Type.h"
 #include "../utils/FoldLeft.h"
 #include "Code.h"
+#include "CodeLabelGenerator.h"
 #include <format>
 #include <ranges>
 #include <sstream>
@@ -23,6 +24,8 @@ public:
 		m_functions.emplace(std::piecewise_construct, std::forward_as_tuple(MAIN), std::forward_as_tuple(MAIN, MAIN));
 	}
 
+	CodeLabelGenerator& GetLabelGenerator() { return m_labelGenerator; }
+
 	void AddInstruction(std::string const& code, bool isNewRow = false)
 	{
 		m_rowId += isNewRow;
@@ -37,6 +40,22 @@ public:
 	size_t GetVariablePosOrAdd(std::string const& variableName)
 	{
 		return GetValuePosOrAdd<std::string>(GetCurrentContext().variables, variableName);
+	}
+
+	size_t AddParentLocal(std::string const& variableName, size_t pos = 0)
+	{
+		return GetValuePosOrAdd<Variable>(GetCurrentContext().parentLocals, std::make_pair(variableName, pos));
+	}
+
+	void AddParentLocalsToCurrentContext()
+	{
+		auto& currentContext = GetCurrentContext();
+		auto parentLocals = GetContext(currentContext.parentName).variables;
+
+		for (auto const& parentLocal : GetContext(currentContext.parentName).variables)
+		{
+			AddParentLocal(parentLocal, GetCurrentContext().parentLocals.size());
+		}
 	}
 
 	VariableContext GetVariableContextPos(std::string const& variableName)
@@ -94,7 +113,8 @@ public:
 							   functionContext.parentLocals | std::views::transform([&](const auto& p) { return std::to_string(p.second); }),
 							   [&](const auto& acc, const auto& curr) {
 								   return acc + " " += curr;
-							   }) << std::endl;
+							   })
+						<< std::endl;
 			}
 			if (!functionContext.parentUpvalues.empty())
 			{
@@ -103,7 +123,8 @@ public:
 							   functionContext.parentUpvalues | std::views::transform([&](const auto& p) { return std::to_string(p.second); }),
 							   [&](const auto& acc, const auto& curr) {
 								   return acc + " " += curr;
-							   }) << std::endl;
+							   })
+						<< std::endl;
 			}
 
 			outFile << ".code" << std::endl
@@ -211,6 +232,8 @@ private:
 	std::vector<std::string> m_functionNames;
 	std::unordered_map<std::string, std::string> m_functionToParent;
 	std::unordered_map<std::string, FunctionContext> m_functions; // functionName -> context
+
+	CodeLabelGenerator m_labelGenerator{};
 
 	static inline const std::string MAIN = "__EntryPoint__";
 };

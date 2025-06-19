@@ -13,6 +13,7 @@ enum class PrimitiveType
 	STRING,
 	BOOL,
 	VOID,
+	ANY,
 };
 
 struct Type;
@@ -64,6 +65,15 @@ struct ArrayType
 
 	Type elementType;
 };
+
+inline bool operator==(ArrayTypePtr const& lhs, ArrayTypePtr const& rhs)
+{
+	if (lhs->elementType == PrimitiveType::ANY || rhs->elementType == PrimitiveType::ANY)
+	{
+		return true;
+	}
+	return lhs->elementType == rhs->elementType;
+}
 
 inline std::unordered_map<TokenType, PrimitiveType> TokenTypeToPrimitiveType = {
 	{ TokenType::INTEGER, PrimitiveType::INT },

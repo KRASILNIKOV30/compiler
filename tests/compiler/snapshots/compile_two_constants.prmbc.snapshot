@@ -1,0 +1,15 @@
+.def
+.argc 0
+.locals 2
+.name __EntryPoint__
+.constants
+number 3
+number 5
+.code
+1 const 0
+1 set_local 0
+1 const 1
+1 set_local 1
+1 return
+.end_def
+

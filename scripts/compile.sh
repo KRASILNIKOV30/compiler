@@ -12,7 +12,7 @@ readonly RELEASE_DIR_NAME="cmake-build-release"
 readonly DEBUG_DIR_NAME="cmake-build-debug"
 readonly COMPILER_EXECUTABLE="compiler"
 readonly VM_EXECUTABLE="PVM"
-readonly GRAMMAR_FILE="grammar.txt"
+readonly GRAMMAR_FILE="grammar.gfx"
 readonly BYTE_CODE_FILE="byte-code.prmbc"
 
 readonly RED='\033[0;31m'
@@ -105,7 +105,7 @@ execute_program() {
     success "Compiler finished."
 
     local byte_code_path="${build_dir}/${BYTE_CODE_FILE}"
-    mv -f "${PROJECT_DIR}/${BYTE_CODE_FILE}" "${byte_code_path}"
+    mv -f "${BYTE_CODE_FILE}" "${byte_code_path}"
 
     if ! "${vm_path}" "${byte_code_path}"; then
         error "Virtual Machine execution failed."
