@@ -387,7 +387,7 @@ private:
 
 				Type resultType = CalculateCallExpressionType(funcType, args);
 				// Проверяем, что предикат возвращает bool
-				if (resultType != Type{ PrimitiveType::BOOL })
+				if (resultType != PrimitiveType::BOOL)
 				{
 					throw std::runtime_error("Filter predicate must return a boolean, but it returns '" + TypeToString(resultType) + "'.");
 				}
