@@ -12,7 +12,10 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
+		generator.ShouldNotClosureFunctionDirectly();
 		m_argument->Generate(generator);
+		generator.ClosureFunction();
+
 		generator.AddInstruction("return");
 	}
 

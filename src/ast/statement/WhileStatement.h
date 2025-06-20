@@ -16,14 +16,16 @@ public:
 		auto& labelGenerator = generator.GetLabelGenerator();
 		labelGenerator.NewWhileLabel();
 
-		generator.AddLabel(labelGenerator.GetWhileLabel());
+		const auto whileLabel = labelGenerator.GetWhileLabel();
+		const auto endWhileLabel = labelGenerator.GetEndWhileLabel();
+		generator.AddLabel(whileLabel);
 		m_condition->Generate(generator);
-		generator.AddInstruction("jmp_false " + labelGenerator.GetEndWhileLabel());
+		generator.AddInstruction("jmp_false " + endWhileLabel);
 
 		m_body->Generate(generator);
-		generator.AddInstruction("jmp " + labelGenerator.GetWhileLabel());
+		generator.AddInstruction("jmp " + whileLabel);
 
-		generator.AddLabel(labelGenerator.GetEndWhileLabel());
+		generator.AddLabel(endWhileLabel);
 	}
 
 	BlockStatement* GetBlock()

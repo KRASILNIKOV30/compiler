@@ -1,16 +1,28 @@
-const max = (a: int, b: int) -> {
-   var result: int = 0;
-   if (a > b)
-   {
-     result = a;
-   }
-   else
-   {
-     result = b;
-   };
-   return result;
+const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+const isEven = (a: int) -> (a mod 2 == 0);
+const square = (a: int) -> a * a;
+
+iter (item of arr
+    < drop(1)
+    < take(8)
+    < reverse
+    < filter(isEven)
+    < transform(square)
+) {
+    println(item);
 };
 
-const writeMax = (max: int -> int -> int, a: int, b: int) -> println(max(a, b));
+const cube = (a: int) -> a * a * a;
+const arrFn = [
+    (a: int) -> a * a,
+    (a: int) -> a * a * a
+];
 
-writeMax(max, 10, 20);
+var pipeline = 2;
+
+iter (fn of arrFn) {
+    pipeline = fn(pipeline);
+};
+
+println(pipeline);

@@ -37,24 +37,12 @@ public:
 			GenerateFunctionBeginning(generator, 0);
 			generator.AddParentLocalsToCurrentContext();
 		}
-
 		for (auto const& param : m_params)
 		{
 			GenerateFunctionBeginning(generator, 1);
 			generator.GetVariablePosOrAdd(param);
 			generator.AddParentLocalsToCurrentContext();
 		}
-//		for (size_t i = 0; i < m_params.size(); ++i)
-//		{
-//			GenerateFunctionBeginning(generator, 1);
-//			generator.GetVariablePosOrAdd(m_params[i]);
-//			generator.AddParentLocalsToCurrentContext();
-//
-//			if (i > 0)
-//			{
-//				generator.AddParentLocal(m_params[i - 1]);
-//			}
-//		}
 
 		std::visit([&](const auto& body) { Generate(generator, body); }, m_body);
 
@@ -65,6 +53,10 @@ public:
 		for (auto const& param: m_params)
 		{
 			GenerateFunctionEnding(generator);
+			if (param != m_params.back())
+			{
+				generator.AddInstruction("closure");
+			}
 		}
 	}
 
@@ -75,7 +67,6 @@ private:
 		labelGenerator.NewArrowFunctionLabel();
 
 		generator.AddInstruction("load_fn " + std::to_string(labelGenerator.GetArrowFunctionLabelId()));
-		generator.AddInstruction("closure");
 
 		generator.BeginFunction(labelGenerator.GetArrowFunctionLabel(), argc);
 	}

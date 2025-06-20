@@ -11,6 +11,8 @@ number 4
 string println
 .code
 1 load_fn 1
+1 set_local 0
+1 get_local 0
 1 closure
 1 set_local 0
 1 const 0
@@ -116,6 +118,8 @@ endif1:
 1 add
 1 set_local 3
 1 load_fn 4
+1 set_local 6
+1 get_local 6
 1 closure
 1 set_local 6
 1 get_local 3

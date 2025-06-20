@@ -1,10 +1,9 @@
 .def
 .argc 0
-.locals 2
+.locals 1
 .name __EntryPoint__
 .constants
-number 2.0
-number 3.2
+number 15
 string println
 .code
 1 load_fn 1
@@ -12,14 +11,15 @@ string println
 1 get_local 0
 1 closure
 1 set_local 0
+1 load_fn 2
+1 set_local 0
+1 get_local 0
+1 closure
+1 set_local 0
 1 const 0
 1 get_local 0
 1 call 1
-1 set_local 1
-1 const 1
-1 get_local 1
-1 call 1
-1 get_global 2
+1 get_global 1
 1 call 1
 1 pop
 1 return
@@ -31,9 +31,7 @@ string println
 .name arrowFunction1
 .parent_local 0
 .code
-1 load_fn 2
-1 closure
-1 return
+1 get_local 0
 1 return
 .end_def
 
@@ -41,11 +39,32 @@ string println
 .argc 1
 .locals 0
 .name arrowFunction2
+.constants
+number 1
+number 2
 .parent_local 0
 .code
 1 get_local 0
+1 const 0
+1 cgt
+1 not
+1 jmp_false endif1
+1 get_local 0
+1 return
+1 jmp endif1
+endif1:
+1 get_local 0
+1 const 0
+1 sub
 1 get_upvalue 0
-1 mul
+1 call 1
+1 get_local 0
+1 const 1
+1 sub
+1 get_upvalue 0
+1 call 1
+1 add
+1 return
 1 return
 .end_def
 

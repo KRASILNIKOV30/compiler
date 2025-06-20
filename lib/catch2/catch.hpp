@@ -14090,7 +14090,7 @@ namespace Catch {
             }
         }
         if( isHidden ) {
-            // Add all "hidden" tags to make them behave identically
+            // ShouldNotClosureFunctionDirectly all "hidden" tags to make them behave identically
             tags.insert( tags.end(), { ".", "!hide" } );
         }
 

@@ -31,9 +31,13 @@ string println
 1 create_arr 10
 1 set_local 0
 1 load_fn 1
+1 set_local 1
+1 get_local 1
 1 closure
 1 set_local 1
 1 load_fn 2
+1 set_local 2
+1 get_local 2
 1 closure
 1 set_local 2
 1 get_local 0
@@ -73,6 +77,8 @@ string println
 1 mul
 1 set_local 6
 1 load_fn 3
+1 set_local 8
+1 get_local 8
 1 closure
 1 set_local 8
 1 get_local 4
@@ -112,6 +118,8 @@ endif1:
 1 jmp while1
 endwhile1:
 1 load_fn 4
+1 set_local 13
+1 get_local 13
 1 closure
 1 set_local 13
 1 load_fn 5
@@ -133,6 +141,8 @@ endwhile1:
 1 const 0
 1 set_local 6
 1 load_fn 7
+1 set_local 8
+1 get_local 8
 1 closure
 1 set_local 8
 1 get_local 4

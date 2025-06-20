@@ -15,7 +15,9 @@ public:
 	{
 		for (auto& element : m_elements)
 		{
+			generator.ShouldNotClosureFunctionDirectly();
 			element->Generate(generator);
+			generator.ClosureFunction();
 		}
 		generator.AddInstruction("create_arr " + std::to_string(m_elements.size()));
 	}

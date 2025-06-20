@@ -45,7 +45,9 @@ private:
 	{
 		for (auto const& argument : m_arguments | std::views::reverse)
 		{
+			generator.ShouldNotClosureFunctionDirectly();
 			argument->Generate(generator);
+			generator.ClosureFunction();
 		}
 
 		const auto calleeContext = generator.GetVariableContextPos(m_callee);

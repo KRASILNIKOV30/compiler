@@ -6,6 +6,7 @@
 #include <format>
 #include <ranges>
 #include <sstream>
+#include <stack>
 #include <string>
 #include <vector>
 
@@ -77,6 +78,7 @@ public:
 
 	void BeginFunction(std::string const& functionName, size_t argc)
 	{
+		m_callStack.top().functionStarted = true;
 		m_functions.emplace(std::piecewise_construct, std::forward_as_tuple(functionName), std::forward_as_tuple(functionName, m_currentLocation, argc));
 		m_functionNames.emplace_back(functionName);
 		m_currentLocation = functionName;
@@ -85,6 +87,54 @@ public:
 	void EndFunction()
 	{
 		m_currentLocation = GetCurrentContext().parentName;
+	}
+
+	void ShouldClosureFunctionDirectly()
+	{
+		m_callStack.push({ false, true });
+	}
+
+	void ShouldNotClosureFunctionDirectly()
+	{
+		m_callStack.push({ false, false });
+	}
+
+	void ClosureFunction(size_t variablePos = -1, bool isUpValue = false)
+	{
+		if (m_callStack.empty())
+		{
+			return;
+		}
+		if (!m_callStack.top().functionStarted)
+		{
+			m_callStack.pop();
+			return;
+		}
+		if (!m_callStack.top().closureDirectly)
+		{
+			m_callStack.pop();
+			AddInstruction("closure");
+			return;
+		}
+		if (variablePos == -1)
+		{
+			// closure will be called later
+			return;
+		}
+
+		m_callStack.pop();
+		if (isUpValue)
+		{
+			AddInstruction("get_upvalue " + std::to_string(variablePos));
+			AddInstruction("closure");
+			AddInstruction("set_upvalue " + std::to_string(variablePos));
+		}
+		else
+		{
+			AddInstruction("get_local " + std::to_string(variablePos));
+			AddInstruction("closure");
+			AddInstruction("set_local " + std::to_string(variablePos));
+		}
 	}
 
 	void PrintCode(std::ostream& outFile)
@@ -226,6 +276,14 @@ private:
 		arr.push_back(value);
 		return arr.size() - 1;
 	}
+
+	struct FunctionCall
+	{
+		bool functionStarted = false;
+		bool closureDirectly = false;
+	};
+
+	std::stack<FunctionCall> m_callStack;
 
 	int m_rowId = 1;
 	std::string m_currentLocation = MAIN;

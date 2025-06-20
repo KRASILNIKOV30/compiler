@@ -20,6 +20,8 @@ string arrayLength
 1 const 0
 1 set_local 0
 1 load_fn 1
+1 set_local 1
+1 get_local 1
 1 closure
 1 set_local 1
 1 const 1
@@ -46,6 +48,8 @@ string arrayLength
 1 const 3
 1 set_local 5
 1 load_fn 4
+1 set_local 6
+1 get_local 6
 1 closure
 1 set_local 6
 1 get_local 3
@@ -117,6 +121,8 @@ string println
 1 const 0
 1 set_local 4
 1 load_fn 2
+1 set_local 5
+1 get_local 5
 1 closure
 1 set_local 5
 1 get_local 2
@@ -136,6 +142,8 @@ while1:
 1 add
 1 set_local 6
 1 load_fn 3
+1 set_local 8
+1 get_local 8
 1 closure
 1 set_local 8
 1 get_local 7

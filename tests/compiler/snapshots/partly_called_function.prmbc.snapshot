@@ -9,6 +9,8 @@ number 3
 number 1
 .code
 1 load_fn 1
+1 set_local 0
+1 get_local 0
 1 closure
 1 set_local 0
 1 const 0

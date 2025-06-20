@@ -16,10 +16,12 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
+		generator.ShouldClosureFunctionDirectly();
 		m_right->Generate(generator);
 
 		if (m_left->IsPartOfArray())
 		{
+			generator.ClosureFunction();
 			m_left->Generate(generator);
 			generator.AddInstruction("set_el");
 		}
@@ -29,10 +31,12 @@ public:
 			if (varContext.isVariableFromParent)
 			{
 				generator.AddInstruction("set_upvalue " + std::to_string(varContext.pos));
+				generator.ClosureFunction(varContext.pos, true);
 			}
 			else
 			{
 				generator.AddInstruction("set_local " + std::to_string(varContext.pos));
+				generator.ClosureFunction(varContext.pos);
 			}
 		}
 	}

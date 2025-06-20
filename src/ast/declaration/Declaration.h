@@ -13,12 +13,14 @@ public:
 
 	void Generate(CodeGenerator& generator) const override
 	{
+		generator.ShouldClosureFunctionDirectly();
 		const auto pos = generator.GetVariablePosOrAdd(m_id);
 		if (m_init.has_value())
 		{
 			m_init.value()->Generate(generator);
 		}
 		generator.AddInstruction("set_local " + std::to_string(pos));
+		generator.ClosureFunction(pos);
 	}
 
 private:
