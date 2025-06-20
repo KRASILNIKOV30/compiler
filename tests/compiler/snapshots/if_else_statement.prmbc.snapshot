@@ -5,7 +5,6 @@
 .constants
 number 0
 number 1
-bool false
 number 2
 number 3
 .code
@@ -13,13 +12,13 @@ number 3
 1 set_local 0
 1 const 1
 1 set_local 1
-1 const 2
+1 false
 1 jmp_false else1
-1 const 3
+1 const 2
 1 set_local 2
 1 jmp endif1
 else1:
-1 const 4
+1 const 3
 1 set_local 3
 1 jmp endif1
 endif1:

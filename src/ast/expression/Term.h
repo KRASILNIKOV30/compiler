@@ -26,12 +26,15 @@ public:
 			{
 				generator.AddInstruction("get_local " + std::to_string(varContext.pos));
 			}
+			return;
 		}
-		else
+		if (m_type == PrimitiveType::BOOL)
 		{
-			const auto pos = generator.GetConstantPosOrAdd(m_type, m_value);
-			generator.AddInstruction("const " + std::to_string(pos));
+			generator.AddInstruction(m_value);
+			return;
 		}
+		const auto pos = generator.GetConstantPosOrAdd(m_type, m_value);
+		generator.AddInstruction("const " + std::to_string(pos));
 	}
 
 	[[nodiscard]] bool HasValue() const override

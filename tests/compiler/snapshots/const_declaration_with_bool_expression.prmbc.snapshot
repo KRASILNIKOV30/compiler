@@ -2,10 +2,8 @@
 .argc 0
 .locals 1
 .name __EntryPoint__
-.constants
-bool true
 .code
-1 const 0
+1 true
 1 set_local 0
 1 return
 .end_def
